@@ -7,10 +7,11 @@
 [无重复字符的最长子串](#question-3-无重复字符的最长子串)
 [最长回文子串](#question-5-最长回文子串)
 [三数之和](#question-15-三数之和)
+[最接近的三数之和](#question-16-最接近的三数之和)
 [电话号码的字母组合](#question-17-电话号码的字母组合)
 [删除链表的倒数第N个节点](#question-19-删除链表的倒数第n个节点)
 [合并两个有序链表](#question-21-合并两个有序链表)
-[最接近的三数之和](#question-16-最接近的三数之和)
+[两两交换链表中的节点](#question-24-两两交换链表中的节点)
 ---
 
 
@@ -407,6 +408,51 @@ class Solution:
         return ans.next
 ```
 
+##  Question 24 两两交换链表中的节点
+
+> <font face='宋体'>给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
+你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+示例:
+给定 1->2->3->4, 你应该返回 2->1->4->3.
+>> * 解题思路
+>> 双指针，维护一个第一个指针的前一个指针来连接，改天研究一下递归的方法
+</font>
+
+```python
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def swapPairs(self, head: ListNode) -> ListNode:
+
+        if head == None or head.next ==None:
+            return head
+        
+        firstnode = head
+        secondnode = head.next
+        ans = secondnode
+        temp = secondnode.next
+        firstnode.next = temp
+        secondnode.next = firstnode
+        pre = firstnode
+        
+        while pre.next != None and pre.next.next :
+            firstnode = pre.next
+            secondnode = pre.next.next
+            
+            temp = secondnode.next
+            pre.next = secondnode
+            secondnode.next = firstnode
+            firstnode.next = temp
+
+            pre = firstnode
+
+
+        return ans
+```
 
 
 
