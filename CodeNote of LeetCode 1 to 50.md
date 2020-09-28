@@ -9,6 +9,7 @@
 [三数之和](#question-15-三数之和)
 [删除链表的倒数第N个节点](#question-19-删除链表的倒数第n个节点)
 [合并两个有序链表](#question-21-合并两个有序链表)
+[最接近的三数之和](#question-16-最接近的三数之和)
 ---
 
 
@@ -199,6 +200,73 @@ class Solution:
 
         return ans
 ```
+
+##  Question 16 最接近的三数之和
+
+> <font face='宋体'>给定一个包括 n 个整数的数组 nums 和 一个目标值 target。找出 nums 中的三个整数，使得它们的和与 target 最接近。返回这三个数的和。假定每组输入只存在唯一答案。
+示例：
+输入：nums = [-1,2,1,-4], target = 1
+输出：2
+解释：与 target 最接近的和是 2 (-1 + 2 + 1 = 2) 。
+>> * 解题思路
+&nbsp; 做法和[三数之和](#question-15-三数之和)相同,只需要维护一个全局的best距离即可，注意代码中的优化，可以过滤边缘值
+
+</font>
+
+```python
+class Solution:
+    def threeSumClosest(self, nums: List[int], target: int) -> int:
+        nums.sort()
+
+        N  = len(nums)
+        best = nums[0]+nums[1]+nums[2] #假设nums至少三个元素
+
+        #def updateDis(cur):
+        #    nonlocal best # nonlocal关键字用来在函数或其他作用域中使用外层(非全局)变量
+        #    if abs(cur - target) < abs(best - target) :
+        #        best = cur  
+
+        for first in range(N-2):
+            third = N-1
+            #flag = False #每次second和third移动是否减小又增大，当开始变大时可以停止遍历，代码未实现
+            second = first+1
+            """
+            此段代码可以大大过滤样本，排过序后最小的三个数是前三个，最大的数是后三个，所以可以使用这俩个值与target比较，来过滤第一次循环，固然可以大大提高效率
+            max_sum = nums[first] + nums[-2] + nums[-1]
+            min_sum = nums[first] + nums[first + 1] + nums[first + 2]
+            if max_sum <= target:    # 最大的数
+                if abs(max_sum - target) < abs(best - target):
+                    best = max_sum
+                continue              
+            elif min_sum >= target:  # 最小的数
+                if abs(min_sum - target) < abs(best - target):
+                    best = min_sum      
+                break   
+
+            """
+
+            while third > second:
+                if second > first + 1 and nums[second] == nums[second - 1]:
+                    second += 1
+                    continue
+                if third < N-1 and nums[third] == nums[third + 1]:
+                    third-=1
+                    continue
+                dis = nums[first]+nums[second]+nums[third]
+
+                if dis == target:
+                    return dis
+                #updateDis(dis)
+                if abs(dis - target) < abs(best - target) :
+                    best = dis  
+                if dis > target:
+                    third -= 1
+    
+                if dis < target:
+                    second += 1    
+        return best
+```
+
 
 ##  Question 19 删除链表的倒数第N个节点
 
