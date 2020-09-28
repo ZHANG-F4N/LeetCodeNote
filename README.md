@@ -1,4 +1,4 @@
-# GitHubRepository
+# LeetCodeNote
  
 ## this project is my LeetCode learning note
 
