@@ -4,12 +4,13 @@
 ---
 ## 目录
 >[链表两数相加](#question-2-链表两数相加)
->[无重复字符的最长子串](#question-3-无重复字符的最长子串)
->[最长回文子串](#question-5-最长回文子串)
->[三数之和](#question-15-三数之和)
->[删除链表的倒数第N个节点](#question-19-删除链表的倒数第n个节点)
->[合并两个有序链表](#question-21-合并两个有序链表)
->[最接近的三数之和](#question-16-最接近的三数之和)
+[无重复字符的最长子串](#question-3-无重复字符的最长子串)
+[最长回文子串](#question-5-最长回文子串)
+[三数之和](#question-15-三数之和)
+[电话号码的字母组合](#question-17-电话号码的字母组合)
+[删除链表的倒数第N个节点](#question-19-删除链表的倒数第n个节点)
+[合并两个有序链表](#question-21-合并两个有序链表)
+[最接近的三数之和](#question-16-最接近的三数之和)
 ---
 
 
@@ -267,6 +268,53 @@ class Solution:
         return best
 ```
 
+##  Question 17 电话号码的字母组合
+
+> <font face='宋体'>给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。phoneMap = {
+            "2": "abc","3": "def","4": "ghi","5": "jkl",
+            "6": "mno","7": "pqrs","8": "tuv","9": "wxyz",
+        }
+示例:
+输入："23"
+输出：["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+>> * 解题思路
+&nbsp; DFS注意深度优先的边界值，具体看代码
+
+</font>
+
+```python
+class Solution:
+    def letterCombinations(self, digits: str) -> List[str]:
+        if not digits:
+            return list()
+        phoneMap = {
+            "2": "abc",
+            "3": "def",
+            "4": "ghi",
+            "5": "jkl",
+            "6": "mno",
+            "7": "pqrs",
+            "8": "tuv",
+            "9": "wxyz",
+        }
+        ansStr=[]
+        singleStr = []
+        def DFS(index:int):
+            if index == len(digits):
+                ansStr.append("".join(singleStr))
+            else:
+                digit = digits[index]
+                for char in phoneMap[digit]:#for循环就是分支的过程
+                    singleStr.append(char)
+                    DFS(index+1)
+                    singleStr.pop()
+        DFS(0)
+        return ansStr
+
+
+```
+
 
 ##  Question 19 删除链表的倒数第N个节点
 
@@ -324,7 +372,6 @@ class Solution:
 >> 这个题注意Python下链表的使用
 </font>
 
-
 ```python
 # Definition for singly-linked list.
 # class ListNode:
@@ -359,6 +406,7 @@ class Solution:
         
         return ans.next
 ```
+
 
 
 
