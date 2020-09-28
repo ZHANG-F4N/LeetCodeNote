@@ -1,4 +1,15 @@
-# CodeNote of LeetCode
+<p id='top'>
+
+# CodeNote of LeetCode 1 to 50
+---
+##目录
+>[链表两数相加](#question-2-链表两数相加)
+[无重复字符的最长子串](#question-3-无重复字符的最长子串)
+[最长回文子串](#question-5-最长回文子串)
+[三数之和](#question-15-三数之和)
+[删除链表的倒数第N个节点](#question-19-删除链表的倒数第n个节点)
+[合并两个有序链表](#question-21-合并两个有序链表)
+---
 
 ## Question 2 链表两数相加
 
@@ -103,7 +114,6 @@ class Solution:
 ```
 
 
-
 ##  Question 5 最长回文子串
 
 > <font face='宋体'>给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。
@@ -134,6 +144,59 @@ class Solution:
                         right = j
 
         return s[left:right+1]
+```
+
+##  Question 15 三数之和
+
+> <font face='宋体'>给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有满足条件且不重复的三元组。
+注意：答案中不可以包含重复的三元组
+示例：
+给定数组 nums = [-1, 0, 1, 2, -1, -4]，
+满足要求的三元组集合为：
+[
+  [-1, 0, 1],
+  [-1, -1, 2]
+]
+>> * 解题思路
+>> &nbsp;首先要学习两数之和，给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数。简单的思路是进行两边遍历，确定第一个数，然后看其他的数与确定的数之和。时间复杂度为O(N^2),可以通过hash target-nums[i]: nums, 将时间复杂度降为O(N) 
+&nbsp; 三数之和可以理解为规定一个数之后的两数之和，但是问题在于处理掉相同的序列，采用的方法是排序，排序后按序进行筛选，就可以避免重复元素，而当出现相同的值时，必定是相邻的，所以可以遍历时判断有相邻相同的数进行continue，再次过滤相同序列。最后使用双指针(既就是两个下标second和third，一个从前，一个从后进行遍历，因为数组是有序的) 时间复杂度为O(N^2)
+
+</font>
+
+```python
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        N = len(nums)
+        nums.sort()
+        ans = []
+        #print(nums)
+        for first in range(N):
+            #避免重复元素 
+            if first > 0 and nums[first] == nums[first-1]:
+                continue
+            
+            third = N - 1
+            tempans = 0 - nums[first]
+            for second in range(first+1,N-1):
+                
+                #print(first,second,third,tempans)
+                #避免重复元素 
+                if second > first + 1 and nums[second] == nums[second-1]: #
+                    continue
+
+                
+                while nums[second] + nums[third] > tempans and third > second:
+                    third -= 1
+                #需要在进行判断前先判断下标是否越界
+                if third - second == 0 :
+                    break
+
+                #print('a',first,second,third,tempans)
+                if nums[second] + nums[third] == tempans:
+                    ans.append( [nums[first] , nums[second], nums[third]])
+                    continue
+
+        return ans
 ```
 
 ##  Question 19 删除链表的倒数第N个节点
@@ -181,12 +244,15 @@ class Solution:
 
         return ans
 ```
+
 ##  Question 21 合并两个有序链表
 
 > <font face='宋体'>将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
 > 示例：
 输入：1->2->4, 1->3->4
 输出：1->1->2->3->4->4
+>> * 解题思路
+>> 这个题注意Python下链表的使用
 </font>
 
 
@@ -224,3 +290,7 @@ class Solution:
         
         return ans.next
 ```
+
+
+
+[返回顶部](#top)
