@@ -454,6 +454,20 @@ class Solution:
         return ans
 ```
 
+##  Question 28 实现 strStr() KMP
+
+> <font face='宋体'>给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。如果不存在，则返回  -1。
+示例 1:
+输入: haystack = "hello", needle = "ll"
+输出: 2
+>> * 解题思路
+>> 使用KMP算法，KMP算法的关键是构建Next数组，为什么要用next数组呢？是为了在一次匹配失败后可以不用在从头匹配字符串，只需要从子串的某个位置重新匹配，而这个位置就是要又Next数组来提供。核心就是：找到了最长相等的前缀和后缀，匹配失败的位置是后缀子串的后面，那么我们找到与其相同的前缀的后面从新匹配就可以了。
+</font>
+
+```python
+
+```
+
 
 
 [返回顶部](#top)
