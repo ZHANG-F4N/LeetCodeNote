@@ -6,12 +6,15 @@
 >[链表两数相加](#question-2-链表两数相加)
 [无重复字符的最长子串](#question-3-无重复字符的最长子串)
 [最长回文子串](#question-5-最长回文子串)
-[三数之和](#question-15-三数之和)
+[三数之和](#question-15-三数之和)  
 [最接近的三数之和](#question-16-最接近的三数之和)
 [电话号码的字母组合](#question-17-电话号码的字母组合)
-[删除链表的倒数第N个节点](#question-19-删除链表的倒数第n个节点)
+[删除链表的倒数第N个节点](#question-19-删除链表的倒数第n个节点)  
 [合并两个有序链表](#question-21-合并两个有序链表)
 [两两交换链表中的节点](#question-24-两两交换链表中的节点)
+[下一个排列](#question-31-下一个排列)
+[旋转图像](#question-48-旋转图像)  
+
 ---
 
 
@@ -517,7 +520,50 @@ class Solution:
                 #print(nums)
                 nums[changeIndex1+1:] = sorted(nums[changeIndex1+1:])
                 return
-        
+```
+
+##  Question 48 旋转图像
+
+> <font face='宋体'>给定一个 n × n 的二维矩阵表示一个图像。
+将图像顺时针旋转 90 度。
+说明： 
+你必须在原地旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要使用另一个矩阵来旋转图像。  
+示例 1:
+给定 matrix = 
+[  
+  [1,2,3],  
+  [4,5,6],  
+  [7,8,9]
+],  
+原地旋转输入矩阵，使其变为:
+[  
+  [7,4,1],  
+  [8,5,2],  
+  [9,6,3]
+]
+>> * 解题思路
+>> 将顺时针旋转90转化为先转置再左右对调，同样，对于其他的旋转也可以转换为基本的转置，上下左右对调等，需要思考。
+</font>
+
+```python
+class Solution:
+    def rotate(self, matrix: List[List[int]]) -> None:
+        """
+        Do not return anything, modify matrix in-place instead.
+        """
+        #思考其他的旋转方法，分步为基本的转置或者左右上下对调
+        if matrix == []:
+            return
+        N = len(matrix[0])
+        if N == 1:
+            return
+        for i in range(N-1):
+            for j in range(i+1,N):
+                temp = matrix[i][j]
+                matrix[i][j] = matrix[j][i]
+                matrix[j][i] = temp 
+        for i in range(N):
+            matrix[i].reverse()
 ```
 
 [返回顶部](#top)
