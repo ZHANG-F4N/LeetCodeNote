@@ -468,6 +468,56 @@ class Solution:
 
 ```
 
+## Question 31 下一个排列
 
+> <font face='宋体'>实现获取下一个排列的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
+如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
+必须原地修改，只允许使用额外常数空间。
+以下是一些例子，输入位于左侧列，其相应输出位于右侧列。
+1,2,3 → 1,3,2  
+3,2,1 → 1,2,3  
+1,1,5 → 1,5,1 
+>> * 解题思路  
+>> 两趟扫描，先从后往前找第一个减小的数记为a[i],再从a[i]开始往后扫描，找最后一个大于a[i] (注意如果有重复的数字的话，一定是严格大于),的数，记为a[j],将a[i]与a[j]交换，再将a[i]后面的序列调整为最小的序列。如果a[i]后面的序列都大于a[i],则选择最后一个(因为第一次扫描时，确保了a[i]后面的序列都是降序，最后一位即为最小的大于a[i]的数)
+</font>
+
+```python
+class Solution:
+    def nextPermutation(self, nums: List[int]) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        #代码逻辑已经为最优解，但代码还可继续优化
+        changeIndex1 = -1
+        for index in range(len(nums)-1,-1,-1):
+            if index != 0 and nums[index-1]>=nums[index]:
+                continue
+            elif index != 0:
+                changeIndex1 = index - 1
+                break
+            else:
+                nums.reverse()
+                return
+        
+        for index in range(changeIndex1+1,len(nums)):
+            if  nums[changeIndex1] >= nums[index] :
+                #print(changeIndex1,'1in',index-1)
+                temp = nums[changeIndex1]
+                nums[changeIndex1] = nums[index-1]
+                nums[index-1] = temp
+                #print(nums)
+                nums[changeIndex1+1:] = sorted(nums[changeIndex1+1:])
+                #nums[changeIndex1+1:len(nums)].sort() --这个语法是错的，会返回None,需要使用上面这一句
+                return
+            elif  index == len(nums)-1: #当changeIndex1位置后的数都比nums[changeIndex1]大时，这个后缀肯定是降序的，将最后一个字符进行调换
+                # print(changeIndex1,'2in',index)
+                temp = nums[changeIndex1]
+                nums[changeIndex1] = nums[index]
+                nums[index] = temp
+                #print(nums)
+                nums[changeIndex1+1:] = sorted(nums[changeIndex1+1:])
+                return
+        
+```
 
 [返回顶部](#top)
