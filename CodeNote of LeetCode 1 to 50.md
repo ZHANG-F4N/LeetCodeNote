@@ -13,7 +13,9 @@
 [合并两个有序链表](#question-21-合并两个有序链表)
 [两两交换链表中的节点](#question-24-两两交换链表中的节点)
 [下一个排列](#question-31-下一个排列)
-[旋转图像](#question-48-旋转图像)  
+[缺失的第一个正数](#question-41-缺失的第一个正数)  
+[旋转图像](#question-48-旋转图像)
+
 
 ---
 
@@ -95,8 +97,8 @@ class Solution:
 输入: "abcabcbb"
 输出: 3 
 解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
->> * 解题思路
->>传统便利方法时间复杂度为O(n*n)，可以通过O(n)的方法来解决。
+>> * 解题思路  
+>>传统遍历方法时间复杂度为O(n*n)，可以通过O(n)的方法来解决。
 每次遍历，需要维护一个当前字符最后一次出现的位置下标。
 我们需要记录之前出现过的字符，记录的方式有很多，最常见的是统计字符出现的个数，但是这道题字符出现的位置很重要，所以我们可以使用HashMap来建立字符和其出现位置之间的映射。进一步考虑，由于字符会重复出现，到底是保存所有出现的位置呢，还是只记录一个位置？我们之前手动推导的方法实际上是维护了一个滑动窗口，窗口内的都是没有重复的字符，我们需要尽可能的扩大窗口的大小。由于窗口在不停向右滑动，所以我们只关心每个字符最后出现的位置，并建立映射。窗口的右边界就是当前遍历到的字符的位置，为了求出窗口的大小，我们需要一个变量left来指向滑动窗口的左边界，这样，如果当前遍历到的字符从未出现过，那么直接扩大右边界，如果之前出现过，那么就分两种情况，在或不在滑动窗口内，如果不在滑动窗口内，那么就没事，当前字符可以加进来，如果在的话，就需要先在滑动窗口内去掉这个已经出现过的字符了，去掉的方法并不需要将左边界left一位一位向右遍历查找，由于我们的HashMap已经保存了该重复字符最后出现的位置，所以直接移动left指针就可以了。我们维护一个结果res，每次用出现过的窗口大小来更新结果res，就可以得到最终结果了。</font>
 
@@ -512,7 +514,9 @@ class Solution:
                 nums[changeIndex1+1:] = sorted(nums[changeIndex1+1:])
                 #nums[changeIndex1+1:len(nums)].sort() --这个语法是错的，会返回None,需要使用上面这一句
                 return
-            elif  index == len(nums)-1: #当changeIndex1位置后的数都比nums[changeIndex1]大时，这个后缀肯定是降序的，将最后一个字符进行调换
+            elif  index == len(nums)-1:
+             """当changeIndex1位置后的数都比nums[changeIndex1]大 时，
+            这个后缀肯定是降序的，将最后一个字符进行调换"""
                 # print(changeIndex1,'2in',index)
                 temp = nums[changeIndex1]
                 nums[changeIndex1] = nums[index]
@@ -565,5 +569,46 @@ class Solution:
         for i in range(N):
             matrix[i].reverse()
 ```
+##  Question 41 缺失的第一个正数
 
+> <font face='宋体'>给你一个未排序的整数数组，请你找出其中没有出现的最小的正整数。  
+> 你的算法的时间复杂度应为O(n)，并且只能使用常数级别的额外空间。  
+示例 1:
+输入: [1,2,0]
+输出: 3
+示例 2:
+输入: [3,4,-1,1]
+输出: 2
+>> * 解题思路
+>> 由于时间复杂度O(n)所以不能排序，所以考虑哈希，但是为常数空间，所以只能在原来的数组上进行hash，即将下标为a[i]的值的数变为负数，扫描一遍之后，第一个不为负数的数a[j]对应的下标j就是所求的值。(代码实现时需要预处理和将值 - 1来对应下标)
+</font>
+
+```python
+class Solution:
+    def firstMissingPositive(self, nums: List[int]) -> int:
+        N = len(nums)
+        if nums==[]:
+            return 1
+        for index in range(N):
+            if nums[index] <= 0 or nums[index] > N:
+                nums[index] = N+1
+
+        for index in range(N):
+            #print(index)
+            """
+            加abs是因为在将数变变相反数时，前面的N+1标志可能在之前被取反了
+            nums[abs(nums[index])-1]是为了防止有相同的数，在取相反数之前先判断
+            位置上是否已经取反，如果取过反就不再重复取反，否则可能又变正
+            """
+            if abs(nums[index]) != N+1 and nums[abs(nums[index])-1]> 0:
+                #print(index,nums[index]-1,nums[nums[index]-1])
+                nums[abs(nums[index])-1] = -nums[abs(nums[index])-1]
+        print(nums)
+        for index in range(N):
+            if nums[index] > 0 :#存在正数时，正数的下标+1即为答案
+                return index+1
+            elif index == N-1:#当全负时，即数组由1到N组成
+                return N+1
+
+```
 [返回顶部](#top)
