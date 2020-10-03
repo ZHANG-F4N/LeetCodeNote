@@ -6,13 +6,15 @@
 >[链表两数相加](#question-2-链表两数相加)
 [无重复字符的最长子串](#question-3-无重复字符的最长子串)
 [最长回文子串](#question-5-最长回文子串)
-[三数之和](#question-15-三数之和)  
+[字符串转换整数](#question-8-字符串转换整数-atoi)  
+[三数之和](#question-15-三数之和)
 [最接近的三数之和](#question-16-最接近的三数之和)
 [电话号码的字母组合](#question-17-电话号码的字母组合)
 [删除链表的倒数第N个节点](#question-19-删除链表的倒数第n个节点)  
 [合并两个有序链表](#question-21-合并两个有序链表)
 [两两交换链表中的节点](#question-24-两两交换链表中的节点)
-[下一个排列](#question-31-下一个排列)
+[下一个排列](#question-31-下一个排列)  
+[搜索旋转排序数组](#question-33-搜索旋转排序数组)
 [搜索插入位置](#question-35-搜索插入位置)  
 [缺失的第一个正数](#question-41-缺失的第一个正数)
 [旋转图像](#question-48-旋转图像)
@@ -154,6 +156,64 @@ class Solution:
                         right = j
 
         return s[left:right+1]
+```
+
+##  Question 8 字符串转换整数 (atoi)
+
+> <font face='宋体'>请你来实现一个 atoi 函数，使其能将字符串转换成整数。
+首先，该函数会根据需要丢弃无用的开头空格字符，直到寻找到第一个非空格的字符为止。接下来的转化规则如下：
+如果第一个非空字符为正或者负号时，则将该符号与之后面尽可能多的连续数字字符组合起来，形成一个有符号整数。
+假如第一个非空字符是数字，则直接将其与之后连续的数字字符组合起来，形成一个整数。
+该字符串在有效的整数部分之后也可能会存在多余的字符，那么这些字符可以被忽略，它们对函数不应该造成影响。  
+&nbsp;注意：假如该字符串中的第一个非空格字符不是一个有效整数字符、字符串为空或字符串仅包含空白字符时，则你的函数不需要进行转换，即无法进行有效转换。
+在任何情况下，若函数不能进行有效的转换时，请返回 0 。
+提示：
+本题中的空白字符只包括空格字符 ' ' 。
+假设我们的环境只能存储 32 位大小的有符号整数，那么其数值范围为 [−231,  231 − 1]。如果数值超过这个范围，请返回  INT_MAX (231 − 1) 或 INT_MIN (−231) 。
+示例 1:
+输入: "42"
+输出: 42
+示例 2:
+输入: "   -42"
+输出: -42
+解释: 第一个非空白字符为 '-', 它是一个负号。
+     我们尽可能将负号与后面所有连续出现的数字组合起来，最后得到 -42 。
+>> * 解题思路
+>> 根据规则字符串处理，注意python的默认int范围，int 类型在python中是动态长度的。因为python3中int类型是长整型，理论支持无限大的数字
+</font>
+
+```python
+class Solution:
+    def myAtoi(self, str: str) -> int:
+        StrTemp = str.lstrip(' ')
+        if(StrTemp == ''):
+            return 0
+        if (StrTemp[0] >'9' or StrTemp[0]<'0') and StrTemp[0] !='-' and StrTemp[0] !='+':
+            return 0
+        if StrTemp =='+' or StrTemp =='-':
+            return 0
+        if (StrTemp[0] =='-' or StrTemp[0] =='+') and (StrTemp[1] <'0' or StrTemp[1] >'9'):
+            return 0
+        ansChar = ''
+        flag = False
+        FirstIndex = -1
+        for index in range(len(StrTemp)):
+            if '0'<=StrTemp[index]<='9':
+                ansChar += StrTemp[index]
+                if flag == False:
+                    FirstIndex = index
+                flag = True
+            if flag == True and(StrTemp[index]<'0' or StrTemp[index] >'9'):
+                break 
+        if FirstIndex == 0:
+            ans = int(ansChar)
+        else:
+            ans = int(StrTemp[FirstIndex-1]+ansChar)
+        if ans > 2**31 - 1:
+            return 2**31 - 1
+        if ans < -2**31:
+            return -2**31
+        return ans
 ```
 
 ##  Question 15 三数之和
@@ -526,6 +586,48 @@ class Solution:
                 nums[changeIndex1+1:] = sorted(nums[changeIndex1+1:])
                 return
 ```
+## Question 33 搜索旋转排序数组
+
+> <font face='宋体'>假设按照升序排序的数组在预先未知的某个点上进行了旋转。
+( 例如，数组 [0,1,2,4,5,6,7] 可能变为 [4,5,6,7,0,1,2] )。
+搜索一个给定的目标值，如果数组中存在这个目标值，则返回它的索引，否则返回-1 。
+你可以假设数组中不存在重复的元素。
+你的算法时间复杂度必须是 O(log n) 级别。 
+示例 1:
+输入: nums = [4,5,6,7,0,1,2], target = 0
+输出: 4
+>> * 解题思路  
+>> 二分查找，Log(N),如果有序数组从一个位置旋转过，在二分时，肯定有一部分是有序的，先判断那一部分有序，如果tar在有序部分，继续二分即可，如果在无序的部分，做同样的处理。关键是确定其在那一部分，左边有序时：`nums[left]<=nums[mid]`右边有序时：`nums[mid] <= nums[right]`
+判断tar在那一部分时，需要两边都限制才能确定。`nums[left]<= target< nums[mid]`
+</font>
+
+```python
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        if nums==[]:
+            return -1
+
+        left = 0
+        right = len(nums) - 1
+        mid = right // 2
+        while left <= right:
+            if nums[mid] == target:
+                return mid
+            #要加=号，为了保证mid与left或者right重合时也能进入left和right的变化过程
+            if nums[left]<=nums[mid]:
+                if nums[left]<= target< nums[mid]: #左右范围都要限制，才能确保target的位置
+                    right = mid - 1
+                else:
+                    left = mid + 1
+            if nums[mid] <= nums[right]:
+                if nums[mid]<target <=nums[right]:
+                    left = mid + 1
+                else:
+                    right = mid - 1
+            mid = (right + left) // 2
+        return -1 
+```
+
 ## Question 35 搜索插入位置
 
 > <font face='宋体'>给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。你可以假设数组中无重复元素。  
