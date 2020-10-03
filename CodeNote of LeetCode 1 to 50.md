@@ -15,6 +15,7 @@
 [两两交换链表中的节点](#question-24-两两交换链表中的节点)
 [下一个排列](#question-31-下一个排列)  
 [搜索旋转排序数组](#question-33-搜索旋转排序数组)
+[在排序数组中查找元素的第一个和最后一个位置](#question-34-在排序数组中查找元素的第一个和最后一个位置)  
 [搜索插入位置](#question-35-搜索插入位置)  
 [缺失的第一个正数](#question-41-缺失的第一个正数)
 [旋转图像](#question-48-旋转图像)
@@ -628,6 +629,49 @@ class Solution:
         return -1 
 ```
 
+## Question 34 在排序数组中查找元素的第一个和最后一个位置
+
+> <font face='宋体'>&nbsp;给定一个按照升序排列的整数数组 nums，和一个目标值 target。找出给定目标值在数组中的开始位置和结束位置。  
+你的算法时间复杂度必须是 O(log n) 级别。
+如果数组中不存在目标值，返回 [-1, -1]。
+示例 1:
+输入: nums = [5,7,7,8,8,10], target = 8  
+输出: [3,4]
+>> * 解题思路  
+>> 二分查找，Log(N),没有难度，主要就是在第一次确定到`nums[mid] == target` 时，开始使用双指针向两边扩散，寻找边界，注意寻找边界时的细节。
+</font>
+
+```python
+class Solution:
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        if nums ==[]:
+            return [-1,-1]
+        mid = -1
+        left = 0
+        right = len(nums) - 1
+        lindex = -1
+        rindex = -1
+        while left <= right:
+            mid = (right + left) // 2
+            if nums[mid] == target:
+                lindex = rindex = mid
+                #print(mid)
+                while  lindex >= 0 and nums[lindex] == target :
+                    lindex -= 1
+                while  rindex <= len(nums) -1 and nums[rindex] == target:
+                    rindex += 1
+                if (lindex < 0 or nums[lindex] != target):
+                    lindex+=1
+                if (rindex > len(nums) -1 or nums[rindex] != target):
+                    rindex -= 1
+                return [lindex,rindex]
+            if target < nums[mid]:
+                right = mid -1
+            if target > nums[mid]:
+                left = mid + 1
+        return [lindex,rindex]
+```
+
 ## Question 35 搜索插入位置
 
 > <font face='宋体'>给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。你可以假设数组中无重复元素。  
@@ -637,7 +681,6 @@ class Solution:
 示例 2:
 输入: [1,3,5,6], 2
 输出: 1
-
 >> * 解题思路  
 >> 二分查找，Log(N),注意元素不存在时的输出位置，mid向下取整，所以最后会偏向left，最后输出left位置
 </font>
