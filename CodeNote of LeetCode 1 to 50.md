@@ -13,7 +13,8 @@
 [合并两个有序链表](#question-21-合并两个有序链表)
 [两两交换链表中的节点](#question-24-两两交换链表中的节点)
 [下一个排列](#question-31-下一个排列)
-[缺失的第一个正数](#question-41-缺失的第一个正数)  
+[搜索插入位置](#question-35-搜索插入位置)  
+[缺失的第一个正数](#question-41-缺失的第一个正数)
 [旋转图像](#question-48-旋转图像)
 
 
@@ -525,6 +526,45 @@ class Solution:
                 nums[changeIndex1+1:] = sorted(nums[changeIndex1+1:])
                 return
 ```
+## Question 35 搜索插入位置
+
+> <font face='宋体'>给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。你可以假设数组中无重复元素。  
+示例 1:
+输入: [1,3,5,6], 5
+输出: 2
+示例 2:
+输入: [1,3,5,6], 2
+输出: 1
+
+>> * 解题思路  
+>> 二分查找，Log(N),注意元素不存在时的输出位置，mid向下取整，所以最后会偏向left，最后输出left位置
+</font>
+
+```python
+class Solution:
+    def searchInsert(self, nums: List[int], target: int) -> int:
+        if nums == []:
+            return 0
+        if target > nums[len(nums)-1]:
+            return len(nums)
+        if target < nums[0]:
+            return 0
+        mid = (len(nums)-1) // 2
+        left = 0
+        right = len(nums) - 1
+        #注意为什么匹配不到元素时返回left
+        while left <= right:
+            print(left,right, mid)
+            if target == nums[mid]:
+                return mid
+            if target < nums[mid]:
+                right = mid - 1
+            if target > nums[mid]:
+                left = mid + 1
+            mid = (right + left) // 2
+        return left #最后的插入位置，向下取整的，所以最后left为mid+1，mid总是最后等于left
+```
+
 
 ##  Question 48 旋转图像
 
