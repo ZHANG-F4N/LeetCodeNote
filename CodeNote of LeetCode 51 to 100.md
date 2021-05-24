@@ -1,4 +1,4 @@
-# Code-note of LeetCode 1 to 50
+# Code-note of LeetCode 51 to 100
 
 [TOC]
 
@@ -67,7 +67,6 @@ class Solution {
 ```java
 class Solution {
     public int[][] merge(int[][] intervals) {
-        
         Arrays.sort(intervals,new Comparator<int[]>(){
             @Override
             public int compare(int[] o1, int[] o2) {
@@ -91,7 +90,7 @@ class Solution {
 
 
 
-## Question 58  最后一个单词的长度
+## Question 58 最后一个单词的长度
 
 
 
@@ -121,5 +120,37 @@ class Solution {
         return ans;
     }
 }
+```
+
+
+
+## Question 66 加一
+
+给定一个由 整数 组成的 非空 数组所表示的非负整数，在该数的基础上加一。
+
+最高位数字存放在数组的首位， 数组中每个元素只存储单个数字。
+
+你可以假设除了整数 0 之外，这个整数不会以零开头。
+
+```java
+输入：digits = [1,2,3]
+输出：[1,2,4]
+解释：输入数组表示数字 123。
+```
+
+---
+
+```java
+for (int i = digits.length - 1; i >= 0; i--) {
+    digits[i]++;
+    digits[i] %= 10;
+
+    if(digits[i]!=0){
+        return digits;
+    }
+}
+int[] ints = new int[digits.length+1];
+ints[0] = 1;
+return ints;
 ```
 
