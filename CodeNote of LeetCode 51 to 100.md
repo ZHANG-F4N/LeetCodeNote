@@ -150,6 +150,53 @@ ints[0] = 1;
 return ints;
 ```
 
+## Question 86  分隔链表
+
+给你一个链表的头节点 head 和一个特定值 x ，请你对链表进行分隔，使得所有 小于 x 的节点都出现在 大于或等于 x 的节点之前。
+
+你应当 保留 两个分区中每个节点的初始相对位置。
+
+![img](CodeNote of LeetCode 51 to 100.assets/partition.jpg)
+
+```java
+输入：head = [1,4,3,2,5,2], x = 3
+输出：[1,2,2,4,3,5]
+```
+
+---
+
+```java
+class Solution {
+    public ListNode partition(ListNode head, int x) {
+                //双指针
+        ListNode small = new ListNode();
+        ListNode smallHead = small;
+        ListNode big = new ListNode();
+        ListNode bigHead = big;
+        ListNode temp = head;
+
+        //ListNode ans = null;
+        while (temp != null) {
+            if (temp.val < x) {
+                small.next = temp;
+                temp = temp.next;
+                small = small.next;
+                small.next=null;
+            } else {
+                big.next = temp;
+                temp = temp.next;
+                big = big.next;
+                big.next=null;
+            }
+        }
+        bigHead = bigHead.next;
+        if (bigHead != null) {
+            small.next = bigHead;
+        }
+        return smallHead.next;
+    }
+}
+```
 
 
 
@@ -252,4 +299,6 @@ class Solution {
     }
 }
 ```
+
+
 
