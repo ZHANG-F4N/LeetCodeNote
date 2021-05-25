@@ -123,7 +123,7 @@ class Solution {
 
 
 
-## Question 61  旋转链表
+## Question 61 旋转链表
 
 给你一个链表的头节点 `head` ，旋转链表，将链表每个节点向右移动 `k` 个位置。
 
@@ -221,7 +221,7 @@ class Solution {
 
 
 
-## Question  63  不同路径 II
+## Question 63 不同路径II
 
 一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为“Start” ）。
 
@@ -331,7 +331,7 @@ class Solution {
 
 
 
-## Question 70  爬楼梯
+## Question 70 爬楼梯
 
 假设你正在爬楼梯。需要 *n* 阶你才能到达楼顶。
 
@@ -372,7 +372,7 @@ class Solution {
 
 
 
-## Question 80  删除有序数组中的重复项 II
+## Question 80 删除有序数组中的重复项II
 
 给你一个有序数组 nums ，请你 原地 删除重复出现的元素，使每个元素 最多出现两次 ，返回删除后数组的新长度。
 
@@ -418,7 +418,7 @@ class Solution {
 
 
 
-## Question  86   分隔链表
+## Question 86 分隔链表
 给你一个链表的头节点 head 和一个特定值 x ，请你对链表进行分隔，使得所有 小于 x 的节点都出现在 大于或等于 x 的节点之前。
 
 你应当 保留 两个分区中每个节点的初始相对位置。
@@ -516,7 +516,7 @@ class Solution {
 
 
 
-## Question 94  二叉树的中序遍历
+## Question 94 二叉树的中序遍历
 
 给定一个二叉树的根节点 `root` ，返回它的 **中序** 遍历。
 
