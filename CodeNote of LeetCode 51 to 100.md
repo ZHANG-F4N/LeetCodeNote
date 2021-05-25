@@ -40,10 +40,6 @@ class Solution {
 }
 ```
 
-
-
-
-
 ## Question 56 合并区间
 
 以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。请你合并所有重叠的区间，并返回一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间。
@@ -152,5 +148,108 @@ for (int i = digits.length - 1; i >= 0; i--) {
 int[] ints = new int[digits.length+1];
 ints[0] = 1;
 return ints;
+```
+
+
+
+
+
+## Question 88 合并两个有序数组
+
+给你两个有序整数数组 nums1 和 nums2，请你将 nums2 合并到 nums1 中，使 nums1 成为一个有序数组。
+
+初始化 nums1 和 nums2 的元素数量分别为 m 和 n 。你可以假设 nums1 的空间大小等于 m + n，这样它就有足够的空间保存来自 nums2 的元素。
+
+```shell
+输入：nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3
+输出：[1,2,2,3,5,6]
+```
+
+---
+
+```java
+class Solution {
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int j = n - 1, i = m - 1, k = m + n - 1;
+        for (; i >= 0 && j >= 0 && k >= 0; k--) {
+            if (nums1[i] > nums2[j]) {
+                nums1[k] = nums1[i];
+                i--;
+            } else {
+                nums1[k] = nums2[j];
+                j--;
+            }
+        }
+        if (i == -1) {
+            for (;k>=0;k--){
+                nums1[k] =nums2[j];
+                j--;
+            }
+            // System.out.println(Arrays.toString(nums1));
+            return;
+        }
+        if (j == -1){
+            for (;k>=0;k--){
+                nums1[k] =nums1[i];
+                i--;
+            }
+            // System.out.println(Arrays.toString(nums1));
+            return;
+        }
+    }
+}
+```
+
+
+
+## Question 94  二叉树的中序遍历
+
+给定一个二叉树的根节点 `root` ，返回它的 **中序** 遍历。
+
+<img src="CodeNote of LeetCode 51 to 100.assets/inorder_1.jpg" alt="img" style="zoom:50%;" />
+
+```java
+输入：root = [1,null,2,3]
+输出：[1,3,2]
+```
+
+---
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public static ArrayList<Integer> nums=new ArrayList<Integer>();
+    public List<Integer> inorderTraversal(TreeNode root) {
+        nums.clear();
+        inorder(root);
+        //  Iterator it1 = nums.iterator();
+        // while(it1.hasNext()){
+        //     System.out.println(it1.next());
+        // }
+        return nums;
+    }
+    public static void  inorder(TreeNode root){
+        if(root == null ){
+            return ;
+        }
+        inorder(root.left);
+        nums.add(root.val);
+        inorder(root.right);
+    }
+}
 ```
 

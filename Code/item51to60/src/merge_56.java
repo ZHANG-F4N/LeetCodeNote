@@ -37,10 +37,6 @@ public class merge_56 {
             }
         }
 
-//        int[][] ans =
-//        for (int i = 0;i<ans.length;i++){
-//            System.out.println(ans[i][0]+"\t"+ans[i][1]);
-//        }
         return List.toArray(new int[List.size()][]);
     }
 }
