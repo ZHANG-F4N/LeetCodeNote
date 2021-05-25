@@ -2,6 +2,9 @@
 
 [TOC]
 
+$$
+ans=\frac{mc^2}{\int_{1}^{2}{x}dx(\sum_{n=1}^{100}{a_n})\lim_{n\rightarrow+\infty}f(n)}
+$$
 ## Question 53 最大子序和
 
 给定一个整数数组 `nums` ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
@@ -120,6 +123,179 @@ class Solution {
 
 
 
+## Question 61  旋转链表
+
+给你一个链表的头节点 `head` ，旋转链表，将链表每个节点向右移动 `k` 个位置。
+
+ ![img](CodeNote of LeetCode 51 to 100.assets/rotate1.jpg)
+
+```java
+输入：head = [1,2,3,4,5], k = 2
+输出：[4,5,1,2,3]
+```
+
+---
+
+解题思路：
+
+- 右移的长度可能超过链表长，所以需要取模。
+- 也可以采用循环链表来处理：
+  - 首先找到链表尾部，将链表转化为循环链表。
+  - 然后根据K的值确定出新表头的位置，在新表头前面进行断环操作。
+
+```java
+class Solution {
+    public ListNode rotateRight(ListNode head, int k) {
+        int listLength = 0;
+        ListNode  tour = head;
+        while( tour != null){
+            tour= tour.next;
+            listLength++;
+        }
+        if (listLength <=1){
+            return head;
+        }
+        tour = head;
+        k = listLength - (k % listLength)  ;
+        if (k == listLength ){
+            return head;
+        }
+        while(--k > 0 ){
+            tour = tour.next;
+        }
+        ListNode temp = tour.next;
+        tour.next = null;
+        tour = temp;
+        while(temp.next!=null){
+            temp=temp.next;
+        }
+        temp.next = head;
+        head=tour;
+        return  head;
+    }
+}
+```
+
+
+
+## Question 62 不同路径
+
+一个机器人位于一个 `m x n` 网格的左上角 （起始点在下图中标记为 “Start” ）。
+
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+
+问总共有多少条不同的路径？
+
+```java
+输入：m = 3, n = 7
+输出：28
+```
+
+---
+
+解题思路：
+
+- 组合数学方法
+
+  机器人只能朝下或右走，将其横向和纵向走的路程平移到一起，相当于组合数学问题，m+n个位置里取n个。
+
+- 动态规划法
+
+  转移方程*f*(*i*,*j*)=*f*(*i*−1,*j*)+*f*(*i*,*j*−1)
+
+  <img src="CodeNote of LeetCode 51 to 100.assets/image-20210525204846175.png" alt="image-20210525204846175" style="zoom:50%;" />
+
+```java 
+class Solution {
+    public int uniquePaths(int m, int n) {
+        int min = Math.min(m - 1, n - 1);
+        int total = m + n - 2;
+        long ans = 1;
+        for (int i = total, j = 1; i >= total - min + 1; i--, j++) {
+            ans = ans * i / j;
+        }
+        return (int) ans;
+    }
+}
+```
+
+
+
+## Question  63  不同路径 II
+
+一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为“Start” ）。
+
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。
+
+现在考虑网格中有障碍物。那么从左上角到右下角将会有多少条不同的路径？
+
+![img](CodeNote of LeetCode 51 to 100.assets/robot1.jpg)
+
+```java
+输入：obstacleGrid = [[0,0,0],[0,1,0],[0,0,0]]
+输出：2
+解释：
+3x3 网格的正中间有一个障碍物。
+从左上角到右下角一共有 2 条不同的路径：
+1. 向右 -> 向右 -> 向下 -> 向下
+2. 向下 -> 向下 -> 向右 -> 向右
+```
+
+---
+
+解题思路：
+
+  - 动态规划
+
+    将有障碍物的位置置为0
+
+    - 我们可以运用「滚动数组思想」把空间复杂度优化称 *O*(*m*)。
+    - 「滚动数组思想」是一种常见的动态规划优化方法
+
+<img src="CodeNote of LeetCode 51 to 100.assets/image-20210525205205735.png" alt="image-20210525205205735" style="zoom:67%;" />
+
+```java
+class Solution {
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        if (obstacleGrid[0][0] ==1){
+            return 0;
+        }
+        int ans = 0;
+        int col = obstacleGrid[0].length;
+        int row = obstacleGrid.length;
+        obstacleGrid[0][0] = 1;
+        for (int i = 1; i < col; i++) {
+            if (obstacleGrid[0][i] == 1) {
+                obstacleGrid[0][i] = 0;
+            } else {
+                obstacleGrid[0][i] = obstacleGrid[0][i-1];
+            }
+        }
+        for (int i = 1; i < row; i++) {
+            if (obstacleGrid[i][0] == 1) {
+                obstacleGrid[i][0] = 0;
+            } else {
+                obstacleGrid[i][0] = obstacleGrid[i-1][0];
+            }
+        }
+
+        for (int i = 1; i < row; i++) {
+            for (int j = 1; j < col; j++) {
+                if (obstacleGrid[i][j] == 1){
+                    obstacleGrid[i][j] = 0;
+                }else {
+                    obstacleGrid[i][j] = obstacleGrid[i-1][j]+obstacleGrid[i][j-1];
+                }
+            }
+        }
+        ans = obstacleGrid[row-1][col-1];
+        return ans;
+    }
+}
+```
+
+
+
 ## Question 66 加一
 
 给定一个由 整数 组成的 非空 数组所表示的非负整数，在该数的基础上加一。
@@ -137,21 +313,112 @@ class Solution {
 ---
 
 ```java
-for (int i = digits.length - 1; i >= 0; i--) {
-    digits[i]++;
-    digits[i] %= 10;
-
-    if(digits[i]!=0){
-        return digits;
+class Solution {
+    public int[] plusOne(int[] digits) {
+      for (int i = digits.length - 1; i >= 0; i--) {
+            digits[i]++;
+            digits[i] %= 10;
+            if(digits[i]!=0){
+                return digits;
+            }
+        }
+        int[] ints = new int[digits.length+1];
+        ints[0] = 1;
+        return ints;
     }
 }
-int[] ints = new int[digits.length+1];
-ints[0] = 1;
-return ints;
 ```
 
-## Question 86  分隔链表
 
+
+## Question 70  爬楼梯
+
+假设你正在爬楼梯。需要 *n* 阶你才能到达楼顶。
+
+每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+
+```java
+输入： 2
+输出： 2
+解释： 有两种方法可以爬到楼顶。
+1.  1 阶 + 1 阶
+2.  2 阶
+```
+
+---
+
+解题思路：
+
+​		斐波那契Fibonacci数列，递推算法。
+
+```java
+class Solution {
+    public int climbStairs(int n) {
+        int a1 = 1;
+        int a2 = 1;
+        if(n == 1){
+            return 1;
+        }
+        int ans = 1;
+        for(int i = 1;i<n;i++){
+            ans = a1+a2;
+            a1 = a2;
+            a2 = ans;
+        }
+        return ans;
+    }
+}
+```
+
+
+
+## Question 80  删除有序数组中的重复项 II
+
+给你一个有序数组 nums ，请你 原地 删除重复出现的元素，使每个元素 最多出现两次 ，返回删除后数组的新长度。
+
+不要使用额外的数组空间，你必须在 原地 修改输入数组 并在使用 O(1) 额外空间的条件下完成。
+
+```java
+输入：nums = [1,1,1,2,2,3]
+输出：5, nums = [1,1,2,2,3]
+解释：函数应返回新长度 length = 5, 并且原数组的前五个元素被修改为 1, 1, 2, 2, 3 。 不需要考虑数组中超出新长度后面的元素。
+```
+
+---
+
+另外一种解法是，使用步长为2的快慢指针来进行判断，不相等就赋值。
+
+```java
+class Solution {
+    public int removeDuplicates(int[] nums) {
+        int voidIndex = 1;
+        if(nums.length <=1){
+            return 1;
+        }
+        int  flag =1 ;//相等个数
+        for (int i = 1; i < nums.length; i++) {
+            if(nums[i] != nums[voidIndex-1] ){
+                flag = 1;
+                nums[voidIndex++] = nums[i];
+            }else {
+                flag++;
+                if (flag>2){
+                    continue;
+                }
+                else {
+                    nums[voidIndex++] = nums[i];
+                }
+            }
+        }
+        //System.out.println(Arrays.toString(nums)+voidIndex);
+        return  voidIndex;
+    }
+}
+```
+
+
+
+## Question  86   分隔链表
 给你一个链表的头节点 head 和一个特定值 x ，请你对链表进行分隔，使得所有 小于 x 的节点都出现在 大于或等于 x 的节点之前。
 
 你应当 保留 两个分区中每个节点的初始相对位置。

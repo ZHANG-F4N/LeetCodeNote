@@ -9,10 +9,6 @@ public class partition_86 {
             end.next = temp;
             end = temp;
         }
-//        while(start != null){
-//            System.out.println(start.val);
-//            start=start.next;
-//        }
         int x = 3;
         partition(start.next, x);
     }
@@ -60,19 +56,3 @@ public class partition_86 {
 
 }
 
-class ListNode {
-    int val;
-    ListNode next;
-
-    ListNode() {
-    }
-
-    ListNode(int val) {
-        this.val = val;
-    }
-
-    ListNode(int val, ListNode next) {
-        this.val = val;
-        this.next = next;
-    }
-}
