@@ -1,6 +1,6 @@
 public class a82deleteDuplicates {
     public static void main(String[] args) {
-        int[] head = {1, 1, 1, 2, 3,3};
+        int[] head = {1, 1, 1, 2, 3, 3};
         ListNode start = new ListNode(0);
         ListNode end = start;
         for (int i : head) {
@@ -21,20 +21,33 @@ public class a82deleteDuplicates {
         }
         head = new ListNode(-1, head);
 
-        ListNode preTemp = head.next;
-        ListNode ofterTemp = preTemp.next;
-        ListNode check = head;
-        head.next=null;
-        while (ofterTemp != null) {
-            if (ofterTemp.val == preTemp.val) {
-                ofterTemp = ofterTemp.next;
-            } else {
-                check.next = ofterTemp;
-                check = ofterTemp;
-                preTemp = ofterTemp;
-                ofterTemp = ofterTemp.next;
-            }
+        ListNode endList = head;
+        ListNode preTemp = head;
+        ListNode check = head.next;
+        ListNode ofterTemp = check.next;
+
+
+        if (check.val != ofterTemp.val){
+            check=check.next;
         }
+
+//        if (preTemp.val != ofterTemp.val) {
+//            head.next = preTemp;
+//            preTemp = ofterTemp;
+//            ofterTemp = ofterTemp.next;
+//        }else {
+//            head.next = null;
+//        }
+//        while (ofterTemp != null) {
+//            if (ofterTemp.val == preTemp.val) {
+//                ofterTemp = ofterTemp.next;
+//            } else {
+//                check.next = ofterTemp;
+//                check = ofterTemp;
+//                preTemp = ofterTemp;
+//                ofterTemp = ofterTemp.next;
+//            }
+//        }
         //if ()
         System.out.println(check.val);
         //System.out.println(preTemp.next);

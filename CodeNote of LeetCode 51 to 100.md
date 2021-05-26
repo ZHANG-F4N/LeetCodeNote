@@ -296,6 +296,48 @@ class Solution {
 
 
 
+## Question 64 最小路径和
+
+给定一个包含非负整数的 *m* x *n* 网格 grid ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
+
+**说明：**每次只能向下或者向右移动一步。
+
+![img](CodeNote of LeetCode 51 to 100.assets/minpath.jpg)
+
+```java
+输入：grid = [[1,3,1],[1,5,1],[4,2,1]]
+输出：7
+解释：因为路径 1→3→1→1→1 的总和最小。
+```
+
+---
+
+动态规划法
+
+- 转移方程*f*(*i*,*j*)=*dp*\[i][*j*]=min(*dp*\[*i*−1][*j*],*dp*\[*i*][*j*−1])+*grid*\[*i*][*j*]。
+- 我们可以运用「滚动数组思想」把空间复杂度优化称 *O*(*m*)。
+
+```java
+class Solution {
+    public int minPathSum(int[][] grid) {
+        for (int i = 1; i < grid[0].length; i++) {
+            grid[0][i] += grid[0][i-1];
+        }
+        for (int i = 1; i < grid.length; i++) {
+            grid[i][0] += grid[i-1][0];
+        }
+        for (int i = 1; i < grid.length; i++) {
+            for (int j = 1; j < grid[0].length; j++) {
+                grid[i][j]=Math.min(grid[i-1][j]+grid[i][j],grid[i][j-1]+grid[i][j]);
+            }
+        }
+        return grid[grid.length-1][grid[0].length-1];
+    }
+}
+```
+
+
+
 ## Question 66 加一
 
 给定一个由 整数 组成的 非空 数组所表示的非负整数，在该数的基础上加一。
@@ -325,6 +367,53 @@ class Solution {
         int[] ints = new int[digits.length+1];
         ints[0] = 1;
         return ints;
+    }
+}
+```
+
+
+
+## Question 69 $x$的平方根
+
+难度简单682收藏分享切换为英文接收动态反馈
+
+实现 int sqrt(int x) 函数。
+
+计算并返回 x 的平方根，其中 x 是非负整数。
+
+由于返回类型是整数，结果只保留整数的部分，小数部分将被舍去。
+
+```java
+输入: 8
+输出: 2
+说明: 8 的平方根是 2.82842..., 
+     由于返回类型是整数，小数部分将被舍去。
+```
+
+```java
+class Solution {
+    public int mySqrt(int x) {
+        //1特殊处理
+        if (x == 1) {
+            return 1;
+        }
+        int left = 1, right = x >> 1;
+        int mid = (left + right) >> 1;
+        //<=才能向下取整
+        while (left <= right) {
+            //防爆x=2147395599
+            if ((long)mid * mid == x) {
+                return mid;
+            }
+            if ((long)mid * mid > x) {
+                right = mid - 1;
+            }
+            if ((long)mid * mid < x) {
+                left = mid + 1;
+            }
+            mid = (left + right) >> 1;
+        }
+        return mid;
     }
 }
 ```
