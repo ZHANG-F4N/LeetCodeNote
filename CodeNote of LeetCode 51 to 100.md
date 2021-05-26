@@ -569,3 +569,41 @@ class Solution {
 
 
 
+## Question 206 反转链表
+
+给你单链表的头节点 `head` ，请你反转链表，并返回反转后的链表。
+
+![img](CodeNote of LeetCode 51 to 100.assets/rev1ex1.jpg)
+
+```java
+输入：head = [1,2,3,4,5]
+输出：[5,4,3,2,1]
+```
+
+---
+
+解题思路：
+	采用头插法进行反转。
+
+进阶：可以使用递归实现。
+
+```java
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode cursor = head.next;
+        ListNode temp = null;
+        head.next = null;
+        while (cursor != null) {
+            temp = cursor;
+            cursor = cursor.next;
+            temp.next = head;
+            head = temp;
+        }
+        return head;
+    }
+}
+```
+
