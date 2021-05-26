@@ -418,6 +418,66 @@ class Solution {
 
 
 
+## Question 82 删除排序链表中的重复元素 II
+
+存在一个按升序排列的链表，给你这个链表的头节点 head ，请你删除链表中所有存在数字重复情况的节点，只保留原始链表中 没有重复出现 的数字。
+
+返回同样按升序排列的结果链表。
+
+<img src="CodeNote of LeetCode 51 to 100.assets/linkedlist1.jpg" alt="img" style="zoom:67%;" />
+
+```java
+输入：head = [1,2,3,3,4,4,5]
+输出：[1,2,5]
+```
+
+---
+
+
+
+
+
+## Question 83 删除排序链表中的重复元素
+
+存在一个按升序排列的链表，给你这个链表的头节点 `head` ，请你删除所有重复的元素，使每个元素 **只出现一次** 。
+
+返回同样按升序排列的结果链表。
+
+![img](CodeNote of LeetCode 51 to 100.assets/list2.jpg)
+
+```java
+输入：head = [1,1,2,3,3]
+输出：[1,2,3]
+```
+
+---
+
+```java
+class Solution {
+    public ListNode deleteDuplicates(ListNode head) {
+        if(head == null || head.next == null){
+            return head;
+        }
+        ListNode preTemp = head;
+        ListNode ofterTemp = head.next;
+        while(ofterTemp != null){
+            if(preTemp.val == ofterTemp.val){
+                ofterTemp = ofterTemp.next;
+            }else {
+                preTemp.next = ofterTemp;
+                ofterTemp = ofterTemp.next;
+                preTemp = preTemp.next;
+            }
+        }
+        //这一句在最后有重复元素时,删除多余的重复元素.
+        preTemp.next = null;
+        return head;
+    }
+}
+```
+
+
+
 ## Question 86 分隔链表
 给你一个链表的头节点 head 和一个特定值 x ，请你对链表进行分隔，使得所有 小于 x 的节点都出现在 大于或等于 x 的节点之前。
 
