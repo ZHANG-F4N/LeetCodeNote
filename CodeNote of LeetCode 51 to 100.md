@@ -718,6 +718,100 @@ class Solution {
 
 
 
+
+
+
+
+## Question 122 买卖股票的最佳时机 II
+
+给定一个数组 prices ，其中 prices[i] 是一支给定股票第 i 天的价格。
+
+设计一个算法来计算你所能获取的最大利润。你可以尽可能地完成更多的交易（多次买卖一支股票）。
+
+注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+
+```java
+输入: prices = [7,1,5,3,6,4]
+输出: 7
+解释: 在第 2 天（股票价格 = 1）的时候买入，在第 3 天（股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。
+     随后，在第 4 天（股票价格 = 3）的时候买入，在第 5 天（股票价格 = 6）的时候卖出, 这笔交易所能获得利润 = 6-3 = 3 。
+```
+
+---
+
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        int ans = 0;
+        if (prices.length == 1 || prices.length == 0){
+            return 0;
+        }
+        //收集所有上坡,上坡就有利可图
+        for (int i = 1; i < prices.length; i++) {
+            if(prices[i-1]<prices[i]){
+                ans+=prices[i]-prices[i-1];
+            }
+        }
+        return ans;
+    }
+}
+```
+
+
+
+## Question 189 旋转数组
+
+给定一个数组，将数组中的元素向右移动 k 个位置，其中 k 是非负数。
+
+进阶：
+
+- 尽可能想出更多的解决方案，至少有三种不同的方法可以解决这个问题。
+- 你可以使用空间复杂度为 O(1) 的 原地 算法解决这个问题吗？
+
+```java
+输入: nums = [1,2,3,4,5,6,7], k = 3
+输出: [5,6,7,1,2,3,4]
+解释:
+向右旋转 1 步: [7,1,2,3,4,5,6]
+向右旋转 2 步: [6,7,1,2,3,4,5]
+向右旋转 3 步: [5,6,7,1,2,3,4]
+```
+
+---
+
+解题思路:
+
+1. 翻转所有元素。
+2. 翻转 \[0, k\bmod n - 1][0,kmodn−1] 区间的元素	
+3. 翻转 \[k\bmod n, n - 1][kmodn,n−1] 区间的元素	
+
+- 时间复杂度：*O(n)*，其中 n 为数组的长度。每个元素被翻转两次，一共 n 个元素，因此总时间复杂度为 $O(2n)=O(n)$。
+
+- 空间复杂度：*O(1)*。
+
+```java
+class Solution {
+    public void rotate(int[] nums, int k) {
+        if (k == 0 || nums.length<=1) {
+            return;
+        }
+        int len = nums.length;
+        k = k % len;
+        reverse(nums,0,len-1);
+        reverse(nums,0,k-1);
+        reverse(nums,k,len-1);
+    }
+    public void reverse(int[] nums, int left, int right) {
+        int temp = 0;
+        while(left < right){
+            temp = nums[right];
+            nums[right--] = nums[left];
+            nums[left++] = temp;
+        }
+    }
+}
+```
+
 ## Question 206 反转链表
 
 给你单链表的头节点 `head` ，请你反转链表，并返回反转后的链表。
@@ -755,4 +849,3 @@ class Solution {
     }
 }
 ```
-

@@ -2,6 +2,15 @@ public class a69mySqrt {
     public static void main(String[] args) {
         System.out.println(mySqrt(2147395599));
     }
+/*
+    X=15	1	    2	    3	    4	    5	6	7	8
+    R1	    Left		            Mid				   Right
+			    	            16 Mid^2>X
+    R2	    Left    Mid	  Right
+		        4 Mid^2<X
+    R3			        Left/Right
+                          Mid^2<X
+*/
 
     public static int mySqrt(int x) {
         //1特殊处理
