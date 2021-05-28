@@ -2,6 +2,90 @@
 
 [TOC]
 
+## Java常见的容器类
+
+<img src="JavaTips.assets/v2-c229d5cd53d9eff59865fe8b7a7f7091_720w.jpg" alt="img" style="zoom:67%;" />
+
+容器常用的方法有:
+
+```java
+boolean add(Object obj):向容器中添加指定的元素
+Iterator iterator()：返回能够遍历当前集合中所有元素的迭代器
+Object[] toArray():返回包含此容器中所有元素的数组。
+Object get(int index)：获取下标为index的那个元素
+Object remove(int index)：删除下标为index的那个元素
+Object set(int index,Object element)：将下标为index的那个元素置为element
+Object add(int index,Object element)：在下标为index的位置添加一个对象element
+Object put(Object key,Object value):向容器中添加指定的元素
+Object get(Object key)：获取关键字为key的那个对象
+int size():返回容器中的元素数
+```
+
+常见的容器类有以下这些:
+
+Java容器类库是用来保存对象的，他有两种不同的概念：
+
+- Collection，独立元素的序列，这些元素都服从一条或多条规则。List、Set以及Queue都是Collection的一种，List必须按照顺序保存元素，而Set不能有重复元素，Queue需要按照排队规则来确定对象的顺序。
+- Map，Map是键值对类型，允许用户通过键来查找对象。Hash表允许我们使用另一个对象来查找某个对象。
+
+### Collection 
+
+　├List 
+　│--├LinkedList 
+　│--├ArrayList 
+　│--└Vector 
+　│     └Stack 
+
+　├Set 
+　│--├HashSet 
+　│--├TreeSet 
+　│--└LinkedSet 
+
+　├Queue 
+　│	└Deque
+
+
+
+
+
+#### Queue和Deque
+
+---
+
+- **Deque继承Queue。**
+- **Queue接口,是集合框架Collection的子接口，是一种常见的数据结构，遵循先进先出的原则。基于链表来进行实现，的单向队列。LinkedList接口，实现了Queue，所以LinkedList，在插入和删除操作，效率会比较高。**
+- **Deque接口（双向队列），是Queue接口的子接口，是指队列两端的元素，既能入队（offer）也能出队。
+  如果将Deque限制为只能从一端进行入队，和出队，就是栈的数据结构的实现。对于栈而言，有入栈（push）和出栈（pop），遵循先进后出的规则。**
+
+```java
+使用方式:
+Deque<String> deque = new LinkedList<String>();
+Queue<T> queue = new LinkedList<T>();
+```
+
+```java
+常用方法
+poll()：将队首的元素删除，并返回该元素。
+peek()：返回队首的元素，但不进行删除操作。
+offer()：将元素添加到队尾，如果成功，则返回true。
+```
+
+
+
+
+### Map 
+
+　├-HashMap 
+　│	└LinkedHashMap
+　├-Hashtable 
+　├-TreeMap 
+　└-WeakHashMap
+
+
+
+
+
+
 
 
 ## 创建一棵二叉树

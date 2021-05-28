@@ -2,50 +2,173 @@
 
 [TOC]
 
+## [98. 验证二叉搜索树](https://leetcode-cn.com/problems/validate-binary-search-tree/)
 
+给定一个二叉树，判断其是否是一个有效的二叉搜索树。
 
+假设一个二叉搜索树具有如下特征：
 
+- 节点的左子树只包含小于当前节点的数。
+- 节点的右子树只包含大于当前节点的数。
+- 所有左子树和右子树自身必须也是二叉搜索树。
 
-## [104. 二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
-
-给定一个二叉树，找出其最大深度。
-
-二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
-
-**说明:** 叶子节点是指没有子节点的节点。
-
-示例：
-给定二叉树 [3,9,20,null,null,15,7]，
-
-    	3
-       / \
-      9  20
-        /  \
-       15   7
-
-返回它的最大深度 3 。
+```java
+输入:
+    2
+   / \
+  1   3
+输出: true
+```
 
 ---
 
 解题思路:
 
-​	深度优先搜索,每递归调用一次,就深度加一。
+​	BST中序遍历结果递增。
 
 ```java
 class Solution {
-    public int maxDepth(TreeNode root) {
-        return DFS(root);
-    }
-    public  int DFS(TreeNode root){
-        if(root == null){
-            return 0;
+    private  long  pre = Long.MIN_VALUE;
+    public boolean isValidBST(TreeNode root) {
+        if (root == null) {
+            return true;
         }
-        return Math.max(DFS(root.left),DFS(root.right))+1;
+        if (root.left == null && root.right == null) {
+            if (pre >= root.val) {
+                return false;
+            }
+            pre = root.val;
+            return true;
+        }
+        if (!isValidBST(root.left)) {
+            return false;
+        }
+        if (root.val <= pre) {
+            return false;
+        }
+        pre = root.val;
+        if (!isValidBST(root.right)) {
+            return false;
+        }
+        return true;
     }
 }
 ```
 
 
+
+## [101. 对称二叉树](https://leetcode-cn.com/problems/symmetric-tree/)
+
+给定一个二叉树，检查它是否是镜像对称的。
+
+例如，二叉树 `[1,2,2,3,4,4,3]` 是对称的。
+
+```java
+    1
+   / \
+  2   2
+ / \ / \
+3  4 4  3
+```
+
+但是下面这个 `[1,2,2,null,3,null,3]` 则不是镜像对称的:
+
+```java
+    1
+   / \
+  2   2
+   \   \
+   3    3
+```
+
+---
+
+解题思路:
+
+如果同时满足下面的条件，两个树互为镜像：
+
+- 它们的两个根结点具有相同的值
+- 每个树的右子树都与另一个树的左子树镜像对称
+
+```java
+class Solution {
+    public boolean isSymmetric(TreeNode root) {
+        if (root == null || (root.left == null && root.right == null)) {
+            return true;
+        }
+        return check(root,root);
+    }
+    public  boolean check(TreeNode left,TreeNode right){
+        if(left == null && right == null){
+            return true;
+        }
+        if (left == null || right == null){
+            return false;
+        }
+        return left.val == right.val && check(left.left,right.right) && check(left.right,right.left);
+    }
+}
+```
+
+
+
+## [102. 二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
+
+给你一个二叉树，请你返回其按 **层序遍历** 得到的节点值。 （即逐层地，从左到右访问所有节点）。
+
+二叉树：[3,9,20,null,null,15,7],
+
+```java
+    3
+   / \
+  9  20
+    /  \
+   15   7
+
+```
+```java
+返回其层序遍历结果：
+[
+  [3],
+  [9,20],
+  [15,7]
+]
+```
+
+---
+
+解题思路:
+
+​	每次访问一层,使用队列保存访问节点。
+
+```java
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> list = new ArrayList<>();
+        if (root == null){
+            return list;
+        }
+        ArrayDeque<TreeNode> deque = new ArrayDeque<>();
+        deque.offer(root);
+        while(!deque.isEmpty()){
+            ArrayList<Integer> levelList = new ArrayList<>();
+            int size = deque.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode temp = deque.poll();
+                levelList.add(temp.val);
+                if(temp.left != null){
+                    deque.offer(temp.left);
+                }
+                if(temp.right != null){
+                    deque.offer(temp.right);
+                }
+            }
+            list.add(levelList);
+        }
+        return list;
+    }
+}
+```
 
 
 
@@ -83,6 +206,7 @@ class Solution {
 ```java
 class Solution {
     public int singleNumber(int[] nums) {
+
         int ans = 0;
         //偶数次相同的数异或为 0000
         for (int i = 0; i < nums.length; i++) {
@@ -280,9 +404,56 @@ class Solution {
 }
 ```
 
+## [278. 第一个错误的版本](https://leetcode-cn.com/problems/first-bad-version/)
 
+你是产品经理，目前正在带领一个团队开发新的产品。不幸的是，你的产品的最新版本没有通过质量检测。由于每个版本都是基于之前的版本开发的，所以错误的版本之后的所有版本都是错的。
 
+假设你有 n 个版本 [1, 2, ..., n]，你想找出导致之后所有版本出错的第一个错误的版本。
 
+你可以通过调用 bool isBadVersion(version) 接口来判断版本号 version 是否在单元测试中出错。实现一个函数来查找第一个错误的版本。你应该尽量减少对调用 API 的次数。
+
+```java
+给定 n = 5，并且 version = 4 是第一个错误的版本。
+1	2	3	4	5	
+F	F	F	T	T
+调用 isBadVersion(3) -> false
+调用 isBadVersion(5) -> true
+调用 isBadVersion(4) -> true
+所以，4 是第一个错误的版本。 
+```
+
+---
+
+解题思路:
+
+​	二分查找。
+
+```java
+/* The isBadVersion API is defined in the parent class VersionControl.
+      boolean isBadVersion(int version); */
+
+public class Solution extends VersionControl {
+    public int firstBadVersion(int n) {
+        if(n == 1){
+            return 1;
+        }
+        int left = 1;
+        int right = n;
+        // int mid = (left + right)>>1;
+        int mid = left + ((right - left +1)>>1);
+        while(left <= right){
+            //System.out.println("mid--"+mid+"left--"+left+"right--"+right);
+            if(isBadVersion(mid)){
+                right = mid-1;
+            }else{
+                left = mid + 1;
+            }
+            mid =  left + ((right - left +1)>>1);
+        }
+        return mid;
+    }
+}
+```
 
 ## [350. 两个数组的交集 II](https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/)
 
