@@ -257,6 +257,86 @@ public class Solution {
 }
 ```
 
+## [204. 计数质数](https://leetcode-cn.com/problems/count-primes/)
+
+统计所有小于非负整数 *n* 的质数的数量。
+
+```java
+输入：n = 10
+输出：4
+解释：小于 10 的质数一共有 4 个, 它们是 2, 3, 5, 7 。
+```
+
+---
+
+解题思路:
+
+方法一:枚举
+
+- 如果 *y* 是 *x* 的因数，那么 $\frac{x}{y}$ 也必然是 x 的因数，因此我们只要校验 *y* 或者 $\frac{x}{y} $ 即可。而如果我们每次选择校验两者中的较小数，则不难发现较小数一定落在 \[2,$\sqrt{x}$]的区间中，因此我们只需要枚举 \[2,$\sqrt{x}$] 中的所有数即可，这样单次检查的时间复杂度从O(n) 降低至了 $O(\sqrt{n})$。
+
+方法二:埃氏筛
+
+- 如果 *x* 是质数，那么大于 *x* 的 *x* 的倍数 $2x,3x,\ldots $一定不是质数，因此我们可以从这里入手。
+- 我们设isPrime[i] 表示数 i 是不是质数，如果是质数则为 1，否则为 0。从小到大遍历每个数，如果这个数为质数，则将其所有的倍数都标记为合数（除了该质数本身），即 0，这样在运行结束的时候我们即能知道质数的个数。
+- 当然这里还可以继续优化，对于一个质数 x，如果按上文说的我们从 $2x$ 开始标记其实是冗余的，应该直接从 $x\cdot x$ 开始标记，因为 $2x,3x,\ldots$ 这些数一定在 x 之前就被其他数的倍数标记过了，例如 2 的所有倍数，3 的所有倍数等。
+
+```java
+class Solution {
+    public int countPrimes(int n) {
+        if (n == 0 || n == 1) {
+            return 0;
+        }
+        int sqrt_n = (int) Math.sqrt(n);
+        int ans = 0;
+        boolean[] isPrimes = new boolean[n];
+        for (int i = 2; i < isPrimes.length; i++) {
+            int temp = 2;
+            if (!isPrimes[i] && i <= sqrt_n) {
+                while (i * temp < n) {
+                    isPrimes[i * temp] = true;
+                    temp++;
+                }
+            }
+            if (!isPrimes[i] ) {
+                ans++;
+            }
+        }
+        //System.out.println(Arrays.toString(isPrimes));
+        return ans;
+    }
+}
+```
+
+
+
+```java
+class Solution {
+    public int countPrimes(int n) {
+        if (n == 0 || n == 1) {
+            return 0;
+        }
+        int sqrt_n = (int) Math.sqrt(n);
+        int ans = 0;
+        boolean[] isPrimes = new boolean[n];
+        for (int i = 2; i < isPrimes.length; i++) {
+            int temp = 2;
+            if (!isPrimes[i] && i <= sqrt_n) {
+                while (i * temp < n) {
+                    isPrimes[i * temp] = true;
+                    temp++;
+                }
+            }
+            if (!isPrimes[i] ) {
+                ans++;
+            }
+        }
+        //System.out.println(Arrays.toString(isPrimes));
+        return ans;
+    }
+}
+```
+
 
 
 ## [217. 存在重复元素](https://leetcode-cn.com/problems/contains-duplicate/)
@@ -455,6 +535,51 @@ public class Solution extends VersionControl {
 }
 ```
 
+## [326. 3的幂](https://leetcode-cn.com/problems/power-of-three/)
+
+给定一个整数，写一个函数来判断它是否是 3 的幂次方。如果是，返回 true ；否则，返回 false 。
+
+整数 n 是 3 的幂次方需满足：存在整数 x 使得 n == 3x
+
+```java
+输入：n = 27
+输出：true
+```
+
+---
+
+解题思路:
+
+- 方法一:循环迭代
+
+找出数字 n 是否是数字 b 的幂的一个简单方法是，n%3 只要余数为 0，就一直将 n 除以 b。
+
+$\begin{aligned} n &= b^x  \quad n =b \times b \times \ldots \times b \end{aligned}$
+
+
+
+因此，应该可以将 n 除以 b x 次，每次都有 0 的余数，最终结果是 1。
+
+- 方法二:整数限制
+
+我们可以看出 `n` 的类型是 `int`。在 Java 中说明了该变量是四个字节，他的最大值为 **2147483647**。
+
+知道了 `n` 的限制，我们现在可以推断出 `n` 的最大值，也就是 3 的幂，是 **1162261467**
+
+计算如下：$3^{\lfloor{}\log_3{MaxInt}\rfloor{}} = 3^{\lfloor{}19.56\rfloor{}} = 3^{19} = 1162261467$
+
+因此，我们应该返回 true 的 n 的可能值是 $3^0$，$3^1$…$3 ^ {19}$。因为 3 是质数，所以 $3^{19}$的除数只有 $3^0$，$3^1$,…$3 ^{19}$，因此我们只需要将 $3^{19}$除以 n。若余数为 0 意味着 n 是$3^{19}$的除数，因此是 3 的幂。
+
+```java
+class Solution {
+    public boolean isPowerOfThree(int n) {
+        return n > 0 && 1162261467 % n == 0;
+    }
+}
+```
+
+
+
 ## [350. 两个数组的交集 II](https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/)
 
 给定两个数组，编写一个函数来计算它们的交集。
@@ -499,4 +624,39 @@ class Solution {
 ```
 
 
+
+## [387. 字符串中的第一个唯一字符](https://leetcode-cn.com/problems/first-unique-character-in-a-string/)
+
+给定一个字符串，找到它的第一个不重复的字符，并返回它的索引。如果不存在，则返回 -1。
+
+```java
+s = "leetcode"
+返回 0
+
+s = "loveleetcode"
+返回 2
+```
+
+---
+
+解题思路:
+
+​	统计字符出现频率。
+
+```java
+class Solution {
+    public int firstUniqChar(String s) {
+        int[] chars = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            chars[s.charAt(i)-'a']++;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if(chars[s.charAt(i)-'a'] == 1){
+                return i;
+            }
+        }
+        return -1;
+    }
+}
+```
 
