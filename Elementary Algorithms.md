@@ -170,7 +170,89 @@ class Solution {
 }
 ```
 
+## [118. 杨辉三角](https://leetcode-cn.com/problems/pascals-triangle/)
 
+给定一个非负整数 *numRows，*生成杨辉三角的前 *numRows* 行。
+
+```java
+输入: 5
+输出:
+[
+     [1],
+    [1,1],
+   [1,2,1],
+  [1,3,3,1],
+ [1,4,6,4,1]
+]
+
+```
+
+---
+
+解题思路:
+
+```java
+1				
+1	1			
+1	2	1		
+1	3	3	1	
+1	4	6	4	1
+```
+
+```java
+class Solution {
+    public List<List<Integer>> generate(int numRows) {
+        ArrayList<List<Integer>> ansList = new ArrayList<>();
+        for (int i = 0; i < numRows; i++) {
+            ArrayList<Integer> temp = new ArrayList<>();
+            for (int j = 0; j <= i; j++) {
+                if (j == 0 || j == i) {
+                    temp.add(1);
+                } else {
+                    temp.add(ansList.get(i-1).get(j-1)+ansList.get(i-1).get(j));
+                }
+            }
+            ansList.add(temp);
+        }
+        return ansList;
+    }
+}
+```
+
+## [125. 验证回文串](https://leetcode-cn.com/problems/valid-palindrome/)
+
+给定一个字符串，验证它是否是回文串，只考虑字母和数字字符，可以忽略字母的大小写。
+
+**说明：**本题中，我们将空字符串定义为有效的回文串。
+
+```java
+输入: "A man, a plan, a canal: Panama"
+输出: true
+```
+
+---
+
+```java
+class Solution {
+    public boolean isPalindrome(String s) {
+        int left = 0;
+        int right = s.length() - 1;
+        String temp =  s.toLowerCase();
+        while (left < right) {
+            while (left<right && !((temp.charAt(left) >= 'a' && temp.charAt(left) <= 'z') || (temp.charAt(left) >= '0' && temp.charAt(left) <= '9')) ){
+                left++;
+            }
+            while (left<right && !((temp.charAt(right) >= 'a' && temp.charAt(right) <= 'z') || (temp.charAt(right) >= '0' && temp.charAt(right) <= '9')) ){
+                right--;
+            }
+            if(left<right && (temp.charAt(left++) != temp.charAt(right--))){
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
 
 ## [136. 只出现一次的数字](https://leetcode-cn.com/problems/single-number/)
 
@@ -256,6 +338,84 @@ public class Solution {
     }
 }
 ```
+
+## [190. 颠倒二进制位](https://leetcode-cn.com/problems/reverse-bits/)
+
+颠倒给定的 32 位无符号整数的二进制位。
+
+```java
+输入: 00000010100101000001111010011100
+输出: 00111001011110000010100101000000
+解释: 输入的二进制串 00000010100101000001111010011100 表示无符号整数 43261596，
+     因此返回 964176192，其二进制表示形式为 00111001011110000010100101000000。
+```
+
+---
+
+解题思路:
+
+​	n逐渐右移,每次筛选出n最后一位是0还是1,然后将这一位左移31-i位,再赋值给ans,就可以得到结果.
+
+```java
+public class Solution {
+    // you need treat n as an unsigned value
+    public int reverseBits(int n) {
+        int ans = 0;
+        for (int i = 0; i < 32; i++) {
+            ans |= (n & 1 )<<(31-i);
+            n >>= 1;
+        }
+        return ans;
+    }
+}
+```
+
+
+
+## [191. 位1的个数](https://leetcode-cn.com/problems/number-of-1-bits/)
+
+编写一个函数，输入是一个无符号整数（以二进制串的形式），返回其二进制表达式中数字位数为 '1' 的个数（也被称为汉明重量）。
+
+提示：
+
+- 请注意，在某些语言（如 Java）中，没有无符号整数类型。在这种情况下，输入和输出都将被指定为有符号整数类型，并且不应影响您的实现，因为无论整数是有符号的还是无符号的，其内部的二进制表示形式都是相同的。
+
+- 在 Java 中，编译器使用二进制补码记法来表示有符号整数。因此，在 示例 1 中，输入表示有符号整数 -3。
+
+```java
+输入：11111111111111111111111111111101
+输出：31
+解释：输入的二进制串 11111111111111111111111111111101 中，共有 31 位为 '1'。
+```
+
+```java
+输入：00000000000000000000000000001011
+输出：3
+解释：输入的二进制串 00000000000000000000000000001011 中，共有三位为 '1'。
+```
+
+---
+
+解题思路:
+
+我们可以直接循环检查给定整数 n 的二进制位的每一位是否为 1。具体代码中，当检查第 i 位时，我们可以让 n 与 $2^i$进行与运算，当且仅当 n 的第 i 位为 1 时，运算结果不为 0。
+
+```java
+public class Solution {
+    // you need to treat n as an unsigned value
+    public int hammingWeight(int n) {
+        int ans = 0;
+        for (int i = 0; i < 32; i++) {
+            if((n & (1<<i)) != 0){
+                ans++;
+            }
+        }
+        return ans;
+    }
+}
+```
+
+
 
 ## [204. 计数质数](https://leetcode-cn.com/problems/count-primes/)
 
@@ -484,6 +644,42 @@ class Solution {
 }
 ```
 
+## [242. 有效的字母异位词](https://leetcode-cn.com/problems/valid-anagram/)
+
+给定两个字符串 *s* 和 *t* ，编写一个函数来判断 *t* 是否是 *s* 的字母异位词。
+
+```java
+输入: s = "anagram", t = "nagaram"
+输出: true
+```
+
+---
+
+```java
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        int flag[] = new int[26];
+        if (s.length() != t.length()) {
+            return false;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            flag[s.charAt(i) - 'a']++;
+        }
+        for (int i = 0; i < t.length(); i++) {
+            flag[t.charAt(i) - 'a']--;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (flag[i] != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
+
+
 ## [278. 第一个错误的版本](https://leetcode-cn.com/problems/first-bad-version/)
 
 你是产品经理，目前正在带领一个团队开发新的产品。不幸的是，你的产品的最新版本没有通过质量检测。由于每个版本都是基于之前的版本开发的，所以错误的版本之后的所有版本都是错的。
@@ -534,6 +730,39 @@ public class Solution extends VersionControl {
     }
 }
 ```
+
+
+
+## [283. 移动零](https://leetcode-cn.com/problems/move-zeroes/)
+
+给定一个数组 `nums`，编写一个函数将所有 `0` 移动到数组的末尾，同时保持非零元素的相对顺序。
+
+```java
+输入: [0,1,0,3,12]
+输出: [1,3,12,0,0]
+```
+
+---
+
+```java
+class Solution {
+    public void moveZeroes(int[] nums) {
+        int zeroNum = 0;
+        int len =  nums.length;
+        for (int i = 0; i < len; i++) {
+            if (nums[i] == 0){
+                continue;
+            }
+            nums[zeroNum++] = nums[i];
+        }
+        for(int i = zeroNum;i<len;i++){
+            nums[i] =0;
+        }
+    }
+}
+```
+
+
 
 ## [326. 3的幂](https://leetcode-cn.com/problems/power-of-three/)
 
@@ -656,6 +885,48 @@ class Solution {
             }
         }
         return -1;
+    }
+}
+```
+
+
+
+## [461. 汉明距离](https://leetcode-cn.com/problems/hamming-distance/)
+
+两个整数之间的 汉明距离 指的是这两个数字对应二进制位不同的位置的数目。
+
+给出两个整数 x 和 y，计算它们之间的汉明距离。
+
+**注意：**
+	0 ≤ x, y < $2^{31}$.
+
+```java
+输入: x = 1, y = 4
+输出: 2
+解释:
+1   (0 0 0 1)
+4   (0 1 0 0)
+       ↑   ↑
+上面的箭头指出了对应二进制位不同的位置。
+```
+
+---
+
+解题思路:
+
+​	两数先进行异或,筛选出所有不同位,异或结果中为1的位,就是不同位置的地方,进行计数统计即可。
+
+```java
+class Solution {
+    public int hammingDistance(int x, int y) {
+        int ans = 0;
+        int temp = x ^ y;
+        for (int i = 0; i < 32; i++) {
+            if ((temp&1<<i)!=0){
+                ans++;
+            }
+        }
+        return ans;
     }
 }
 ```

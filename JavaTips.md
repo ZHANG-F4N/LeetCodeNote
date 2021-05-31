@@ -130,6 +130,8 @@ transient Entry<K,V>[] table = (Entry<K,V>[]) EMPTY_TABLE;
 
 
 
+
+
 ## 创建一棵二叉树
 
 依据层次遍历的数组，创建一棵二叉树。
