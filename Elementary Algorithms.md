@@ -2,6 +2,144 @@
 
 [TOC]
 
+##  28. 实现 strStr() KMP
+
+给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。如果不存在，则返回  -1。
+
+```java
+输入: haystack = "hello", needle = "ll"
+输出: 2
+```
+
+---
+
+解题思路
+	使用KMP算法，KMP算法的关键是构建Next数组，为什么要用Next数组呢？是为了在一次匹配失败后可以不用在从头匹配字符串，只需要从子串的某个位置重新匹配，而这个位置就是要又Next数组来提供。
+
+Next数组提供了 `子串` 的内部规律。
+
+核心就是：找到了最长相等的前缀和后缀，匹配失败的位置是后缀子串的后面，那么我们找到与其相同的前缀的后面重新匹配就可以了。
+
+- 假设已经知道了 next[x-1]（以下记为now），如果 P[x] 与 P[now] 一样，那最长相等前后缀的长度就可以扩展一位，很明显 next[x] = now + 1.
+
+  <img src="Elementary Algorithms.assets/v2-6d6a40331cd9e44bfccd27ac5a764618_720w.jpg" alt="img" style="zoom:50%;" />
+
+- 当P[now]与P[x]不相等的时候，我们需要缩小now —— 把now变成next[now-1]，直到P[now]=P[x]为止。P[now]=P[x]时，就可以直接向右扩展了。
+
+  <img src="Elementary Algorithms.assets/v2-ce1d46a1e3603b07a13789b6ece6022f_720w.jpg" alt="img" style="zoom:50%;" />
+
+```python
+class Solution {
+/*
+        A	B	C	A	B	B
+next    0	0	0	1	2	0
+
+        a	b	c	a	b	d	d	d	a	b	c	a	b	c
+next    0	0	0	1	2	0	0	0	1	2	3	4	5	3
+    
+    
+*/
+    public int strStr(String haystack, String needle) {
+        if (needle.equals("")) {
+            return 0;
+        }
+        int len = needle.length();
+        int[] next = new int[len];
+        next[0] = 0;
+        int k = 0;
+        for (int i = 1; i < len; i++) {
+            //Java数组会初始化0,所以不需要对j=0进行处理.
+            while (k > 0 && needle.charAt(i) != needle.charAt(k)) {
+                k = next[k - 1];
+            }
+            if (needle.charAt(i) == needle.charAt(k)) {
+                next[i] = ++k;
+            }
+        }
+        int j = 0;
+        for (int i = 0; i < haystack.length(); i++) {
+            while (j > 0 && haystack.charAt(i) != needle.charAt(j)) {
+                j = next[j - 1];
+            }
+            if (haystack.charAt(i) == needle.charAt(j)) {
+                j++;
+            }
+            if (j == needle.length()) {
+                return (i - j + 1);
+            }
+        }
+        return -1;
+    }
+}
+```
+
+## [36. 有效的数独](https://leetcode-cn.com/problems/valid-sudoku/)
+
+请你判断一个 `9x9` 的数独是否有效。只需要 **根据以下规则** ，验证已经填入的数字是否有效即可。
+
+1. 数字 `1-9` 在每一行只能出现一次。
+2. 数字 `1-9` 在每一列只能出现一次。
+3. 数字 `1-9` 在每一个以粗实线分隔的 `3x3` 宫内只能出现一次。（请参考示例图）
+
+数独部分空格内已填入了数字，空白格用 `'.'` 表示。
+
+**注意：**
+
+- 一个有效的数独（部分已被填充）不一定是可解的。
+- 只需要根据以上规则，验证已经填入的数字是否有效即可。
+
+```python
+输入：board = 
+[["5","3",".",".","7",".",".",".","."]
+,["6",".",".","1","9","5",".",".","."]
+,[".","9","8",".",".",".",".","6","."]
+,["8",".",".",".","6",".",".",".","3"]
+,["4",".",".","8",".","3",".",".","1"]
+,["7",".",".",".","2",".",".",".","6"]
+,[".","6",".",".",".",".","2","8","."]
+,[".",".",".","4","1","9",".",".","5"]
+,[".",".",".",".","8",".",".","7","9"]]
+输出：true
+```
+
+---
+
+解题思路:
+
+​	主要是九个宫格的地址映射，在计算机整数运算里面 $({i}/{3})*3 \neq {i} $ 。
+
+
+```java
+class Solution {
+    public boolean isValidSudoku(char[][] board) {
+        HashMap<Character, Integer>[] rowHashMap = new HashMap[9];
+        HashMap<Character, Integer>[] colHashMap = new HashMap[9];
+        HashMap<Character, Integer>[] boxHashMap = new HashMap[9];
+        for (int i = 0; i < 9; i++) {
+            colHashMap[i] = new HashMap<>();
+            rowHashMap[i] = new HashMap<>();
+            boxHashMap[i] = new HashMap<>();
+        }
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                char temp = board[i][j];
+                if (temp != '.') {
+                    rowHashMap[i].put(temp, rowHashMap[i].getOrDefault(temp, 0) + 1);
+                    colHashMap[j].put(temp, colHashMap[j].getOrDefault(temp, 0) + 1);
+                    boxHashMap[(i / 3) * 3 + j / 3].put(temp, boxHashMap[(i / 3) * 3 + j / 3].getOrDefault(temp, 0) + 1);
+                    if (rowHashMap[i].get(temp) > 1 || colHashMap[j].get(temp) > 1 || boxHashMap[(i / 3) * 3 + j / 3].get(temp) > 1) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+}
+```
+
+
+
 ## [98. 验证二叉搜索树](https://leetcode-cn.com/problems/validate-binary-search-tree/)
 
 给定一个二叉树，判断其是否是一个有效的二叉搜索树。
@@ -170,6 +308,52 @@ class Solution {
 }
 ```
 
+
+
+## [108. 将有序数组转换为二叉搜索树](https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/)
+
+给你一个整数数组 nums ，其中元素已经按 升序 排列，请你将其转换为一棵 高度平衡 二叉搜索树。
+
+高度平衡 二叉树是一棵满足「每个节点的左右两个子树的高度差的绝对值不超过 1 」的二叉树。
+
+```java
+输入：nums = [-10,-3,0,5,9]
+输出：[0,-3,9,-10,null,5]
+解释：[0,-10,5,null,-3,null,9] 也将被视为正确答案
+```
+
+![img](Elementary Algorithms.assets/btree2.jpg)
+
+---
+
+解题思路:
+
+​	递归建立二叉树，注意建立方式。
+
+​	二叉搜索树的中序遍历是升序序列，题目给定的数组是按照升序排序的有序数组，因此可以确保数组是二叉搜索树的中序遍历序列。
+
+```java
+class Solution {
+    public TreeNode sortedArrayToBST(int[] nums) {
+        //中序遍历递增
+        return build(nums, 0, nums.length - 1);
+    }
+    public  TreeNode build(int[] nums, int left, int right) {
+        if (left > right) {
+            return null;
+        }
+        int mid = (right + left) >> 1;
+        TreeNode root = new TreeNode(nums[mid]);
+        root.left = build(nums, left, mid - 1);
+        root.right = build(nums, mid + 1, right);
+        return root;
+    }
+}
+
+```
+
+
+
 ## [118. 杨辉三角](https://leetcode-cn.com/problems/pascals-triangle/)
 
 给定一个非负整数 *numRows，*生成杨辉三角的前 *numRows* 行。
@@ -218,6 +402,46 @@ class Solution {
     }
 }
 ```
+
+## [121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+
+给定一个数组 prices ，它的第 i 个元素 prices[i] 表示一支给定股票第 i 天的价格。
+
+你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润。
+
+返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+
+```python
+输入：[7,1,5,3,6,4]
+输出：5
+解释：在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。
+
+```
+
+---
+
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        int ans = 0;
+        //  7	1	5	3	6	4
+
+        int minPrice=Integer.MAX_VALUE;
+        for (int i = 0; i < prices.length; i++) {
+            if(prices[i]<minPrice){
+                minPrice = prices[i];
+            }
+            else if(prices[i]-minPrice >ans){
+                ans = prices[i]-minPrice;
+            }
+        }
+        return ans;
+    }
+}
+```
+
+
 
 ## [125. 验证回文串](https://leetcode-cn.com/problems/valid-palindrome/)
 
