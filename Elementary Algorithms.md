@@ -563,6 +563,85 @@ public class Solution {
 }
 ```
 
+## [155. 最小栈](https://leetcode-cn.com/problems/min-stack/)
+
+设计一个支持 push ，pop ，top 操作，并能在常数时间内检索到最小元素的栈。
+
+push(x) —— 将元素 x 推入栈中。
+pop() —— 删除栈顶的元素。
+top() —— 获取栈顶元素。
+getMin() —— 检索栈中的最小元素。
+
+```java
+输入：
+["MinStack","push","push","push","getMin","pop","top","getMin"]
+[[],[-2],[0],[-3],[],[],[],[]]
+输出：
+[null,null,null,null,-3,null,0,-2]
+解释：
+MinStack minStack = new MinStack();
+minStack.push(-2);
+minStack.push(0);
+minStack.push(-3);
+minStack.getMin();   --> 返回 -3.
+minStack.pop();
+minStack.top();      --> 返回 0.
+minStack.getMin();   --> 返回 -2.
+```
+
+---
+
+解题思路:
+
+​	使用辅助栈，保存当前数字进栈后的最小元素，每次进栈出栈进行更新，保证辅助栈栈顶为当前主栈的最小值。
+
+```java
+class MinStack {
+    Stack<Integer> myStack;
+    Stack<Integer> minStack;
+    /** initialize your data structure here. */
+    public MinStack() {
+        myStack = new Stack<Integer>();
+        minStack = new Stack<Integer>();
+        minStack.push(Integer.MAX_VALUE);
+    }
+    
+    public void push(int val) {
+        if(val < minStack.peek()){
+            minStack.push(val);
+        }else{
+            minStack.push(minStack.peek());
+        }
+
+        myStack.push(val);
+    }
+    
+    public void pop() {
+        myStack.pop();
+        minStack.pop();
+    }
+    
+    public int top() {
+        return myStack.peek();
+    }
+    
+    public int getMin() {
+        return minStack.peek();
+    }
+}
+
+/**
+ * Your MinStack object will be instantiated and called as such:
+ * MinStack obj = new MinStack();
+ * obj.push(val);
+ * obj.pop();
+ * int param_3 = obj.top();
+ * int param_4 = obj.getMin();
+ */
+```
+
+
+
 ## [190. 颠倒二进制位](https://leetcode-cn.com/problems/reverse-bits/)
 
 颠倒给定的 32 位无符号整数的二进制位。
@@ -635,6 +714,48 @@ public class Solution {
             }
         }
         return ans;
+    }
+}
+```
+
+## [198. 打家劫舍](https://leetcode-cn.com/problems/house-robber/)
+
+你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+
+给定一个代表每个房屋存放金额的非负整数数组，计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
+
+```python
+输入：[2,7,9,3,1]
+输出：12
+解释：偷窃 1 号房屋 (金额 = 2), 偷窃 3 号房屋 (金额 = 9)，接着偷窃 5 号房屋 (金额 = 1)。
+     偷窃到的最高金额 = 2 + 9 + 1 = 12 。
+```
+
+---
+
+解题思路:
+
+​	动态规划，转移方程为：$dp[i]=max(dp[i−2]+nums[i],dp[i−1])$。
+
+​	每一天只有偷和不偷两种选择，偷的最大金额为dp[i−2]+nums[i]，不偷的最大金额为dp[i−1]。
+
+```java
+class Solution {
+    public int rob(int[] nums) {
+        if (nums.length == 0){
+            return 0;
+        }
+        if (nums.length == 1){
+            return nums[0];
+        }
+        if (nums.length == 2){
+            return Math.max(nums[0],nums[1]);
+        }
+        nums[1] = Math.max(nums[0],nums[1]);
+        for (int i = 2; i < nums.length; i++) {
+            nums[i] = Math.max(nums[i-2]+nums[i],nums[i-1]);
+        }
+        return nums[nums.length-1];
     }
 }
 ```
@@ -1031,6 +1152,79 @@ class Solution {
 }
 ```
 
+## [384. 打乱数组](https://leetcode-cn.com/problems/shuffle-an-array/)
+
+给你一个整数数组 nums ，设计算法来打乱一个没有重复元素的数组。
+
+实现 Solution class:
+
+Solution(int[] nums) 使用整数数组 nums 初始化对象
+int[] reset() 重设数组到它的初始状态并返回
+int[] shuffle() 返回数组随机打乱后的结果
+
+```java
+输入
+["Solution", "shuffle", "reset", "shuffle"]
+[[[1, 2, 3]], [], [], []]
+输出
+[null, [3, 1, 2], [1, 2, 3], [1, 3, 2]]
+
+解释
+Solution solution = new Solution([1, 2, 3]);
+solution.shuffle();    // 打乱数组 [1,2,3] 并返回结果。任何 [1,2,3]的排列返回的概率应该相同。例如，返回 [3, 1, 2]
+solution.reset();      // 重设数组到它的初始状态 [1, 2, 3] 。返回 [1, 2, 3]
+solution.shuffle();    // 随机返回数组 [1, 2, 3] 打乱后的结果。例如，返回 [1, 3, 2]
+```
+
+---
+
+解题思路:
+
+​	使用洗牌算法，要求每个排列出现的可能性相同，使用洗牌算法，随机生成两个需要交换的位置，对数组进行交换洗牌。复原数组的操作只需要事先保存一下。
+
+​	时间复杂度 $O(n)$
+
+```java
+class Solution {
+    private int[] array;
+    private int[] original;
+    Random random = new Random();
+
+    private int randRange(int min, int max) {
+        return random.nextInt(max - min) + min;
+    }
+    public Solution(int[] nums) {
+        array = nums;
+        original = nums.clone();
+    }
+    /** Resets the array to its original configuration and return it. */
+    public int[] reset() {
+        array = original;
+        original = original.clone();
+        return original;
+    }
+    private void swapAt(int i, int j) {
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    /** Returns a random shuffling of the array. */
+    public int[] shuffle() {
+        for (int i = 0; i < array.length; i++) {
+            swapAt(i, randRange(i, array.length));
+        }
+        return array;
+    }
+}
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution obj = new Solution(nums);
+ * int[] param_1 = obj.reset();
+ * int[] param_2 = obj.shuffle();
+ */
+```
+
 
 
 ## [350. 两个数组的交集 II](https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/)
@@ -1113,7 +1307,69 @@ class Solution {
 }
 ```
 
+## [412. Fizz Buzz](https://leetcode-cn.com/problems/fizz-buzz/)
 
+写一个程序，输出从 1 到 *n* 数字的字符串表示。
+
+1. 如果 *n* 是3的倍数，输出“Fizz”；
+
+2. 如果 *n* 是5的倍数，输出“Buzz”；
+3. 如果 *n* 同时是3和5的倍数，输出 “FizzBuzz”。
+
+```java
+示例
+n = 15,
+返回:
+[
+    "1",
+    "2",
+    "Fizz",
+    "4",
+    "Buzz",
+    "Fizz",
+    "7",
+    "8",
+    "Fizz",
+    "Buzz",
+    "11",
+    "Fizz",
+    "13",
+    "14",
+    "FizzBuzz"
+]
+```
+
+---
+
+解题思路:
+
+​	本题主要是条件叠加会导致判断变复杂,最好使用HashMap将条件保存起来,循环判断。
+
+```java
+class Solution {
+    public List<String> fizzBuzz(int n) {
+        HashMap<Integer, String> hashMap = new HashMap<>();
+        hashMap.put(3, "Fizz");
+        hashMap.put(5, "Buzz");
+        ArrayList<String> strings = new ArrayList<>();
+        for (int i = 1; i <= n; i++) {
+            String ans = "";
+            for (int val : hashMap.keySet()
+            ) {
+                if (i % val == 0) {
+                    ans += hashMap.get(val);
+                }
+            }
+            if (ans.equals("")){
+                strings.add(Integer.toString(i));
+            }else {
+                strings.add(ans);
+            }
+        }
+        return strings;
+    }
+}
+```
 
 ## [461. 汉明距离](https://leetcode-cn.com/problems/hamming-distance/)
 
