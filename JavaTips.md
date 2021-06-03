@@ -59,7 +59,9 @@ Java容器类库是用来保存对象的，他有两种不同的概念：
 
 ```java
 使用方式:
-Deque<String> deque = new LinkedList<String>();
+Deque<T> deque = new LinkedList<T>();
+Deque<T> deque = new ArrayDeque<T>();
+---
 Queue<T> queue = new LinkedList<T>();
 ```
 
