@@ -183,6 +183,9 @@ public class TreeNode {
                 index++;
                 temp.left = null;
             }
+            if (index >= leaf.length) {
+                return root;
+            }
             if (leaf[index] != null ) {
                 TreeNode rightNode = new TreeNode(leaf[index++]);
                 temp.right = rightNode;

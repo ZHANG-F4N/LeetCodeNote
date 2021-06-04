@@ -389,6 +389,51 @@ public class Solution {
 
 
 
+## [230. 二叉搜索树中第K小的元素](https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/)
+
+给定一个二叉搜索树的根节点 `root` ，和一个整数 `k` ，请你设计一个算法查找其中第 `k` 个最小元素（从 1 开始计数）。
+
+![img](Intermediate algorithm.assets/kthtree2.jpg)
+
+```python
+输入：root = [5,3,6,2,4,null,null,1], k = 3
+输出：3
+```
+
+---
+
+解题思路:
+
+​	DFS搜索 + 剪枝。
+
+​	中序(左-中-右)深度优先搜索BST(二叉搜索树)，搜索序列有序。所以使用中序搜索，并且维护全局变量`count`，`count`表示已经搜索过的节点个数，也就是序号了，在 $count = k$ 时停止搜索。
+
+```java
+
+class Solution {
+    private  int count = 0;
+    private  int ans = 0;
+    public int kthSmallest(TreeNode root, int k) {
+        inOrderDFS(root,k);
+        return ans;
+    }
+    public  void inOrderDFS(TreeNode root, int k) {
+        if (root == null) {
+            return;
+        }
+        inOrderDFS(root.left, k);
+        count++;
+        if (count == k){
+            ans = root.val;
+            return;
+        }
+        inOrderDFS(root.right,k);
+    }
+}
+```
+
+
+
 ## [328. 奇偶链表](https://leetcode-cn.com/problems/odd-even-linked-list/)
 
 给定一个单链表，把所有的奇数节点和偶数节点分别排在一起。请注意，这里的奇数节点和偶数节点指的是节点编号的奇偶性，而不是节点的值的奇偶性。
