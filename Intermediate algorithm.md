@@ -389,6 +389,128 @@ public class Solution {
 
 
 
+## [200. 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
+
+给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
+
+岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+
+此外，你可以假设该网格的四条边均被水包围。
+
+```java
+输入：grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+]
+输出：3
+```
+
+---
+
+解题思路:
+
+方法一: BFS搜索
+
+方法二: DFS搜索
+
+方法三: 并查集
+
+\[注意]:
+
+​	搜索方向为上下左右，岛屿的个数就是DFS或者BFS函数调用的次数，即就是 连通分量个数 。
+
+​	对于数组下标的保存，可以使用 $i * col + j$ 来将二维下标转换成一个唯一整数，也可以使用一个数组 new int[]{i, j} 来保存。
+
+```java
+//BFS
+class Solution {
+    public int numIslands(char[][] grid) {
+        int ans = 0;
+        int col = grid[0].length;
+        int row = grid.length;
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (grid[i][j] == '1') {
+                    ans++;
+                    grid[i][j] = '0';
+                    ArrayDeque<Integer> arrayDeque = new ArrayDeque<>();
+                    arrayDeque.offer(i * col + j);
+                    while (!arrayDeque.isEmpty()) {
+                        int temp = arrayDeque.poll();
+                        int iTemp = temp / col;
+                        int jTemp = temp % col;
+
+                        if (iTemp - 1 >= 0 && grid[iTemp - 1][jTemp] == '1') {
+                            arrayDeque.offer((iTemp - 1) * col + jTemp);
+                            grid[iTemp - 1][jTemp] = '0';
+                        }
+                        if (iTemp + 1 < row && grid[iTemp + 1][jTemp] == '1') {
+                            arrayDeque.offer((iTemp + 1) * col + jTemp);
+                            grid[iTemp + 1][jTemp] = '0';
+                        }
+                        if (jTemp - 1 >= 0 && grid[iTemp][jTemp - 1] == '1') {
+                            arrayDeque.offer(iTemp * col + jTemp - 1);
+                            grid[iTemp][jTemp - 1] = '0';
+                        }
+                        if (jTemp + 1 < col && grid[iTemp][jTemp + 1] == '1') {
+                            arrayDeque.offer(iTemp * col + jTemp + 1);
+                            grid[iTemp][jTemp + 1] = '0';
+                        }
+
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+}
+```
+
+```java
+//DFS
+class Solution {
+    public int numIslands(char[][] grid) {
+        int ans = 0;
+        int col = grid[0].length;
+        int row = grid.length;
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (grid[i][j] == '1') {
+                    DFS(grid, i, j);
+                    ans++;
+                }
+            }
+        }
+        return ans;
+    }
+    public  void DFS(char[][] grid, int i, int j) {
+        if (i < 0 || j < 0 || i >= grid.length || j >= grid[0].length) {
+            return;
+        }
+        if (i - 1 >= 0 && grid[i - 1][j] == '1') {
+            grid[i - 1][j] = '0';
+            DFS(grid, i - 1, j);
+        }
+        if (i + 1 < grid.length && grid[i + 1][j] == '1') {
+            grid[i + 1][j] = '0';
+            DFS(grid, i + 1, j);
+        }
+        if (j - 1 >= 0 && grid[i][j - 1] == '1') {
+            grid[i][j - 1] = '0';
+            DFS(grid, i, j - 1);
+        }
+        if (j + 1 < grid[0].length && grid[i][j + 1] == '1') {
+            grid[i][j + 1] = '0';
+            DFS(grid, i, j + 1);
+        }
+    }
+}
+```
+
+
+
 ## [230. 二叉搜索树中第K小的元素](https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/)
 
 给定一个二叉搜索树的根节点 `root` ，和一个整数 `k` ，请你设计一个算法查找其中第 `k` 个最小元素（从 1 开始计数）。
