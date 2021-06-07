@@ -4,6 +4,59 @@
 
 
 
+## [22. 括号生成](https://leetcode-cn.com/problems/generate-parentheses/)
+
+数字 `n` 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 **有效的** 括号组合。
+
+```
+输入：n = 3
+输出：["((()))","(()())","(())()","()(())","()()()"]
+```
+
+---
+
+解题思路:
+
+使用回溯法，动态生成括号对并加入结果集。
+
+在加入结果集时，生成括号遵循以下约束：
+
+- 如果左括号数量不大于 *n*，我们可以放一个左括号。
+- 如果右括号数量小于左括号的数量，我们可以放一个右括号。
+
+```java
+class Solution {
+    //DFS回溯法
+    public List<String> generateParenthesis(int n) {
+        List<String> ans = new ArrayList<>();
+        StringBuilder str = new StringBuilder();
+        backtrack(ans, str, 0, 0, n);
+        return ans;
+    }
+    //ans   ---     结果集
+    //str   ---     零时存储中间结果 StringBuilder可变长,线程不安全,最快
+    //left  ---     左括号个数
+    //right ---     右括号个数
+    //n     ---     总括号对数
+    public  void backtrack(List<String> ans, StringBuilder str, int left, int right, int n) {
+        if (str.length() >= n << 1) {
+            ans.add(str.toString());
+            return;
+        }
+        if (left < n) {
+            backtrack(ans, str.append('('), left + 1, right, n);
+            str.deleteCharAt(str.length() - 1);
+        }
+        if (right < left) {
+            backtrack(ans, str.append(')'), left, right + 1, n);
+            str.deleteCharAt(str.length() - 1);
+        }
+    }
+}
+```
+
+
+
 ## [49. 字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
 
 给定一个字符串数组，将字母异位词组合在一起。字母异位词指字母相同，但排列不同的字符串。
