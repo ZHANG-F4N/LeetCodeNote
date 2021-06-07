@@ -57,6 +57,63 @@ class Solution {
 
 
 
+## [46. 全排列](https://leetcode-cn.com/problems/permutations/)
+
+给定一个不含重复数字的数组 `nums` ，返回其 **所有可能的全排列** 。你可以 **按任意顺序** 返回答案。
+
+```java
+输入：nums = [1,2,3]
+输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+```
+
+---
+
+解题思路:
+
+回溯法，采用 试错 的思想，它尝试分步的去解决一个问题。
+
+在分步解决问题的过程中，当它通过尝试发现现有的分步答案不能得到有效的正确的解答的时候，它将取消上一步甚至是上几步的计算，再通过其它的可能的分步解答再次尝试寻找问题的答案。
+
+回溯法通常用最简单的递归方法来实现。
+
+<img src="Intermediate algorithm.assets/0bf18f9b86a2542d1f6aa8db6cc45475fce5aa329a07ca02a9357c2ead81eec1-image.png" alt="image.png" style="zoom: 33%;" />
+
+\[注意]:
+
+​	Java基础打的还不牢固，tempList(临时结果) 在传递入下一次的递归时，需要进行拷贝。如果只传引用，会在再后面覆盖前面的已有结果。
+
+```java
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        //tempList	--	临时结果
+        //ansList	--	结果集
+        //flag		--	标记数组	
+        List tempList = new ArrayList<Integer>();
+        List ansList = new ArrayList<List<Integer>>();
+        int[] flag = new int[nums.length];
+        backtrack(ansList, flag, tempList, nums, 0);
+        return ansList;
+    }
+    public void backtrack(List<List<Integer>> ansList, int[] flag, List<Integer> tempList, int[] nums, int len) {
+        if (len == nums.length) {
+            ansList.add(tempList);
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (flag[i] == 0) {
+                tempList.add(nums[i]);
+                flag[i] = 1;
+                backtrack(ansList, flag, new ArrayList<>(tempList), nums, len + 1);
+                flag[i] = 0;
+                tempList.remove(tempList.size() - 1);
+            }
+        }
+    }
+}
+```
+
+
+
 ## [49. 字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
 
 给定一个字符串数组，将字母异位词组合在一起。字母异位词指字母相同，但排列不同的字符串。
@@ -156,6 +213,83 @@ class Solution {
     }
 }
 ```
+
+
+
+## [78. 子集](https://leetcode-cn.com/problems/subsets/)
+
+给你一个整数数组 `nums` ，数组中的元素 **互不相同** 。返回该数组所有可能的子集（幂集）。
+
+解集 **不能** 包含重复的子集。你可以按 **任意顺序** 返回解集。
+
+```python
+输入：nums = [1,2,3]
+输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+```
+
+---
+
+解题思路:
+
+时间复杂度：$O(n \times 2^n)$*O*
+
+方法一：
+
+​	对每一个元素`nums[i]`，包含`nums[i]`的子集是`nums[0]~nums[i-1]`的每个子集加上元素`nums[i]`。
+
+方法二：
+
+​	迭代法实现子集枚举,记原序列中元素的总数为 n。原序列中的每个数字 $a_i$的状态可能有两种，即「在子集中」和「不在子集中」。我们用 1 表示「在子集中」，0 表示不在子集中，那么每一个子集可以对应一个长度为 n 的 0/1 序列，第 i 位表示 $a_i$ 是否在子集中。例如，$n = 3，a = \{ 1, 2, 3 \}$ 时：
+
+| 0/1 **序列** | **子集** | 0/1 **序列对应的二进制数** |
+| :----------: | :------: | :------------------------: |
+|     000      |    {}    |             0              |
+|     001      |   {1}    |             1              |
+|     010      |   {2}    |             2              |
+|     011      |  {1,2}   |             3              |
+|     ...      |   ...    |            ...             |
+|     111      | {1,2,3}  |             7              |
+
+​	可以发现 0/1 序列对应的二进制数正好从 0 到$ 2^n - 1$。我们可以枚举$ \textit{mask} \in [0, 2^n - 1] $，mask 的二进制表示是一个 0/1 序列，我们可以按照这个 0/1 序列在原集合当中取数。当我们枚举完所有 $2^n$个 mask，我们也就能构造出所有的子集。
+
+```java
+//方法一
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> ansList = new ArrayList<>();
+        ansList.add(new ArrayList<Integer>());
+        for (int i = 0; i < nums.length; i++) {
+            int subsetNum = ansList.size();
+            for (int j = 0; j < subsetNum; j++) {
+                List<Integer> tempList =  new ArrayList<>(ansList.get(j));
+                tempList.add(nums[i]);
+                ansList.add(tempList);
+            }
+        }
+        return ansList;
+    }
+}
+//方法二
+class Solution {
+    List<Integer> t = new ArrayList<Integer>();
+    List<List<Integer>> ans = new ArrayList<List<Integer>>();
+    public List<List<Integer>> subsets(int[] nums) {
+        int n = nums.length;
+        for (int mask = 0; mask < (1 << n); ++mask) {
+            t.clear();
+            for (int i = 0; i < n; ++i) {
+                if ((mask & (1 << i)) != 0) {
+                    t.add(nums[i]);
+                }
+            }
+            ans.add(new ArrayList<Integer>(t));
+        }
+        return ans;
+    }
+}
+```
+
+
 
 ## [103. 二叉树的锯齿形层序遍历](https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/)
 
