@@ -1,4 +1,4 @@
-# Intermediate algorithm
+# Intermediate Algorithm
 
 [TOC]
 
@@ -214,6 +214,61 @@ class Solution {
 }
 ```
 
+## [75. 颜色分类](https://leetcode-cn.com/problems/sort-colors/)
+
+给定一个包含红色、白色和蓝色，一共 n 个元素的数组，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+
+此题中，我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
+
+- 你可以不使用代码库中的排序函数来解决这道题吗？
+- 你能想出一个仅使用常数空间的一趟扫描算法吗？
+
+```java
+输入：nums = [2,0,2,1,1,0]
+输出：[0,0,1,1,2,2]
+```
+
+---
+
+解题思路:
+
+两趟扫描:
+
+​	在第一次遍历中，我们将数组中所有的 00 交换到数组的头部。在第二次遍历中，我们将数组中所有的 11 交换到头部的 00 之后。此时，所有的 22 都出现在数组的尾部，这样我们就完成了排序。
+
+一趟扫描:
+
+​	我们也可以考虑使用指针$ p_0$来交换 0，$p_2$来交换 2。此时，$p_0$的初始值仍然为 0，而 $p_2$的初始值为 n-1。在遍历的过程中，我们需要找出所有的 0 交换至数组的头部，并且找出所有的 2 交换至数组的尾部。
+
+我们从左向右遍历整个数组，设当前遍历到的位置为 i，对应的元素为$ \textit{nums}[i]$
+
+​	如果找到了 0，那么与前面两种方法类似，将其与$ \textit{nums}[p_0]$进行交换，并将 $p_0$向后移动一个位置；
+
+​	如果找到了 2，那么将其与$ \textit{nums}[p_2]$ 进行交换，并将$ p_2$向前移动一个位置。挪完如果换出来的不是 1，那么指针要回退，因为 0 和 2 都是需要再次移动的。
+
+```java
+class Solution {
+    public void sortColors(int[] nums) {
+        int point_0 = 0;
+        int point_2 = nums.length - 1;
+        for (int i = 0; i <= point_2; i++) {
+            while (i < point_2 && nums[i] == 2) {
+                int temp = nums[point_2];
+                nums[point_2] = nums[i];
+                nums[i] = temp;
+                point_2--;
+             }
+            if (nums[i] == 0) {
+                int temp = nums[point_0];
+                nums[point_0] = nums[i];
+                nums[i] = temp;
+                point_0++;
+            }
+        }
+    }
+}
+```
+
 
 
 ## [78. 子集](https://leetcode-cn.com/problems/subsets/)
@@ -231,7 +286,7 @@ class Solution {
 
 解题思路:
 
-时间复杂度：$O(n \times 2^n)$*O*
+时间复杂度：$O(n \times 2^n)$
 
 方法一：
 
@@ -837,6 +892,79 @@ class Solution {
             }
         }
         return false;
+    }
+}
+```
+
+## [347. 前 K 个高频元素](https://leetcode-cn.com/problems/top-k-frequent-elements/)
+
+给你一个整数数组 `nums` 和一个整数 `k` ，请你返回其中出现频率前 `k` 高的元素。你可以按 **任意顺序** 返回答案。
+
+```java
+输入: nums = [1,1,1,2,2,3], k = 2
+输出: [1,2]
+```
+
+---
+
+解题思路:
+
+方法一:
+
+​	大顶堆。先使用HashMap统计所有的元素以及出现的频率，将频率前K大的元素组成大顶堆，然后将大顶堆元素按序放入数组中即可。
+
+​	时间复杂度：$O(nlog(k))$
+
+方法二：
+
+​	快速排序。
+
+​	时间复杂度：$O(n^2)$ 
+
+​	平均时间复杂度：$O(n)$
+
+```java
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        HashMap<Integer, Integer> hashMap = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            hashMap.put(nums[i], hashMap.getOrDefault(nums[i], 0) + 1);
+        }
+
+        PriorityQueue<int[]> priorityQueue = new PriorityQueue<int[]>(new Comparator<int[]>() {
+           /*
+           Parameters:
+            o1 - the first object to be compared.
+            o2 - the second object to be compared.
+           Returns:
+            a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second.
+            从小到大排序 o1 - o2
+            从大到小排序 o2 - o1
+            */
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[1] - o2[1];
+            }
+//
+        });
+
+        for (Map.Entry<Integer, Integer> entry : hashMap.entrySet()) {
+            int item = entry.getKey();
+            int freq = entry.getValue();
+            if (priorityQueue.size() == k){
+                if (priorityQueue.peek()[1] < freq){
+                    priorityQueue.poll();
+                    priorityQueue.offer(new int[]{item,freq});
+                }
+            }else {
+                priorityQueue.offer(new int[]{item,freq});
+            }
+        }
+        int[] ans=new int[k];
+        for (int i = k-1; i >=0; i--) {
+            ans[i] = priorityQueue.poll()[0];
+        }
+        return ans;
     }
 }
 ```
