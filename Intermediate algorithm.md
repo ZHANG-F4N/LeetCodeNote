@@ -157,6 +157,66 @@ class Solution {
 
 
 
+给定一个非负整数数组 `nums` ，你最初位于数组的 **第一个下标** 。
+
+数组中的每个元素代表你在该位置可以跳跃的最大长度。
+
+判断你是否能够到达最后一个下标。
+
+```java
+输入：nums = [3,2,1,0,4]
+输出：false
+解释：无论怎样，总会到达下标为 3 的位置。但该下标的最大跳跃长度是 0 ， 所以永远不可能到达最后一个下标。
+```
+
+---
+
+解题思路:
+
+方法一:
+
+​	从前往后扫描，维护一个可以到达的最大距离maxStep，每走一步，更新当前可以到达的最大距离，如果最大距离可以到终点，则成功；否则返回false。
+
+方法二：
+
+​	从后往前扫描，每个点遍历一遍，如果可以到达每一个点，最后返回到初始点，则成功，否则返回false。
+
+```java
+//从前往后,每次更新最大可以到达的距离
+class Solution {
+    public boolean canJump(int[] nums) {
+        int maxStep = 0;
+        int len = nums.length - 1;
+        for (int i = 0; i < nums.length; i++) {
+            if (maxStep >= len) {
+                return true;
+            }
+            if (maxStep >= i) {
+                if (maxStep < i + nums[i]) {
+                    maxStep = nums[i] + i;
+                }
+            } 
+        }
+        return false;
+    }
+}
+```
+
+```java
+//从后往前,判断每一个点是否可达
+class Solution {
+    public boolean canJump(int[] nums) {
+        int min = nums.length - 1;
+        for (int i = nums.length - 2; i >= 0; i--) {
+            if (i + nums[i] >= min) min = i;
+        }
+        return min == 0;
+    }
+}
+```
+
+
+
 ## [73. 矩阵置零](https://leetcode-cn.com/problems/set-matrix-zeroes/)
 
 给定一个 $m * n$ 的矩阵，如果一个元素为 0 ，则将其所在行和列的所有元素都设为 0 。请使用 原地 算法。
@@ -629,6 +689,82 @@ public class Solution {
 }
 ```
 
+## [162. 寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
+
+峰值元素是指其值大于左右相邻值的元素。
+
+给你一个输入数组 nums，找到峰值元素并返回其索引。数组可能包含多个峰值，在这种情况下，返回 任何一个峰值 所在位置即可。
+
+你可以假设 nums[-1] = nums[n] = -∞ 。
+
+```
+输入：nums = [1,2,1,3,5,6,4]
+输出：1 或 5 
+解释：你的函数可以返回索引 1，其峰值元素为 2；
+     或者返回索引 5， 其峰值元素为 6。
+```
+
+---
+
+解题思路:
+
+方法一:
+
+​	线性扫描，时间复杂度*O(n)*。
+
+​	利用了连续的两个元素 nums[j] 和 nums[j+1] 不会相等这一事实。于是，我们可以从头开始遍历 nums 数组。每当我们遇到数字 nums[i]，只需要检查它是否大于下一个元素 nums[i+1] 即可判断 nums[i] 是否是峰值。
+
+​	由于“遍历会到达第i个元素”本身就说明上一个元素（第i- 1个）不满足 nums[i] > nums[i + 1] 这一条件，也就说明 nums[i-1] < nums[i]。
+
+<img src="Intermediate algorithm.assets/802bad70c4444bf708f4c63e30e054a33c27ace43b3c7b4fa64a0ffb8201fb7d-image.png" alt="image.png" style="zoom: 67%;" />
+
+方法二：
+
+​	二分查找。时间复杂度$O(log_2{n})$。
+
+​	在简单的二分查找中，我们处理的是一个有序数列，并通过在每一步减少搜索空间来找到所需要的数字。在本例中，我们对二分查找进行一点修改。首先从数组 nums 中找到中间的元素 mid。若该元素恰好位于降序序列或者一个局部下降坡度中（通过将 nums[i] 与右侧比较判断)，则说明峰值会在本元素的左边。于是，我们将搜索空间缩小为 mid 的左边(包括其本身)，并在左侧子数组上重复上述过程。
+
+​	若该元素恰好位于升序序列或者一个局部上升坡度中（通过将 nums[i] 与右侧比较判断)，则说明峰值会在本元素的右边。于是，我们将搜索空间缩小为 mid 的右边，并在右侧子数组上重复上述过程。
+
+​	就这样，我们不断地缩小搜索空间，直到搜索空间中只有一个元素，该元素即为峰值元素。
+
+```java
+//二分扫描
+class Solution {
+    public int findPeakElement(int[] nums) {
+        int left = 0;
+        int right = nums.length - 1;
+        int mid;
+        while (left < right) {
+            mid = (left + right) >> 1;
+            if (nums[mid] < nums[mid + 1]) {
+                //注意这一步
+                //mid和下一个元素比较,左边右移一个
+                left = mid + 1;
+                continue;
+            }
+            //注意这一步
+            right = mid;
+        }
+        return left;
+    }
+}
+```
+
+```java
+//线性扫描
+class Solution {
+    public int findPeakElement(int[] nums) {
+        for (int i = 0; i < nums.length - 1; i++) {
+            if (nums[i] > nums[i + 1]) {
+                return i;
+            }
+        }
+        return nums.length - 1;
+    }
+}
+```
+
 
 
 ## [200. 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
@@ -792,6 +928,70 @@ class Solution {
             return;
         }
         inOrderDFS(root.right,k);
+    }
+}
+```
+
+
+
+编写一个高效的算法来搜索 m x n 矩阵 matrix 中的一个目标值 target 。该矩阵具有以下特性：
+
+- 每行的元素从左到右升序排列。
+- 每列的元素从上到下升序排列。
+
+![img](Intermediate algorithm.assets/searchgrid2.jpg)
+
+```python
+输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 5
+输出：true
+```
+
+---
+
+解题思路:
+
+方法一:
+
+​	暴力，复杂度$O(m \times n)$
+
+方法二:
+
+​	搜索空间的缩减。时间复杂度：$O(nlgn)$。
+
+​	我们可以将已排序的二维矩阵划分为四个子矩阵，其中两个可能包含目标，其中两个肯定不包含。
+
+方法三:
+
+​	主动寻找元素。时间复杂度：*O(n+m)*。
+
+​	首先，我们初始化一个指向矩阵左下角的 (row，col)指针。然后，直到找到目标并返回 true（或者指针指向矩阵维度之外为止）。我们执行以下操作：
+
+​	如果当前指向的值大于目标值，则可以 “向上” 移动一行。 
+
+​	否则，如果当前指向的值小于目标值，则可以移动一列。
+
+​	不难理解为什么这样做永远不会删减正确的答案；因为行是从左到右排序的，所以我们知道当前值右侧的每个值都较大。 因此，如果当前值已经大于目标值，我们知道它右边的每个值会比较大。也可以对列进行非常类似的论证，因此这种搜索方式将始终在矩阵中找到目标（如果存在）。
+
+```java
+class Solution {
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int col = matrix[0].length;
+        int cTemp = 0;
+        int rTemp = matrix.length - 1;
+        while (cTemp < col && rTemp >= 0) {
+            if (matrix[rTemp][cTemp] == target) {
+                return true;
+            }
+            if (matrix[rTemp][cTemp] > target) {
+                rTemp--;
+                continue;
+            }
+            if (matrix[rTemp][cTemp] < target) {
+                cTemp++;
+                continue;
+            }
+        }
+        return false;
     }
 }
 ```
