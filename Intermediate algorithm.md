@@ -76,7 +76,7 @@ class Solution {
 
 回溯法通常用最简单的递归方法来实现。
 
-<img src="Intermediate algorithm.assets/0bf18f9b86a2542d1f6aa8db6cc45475fce5aa329a07ca02a9357c2ead81eec1-image.png" alt="image.png" style="zoom: 33%;" />
+<img src="asset/Intermediate algorithm.assets/0bf18f9b86a2542d1f6aa8db6cc45475fce5aa329a07ca02a9357c2ead81eec1-image.png" alt="image.png" style="zoom: 33%;" />
 
 \[注意]:
 
@@ -561,7 +561,7 @@ struct Node {
 
 初始状态下，所有 *next* 指针都被设置为*null*。
 
-<img src="Intermediate algorithm.assets/116_sample.png" alt="img" style="zoom:67%;" />
+<img src="asset/Intermediate algorithm.assets/116_sample.png" alt="img" style="zoom:67%;" />
 
 ```java
 输入：root = [1,2,3,4,5,6,7]
@@ -640,7 +640,7 @@ class Solution {
 
 编写一个程序，找到两个单链表相交的起始节点。
 
-![img](Intermediate algorithm.assets/160_example_1.png)
+![img](asset/Intermediate algorithm.assets/160_example_1.png)
 
 ```java
 输入：intersectVal = 8, listA = [4,1,8,4,5], listB = [5,0,1,8,4,5], skipA = 2, skipB = 3
@@ -716,7 +716,7 @@ public class Solution {
 
 ​	由于“遍历会到达第i个元素”本身就说明上一个元素（第i- 1个）不满足 nums[i] > nums[i + 1] 这一条件，也就说明 nums[i-1] < nums[i]。
 
-<img src="Intermediate algorithm.assets/802bad70c4444bf708f4c63e30e054a33c27ace43b3c7b4fa64a0ffb8201fb7d-image.png" alt="image.png" style="zoom: 67%;" />
+<img src="asset/Intermediate algorithm.assets/802bad70c4444bf708f4c63e30e054a33c27ace43b3c7b4fa64a0ffb8201fb7d-image.png" alt="image.png" style="zoom: 67%;" />
 
 方法二：
 
@@ -893,7 +893,7 @@ class Solution {
 
 给定一个二叉搜索树的根节点 `root` ，和一个整数 `k` ，请你设计一个算法查找其中第 `k` 个最小元素（从 1 开始计数）。
 
-![img](Intermediate algorithm.assets/kthtree2.jpg)
+![img](asset/Intermediate algorithm.assets/kthtree2.jpg)
 
 ```python
 输入：root = [5,3,6,2,4,null,null,1], k = 3
@@ -939,7 +939,7 @@ class Solution {
 - 每行的元素从左到右升序排列。
 - 每列的元素从上到下升序排列。
 
-![img](Intermediate algorithm.assets/searchgrid2.jpg)
+![img](asset/Intermediate algorithm.assets/searchgrid2.jpg)
 
 ```python
 输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 5
@@ -992,6 +992,108 @@ class Solution {
             }
         }
         return false;
+    }
+}
+```
+
+## [300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+
+给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+
+子序列是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+
+```java
+输入：nums = [10,9,2,5,3,7,101,18]
+输出：4
+解释：最长递增子序列是 [2,3,7,101]，因此长度为 4 。
+```
+
+---
+
+解题思路:
+
+方法一:
+
+​	动态规划，时间复杂度$O(n^2)$。 定义 dp[i] 为考虑前 i 个元素，以第 i 个数字结尾的最长上升子序列的长度，注意 nums[i] 必须被选取。
+
+​	我们从小到大计算 dp 数组的值，在计算 dp[i] 之前，我们已经计算出 dp[0…i−1] 的值，则状态转移方程为：
+$$
+dp[i]=max(dp[j])+1, 其中0≤j<i 且 num[j]<num[i]
+$$
+即考虑往 dp[0…i−1] 中最长的上升子序列后面再加一个 nums[i]。由于dp[j] 代表 nums[0…j] 中以 nums[j] 结尾的最长上升子序列，所以如果能从 dp[j] 这个状态转移过来，那么 nums[i] 必然要大于 nums[j]，才能将 nums[i] 放在 nums[j] 后面以形成更长的上升子序列。
+
+​	最后，整个数组的最长上升子序列即所有 \textit{dp}[i]dp[i] 中的最大值。
+
+方法二:
+
+​	贪心+二分，时间复杂度$O(nlog_2{n})$。
+
+```java
+//DP
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int len = nums.length;
+        int[] dp = new int[len];
+        int ans = 1;
+        for (int i = 0; i < len; i++) {
+            dp[i] = 1;
+        }
+        for (int i = 0; i < len; i++) {
+            for (int j = i - 1; j >= 0; j--) {
+                if (nums[j] < nums[i]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            ans = ans < dp[i] ? dp[i] : ans;
+        }
+        return ans;
+    }
+}
+```
+
+
+
+## [322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)
+
+给定不同面额的硬币 coins 和一个总金额 amount。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
+
+你可以认为每种硬币的数量是无限的。
+
+```java
+输入：coins = [1, 2, 5], amount = 11
+输出：3 
+解释：11 = 5 + 5 + 1
+```
+
+---
+
+解题思路:
+
+​	完全背包问题。动态规划解决，创建DP数组dp[amount+1]，dp[i] 表示总金额为i时，需要的最少硬币数。状态转移方程为:
+$$
+dp[i] = \min_{j = 0,1,...n-1}(dp[i-coins[j]]+1)
+$$
+相当于测试了可以凑出当金额 *i* 的组成可能中(i-coins[j])，需要金币数最小的那个。
+
+```java
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        int max = amount+1;
+        for (int i = 0; i < dp.length; i++) {
+            dp[i] = max;
+        }
+        //API自带,但费时间
+        //Arrays.fill(dp,amount+1);
+        dp[0] = 0;
+        for (int i = 0; i <= amount; i++) {
+            for (int j = 0; j < coins.length; j++) {
+                if (i - coins[j] >= 0) {
+                    dp[i] = Math.min(dp[i - coins[j]]+1, dp[i]) ;
+                }
+            }
+        }
+        return dp[amount] > amount ? -1 :dp[amount];
     }
 }
 ```

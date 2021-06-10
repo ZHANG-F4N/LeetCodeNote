@@ -570,11 +570,11 @@ Next数组提供了 `子串` 的内部规律。
 
 - 假设已经知道了 next[x-1]（以下记为now），如果 P[x] 与 P[now] 一样，那最长相等前后缀的长度就可以扩展一位，很明显 next[x] = now + 1.
 
-  <img src="CodeNote of LeetCode 1 to 50.assets/v2-6d6a40331cd9e44bfccd27ac5a764618_720w.jpg" alt="img" style="zoom:50%;" />
+  <img src="asset/CodeNote of LeetCode 1 to 50.assets/v2-6d6a40331cd9e44bfccd27ac5a764618_720w.jpg" alt="img" style="zoom:50%;" />
 
 - 当P[now]与P[x]不相等的时候，我们需要缩小now —— 把now变成next[now-1]，直到P[now]=P[x]为止。P[now]=P[x]时，就可以直接向右扩展了。
 
-  <img src="CodeNote of LeetCode 1 to 50.assets/v2-ce1d46a1e3603b07a13789b6ece6022f_720w.jpg" alt="img" style="zoom:50%;" />
+  <img src="asset/CodeNote of LeetCode 1 to 50.assets/v2-ce1d46a1e3603b07a13789b6ece6022f_720w.jpg" alt="img" style="zoom:50%;" />
 
 ```python
 class Solution {
