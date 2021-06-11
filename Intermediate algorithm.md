@@ -753,6 +753,108 @@ class Solution {
 
 
 
+## [215. 数组中的第K个最大元素](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/)
+
+在未排序的数组中找到第 **k** 个最大的元素。请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+
+```java
+输入: [3,2,1,5,6,4] 和 k = 2
+输出: 5
+```
+
+---
+
+解题思路:
+
+方法一:
+
+​	快速排序变形。
+
+​	平均时间复杂度 *O(n)*
+
+方法二：
+
+​	大顶堆。我们也可以使用堆排序来解决这个问题——建立一个大根堆，做 *k*−1 次删除操作后堆顶元素就是我们要找的答案。
+
+​	时间复杂度：$O(n \log n)$
+
+方法三:
+
+​	排序。
+
+​	时间复杂度：$O(n \log n)$
+
+```java
+//自己实现大顶堆MaxHeap
+class Solution {
+    public int findKthLargest(int[] nums, int k) {
+        int heapSize = nums.length;
+        buildMaxHeap(nums, heapSize);
+        //移除前K-1大的数
+        for (int i = nums.length - 1; i >= nums.length - k + 1; i--) {
+            heapSize--;
+            swap(nums, 0, i);
+            adjustMaxHeap(nums, 0, heapSize);
+        }
+
+        return nums[0];
+    }
+    public void buildMaxHeap(int[] a, int heapSize) {
+        //从第一个拥有子节点的位置开始调整。
+        for (int i = (heapSize >> 1); i >= 0; --i) {
+            adjustMaxHeap(a, i, heapSize);
+        }
+
+    }
+    //调整大顶堆
+    // i--局部堆头结点
+    // heapSize--堆尾结点
+    public  void adjustMaxHeap(int[] a, int i, int heapSize) {
+        int leftChild = i * 2 + 1;
+        int rightChild = i * 2 + 2;
+        int bigNode = i;
+        if (leftChild < heapSize && a[leftChild] > a[bigNode]) {
+            bigNode = leftChild;
+        }
+        if (rightChild < heapSize && a[rightChild] > a[bigNode]) {
+            bigNode = rightChild;
+        }
+        if (bigNode != i) {
+            swap(a, bigNode, i);
+            adjustMaxHeap(a, bigNode, heapSize);
+        }
+    }
+
+    public void swap(int[] a, int i, int j) {
+        int temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
+    }
+}
+```
+
+```java
+//使用自带的优先队列API
+class Solution {
+    public int findKthLargest(int[] nums, int k) {
+        PriorityQueue<Integer> heap = new PriorityQueue<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (heap.size() == k) {
+                if (heap.peek() <= nums[i]) {
+                    heap.poll();
+                    heap.offer(nums[i]);
+                }
+            } else {
+                heap.offer(nums[i]);
+            }
+        }
+        return heap.peek();
+    }
+}
+```
+
+
+
 ## [230. 二叉搜索树中第K小的元素](https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/)
 
 给定一个二叉搜索树的根节点 `root` ，和一个整数 `k` ，请你设计一个算法查找其中第 `k` 个最小元素（从 1 开始计数）。
