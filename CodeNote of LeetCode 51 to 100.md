@@ -127,7 +127,7 @@ class Solution {
 
 给你一个链表的头节点 `head` ，旋转链表，将链表每个节点向右移动 `k` 个位置。
 
- ![img](CodeNote of LeetCode 51 to 100.assets/rotate1.jpg)
+ ![img](asset/CodeNote of LeetCode 51 to 100.assets/rotate1.jpg)
 
 ```java
 输入：head = [1,2,3,4,5], k = 2
@@ -203,7 +203,7 @@ class Solution {
 
   转移方程*f*(*i*,*j*)=*f*(*i*−1,*j*)+*f*(*i*,*j*−1)
 
-  <img src="CodeNote of LeetCode 51 to 100.assets/image-20210525204846175.png" alt="image-20210525204846175" style="zoom:50%;" />
+  <img src="asset/CodeNote of LeetCode 51 to 100.assets/image-20210525204846175.png" alt="image-20210525204846175" style="zoom:50%;" />
 
 ```java 
 class Solution {
@@ -229,7 +229,7 @@ class Solution {
 
 现在考虑网格中有障碍物。那么从左上角到右下角将会有多少条不同的路径？
 
-![img](CodeNote of LeetCode 51 to 100.assets/robot1.jpg)
+![img](asset/CodeNote of LeetCode 51 to 100.assets/robot1.jpg)
 
 ```java
 输入：obstacleGrid = [[0,0,0],[0,1,0],[0,0,0]]
@@ -252,7 +252,7 @@ class Solution {
     - 我们可以运用「滚动数组思想」把空间复杂度优化称 *O*(*m*)。
     - 「滚动数组思想」是一种常见的动态规划优化方法
 
-<img src="CodeNote of LeetCode 51 to 100.assets/image-20210525205205735.png" alt="image-20210525205205735" style="zoom:67%;" />
+<img src="asset/CodeNote of LeetCode 51 to 100.assets/image-20210525205205735.png" alt="image-20210525205205735" style="zoom:67%;" />
 
 ```java
 class Solution {
@@ -302,7 +302,7 @@ class Solution {
 
 **说明：**每次只能向下或者向右移动一步。
 
-![img](CodeNote of LeetCode 51 to 100.assets/minpath.jpg)
+![img](asset/CodeNote of LeetCode 51 to 100.assets/minpath.jpg)
 
 ```java
 输入：grid = [[1,3,1],[1,5,1],[4,2,1]]
@@ -513,7 +513,7 @@ class Solution {
 
 返回同样按升序排列的结果链表。
 
-<img src="CodeNote of LeetCode 51 to 100.assets/linkedlist1.jpg" alt="img" style="zoom:67%;" />
+<img src="asset/CodeNote of LeetCode 51 to 100.assets/linkedlist1.jpg" alt="img" style="zoom:67%;" />
 
 ```java
 输入：head = [1,2,3,3,4,4,5]
@@ -532,7 +532,7 @@ class Solution {
 
 返回同样按升序排列的结果链表。
 
-![img](CodeNote of LeetCode 51 to 100.assets/list2.jpg)
+![img](asset/CodeNote of LeetCode 51 to 100.assets/list2.jpg)
 
 ```java
 输入：head = [1,1,2,3,3]
@@ -572,7 +572,7 @@ class Solution {
 
 你应当 保留 两个分区中每个节点的初始相对位置。
 
-![img](CodeNote of LeetCode 51 to 100.assets/partition.jpg)
+![img](asset/CodeNote of LeetCode 51 to 100.assets/partition.jpg)
 
 ```java
 输入：head = [1,4,3,2,5,2], x = 3
@@ -669,7 +669,7 @@ class Solution {
 
 给定一个二叉树的根节点 `root` ，返回它的 **中序** 遍历。
 
-<img src="CodeNote of LeetCode 51 to 100.assets/inorder_1.jpg" alt="img" style="zoom:50%;" />
+<img src="asset/CodeNote of LeetCode 51 to 100.assets/inorder_1.jpg" alt="img" style="zoom:50%;" />
 
 ```java
 输入：root = [1,null,2,3]
@@ -816,7 +816,7 @@ class Solution {
 
 给你单链表的头节点 `head` ，请你反转链表，并返回反转后的链表。
 
-![img](CodeNote of LeetCode 51 to 100.assets/rev1ex1.jpg)
+![img](asset/CodeNote of LeetCode 51 to 100.assets/rev1ex1.jpg)
 
 ```java
 输入：head = [1,2,3,4,5]

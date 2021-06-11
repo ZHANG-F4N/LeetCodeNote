@@ -76,7 +76,7 @@ class Solution {
 
 回溯法通常用最简单的递归方法来实现。
 
-<img src="Intermediate algorithm.assets/0bf18f9b86a2542d1f6aa8db6cc45475fce5aa329a07ca02a9357c2ead81eec1-image.png" alt="image.png" style="zoom: 33%;" />
+<img src="asset/Intermediate algorithm.assets/0bf18f9b86a2542d1f6aa8db6cc45475fce5aa329a07ca02a9357c2ead81eec1-image.png" alt="image.png" style="zoom: 33%;" />
 
 \[注意]:
 
@@ -151,6 +151,66 @@ class Solution {
             hashMap.put(new String(temp), strings);
         }
         return new ArrayList<>(hashMap.values());
+    }
+}
+```
+
+
+
+给定一个非负整数数组 `nums` ，你最初位于数组的 **第一个下标** 。
+
+数组中的每个元素代表你在该位置可以跳跃的最大长度。
+
+判断你是否能够到达最后一个下标。
+
+```java
+输入：nums = [3,2,1,0,4]
+输出：false
+解释：无论怎样，总会到达下标为 3 的位置。但该下标的最大跳跃长度是 0 ， 所以永远不可能到达最后一个下标。
+```
+
+---
+
+解题思路:
+
+方法一:
+
+​	从前往后扫描，维护一个可以到达的最大距离maxStep，每走一步，更新当前可以到达的最大距离，如果最大距离可以到终点，则成功；否则返回false。
+
+方法二：
+
+​	从后往前扫描，每个点遍历一遍，如果可以到达每一个点，最后返回到初始点，则成功，否则返回false。
+
+```java
+//从前往后,每次更新最大可以到达的距离
+class Solution {
+    public boolean canJump(int[] nums) {
+        int maxStep = 0;
+        int len = nums.length - 1;
+        for (int i = 0; i < nums.length; i++) {
+            if (maxStep >= len) {
+                return true;
+            }
+            if (maxStep >= i) {
+                if (maxStep < i + nums[i]) {
+                    maxStep = nums[i] + i;
+                }
+            } 
+        }
+        return false;
+    }
+}
+```
+
+```java
+//从后往前,判断每一个点是否可达
+class Solution {
+    public boolean canJump(int[] nums) {
+        int min = nums.length - 1;
+        for (int i = nums.length - 2; i >= 0; i--) {
+            if (i + nums[i] >= min) min = i;
+        }
+        return min == 0;
     }
 }
 ```
@@ -501,7 +561,7 @@ struct Node {
 
 初始状态下，所有 *next* 指针都被设置为*null*。
 
-<img src="Intermediate algorithm.assets/116_sample.png" alt="img" style="zoom:67%;" />
+<img src="asset/Intermediate algorithm.assets/116_sample.png" alt="img" style="zoom:67%;" />
 
 ```java
 输入：root = [1,2,3,4,5,6,7]
@@ -580,7 +640,7 @@ class Solution {
 
 编写一个程序，找到两个单链表相交的起始节点。
 
-![img](Intermediate algorithm.assets/160_example_1.png)
+![img](asset/Intermediate algorithm.assets/160_example_1.png)
 
 ```java
 输入：intersectVal = 8, listA = [4,1,8,4,5], listB = [5,0,1,8,4,5], skipA = 2, skipB = 3
@@ -625,6 +685,82 @@ public class Solution {
             }
         }
         return null;
+    }
+}
+```
+
+## [162. 寻找峰值](https://leetcode-cn.com/problems/find-peak-element/)
+
+峰值元素是指其值大于左右相邻值的元素。
+
+给你一个输入数组 nums，找到峰值元素并返回其索引。数组可能包含多个峰值，在这种情况下，返回 任何一个峰值 所在位置即可。
+
+你可以假设 nums[-1] = nums[n] = -∞ 。
+
+```
+输入：nums = [1,2,1,3,5,6,4]
+输出：1 或 5 
+解释：你的函数可以返回索引 1，其峰值元素为 2；
+     或者返回索引 5， 其峰值元素为 6。
+```
+
+---
+
+解题思路:
+
+方法一:
+
+​	线性扫描，时间复杂度*O(n)*。
+
+​	利用了连续的两个元素 nums[j] 和 nums[j+1] 不会相等这一事实。于是，我们可以从头开始遍历 nums 数组。每当我们遇到数字 nums[i]，只需要检查它是否大于下一个元素 nums[i+1] 即可判断 nums[i] 是否是峰值。
+
+​	由于“遍历会到达第i个元素”本身就说明上一个元素（第i- 1个）不满足 nums[i] > nums[i + 1] 这一条件，也就说明 nums[i-1] < nums[i]。
+
+<img src="asset/Intermediate algorithm.assets/802bad70c4444bf708f4c63e30e054a33c27ace43b3c7b4fa64a0ffb8201fb7d-image.png" alt="image.png" style="zoom: 67%;" />
+
+方法二：
+
+​	二分查找。时间复杂度$O(log_2{n})$。
+
+​	在简单的二分查找中，我们处理的是一个有序数列，并通过在每一步减少搜索空间来找到所需要的数字。在本例中，我们对二分查找进行一点修改。首先从数组 nums 中找到中间的元素 mid。若该元素恰好位于降序序列或者一个局部下降坡度中（通过将 nums[i] 与右侧比较判断)，则说明峰值会在本元素的左边。于是，我们将搜索空间缩小为 mid 的左边(包括其本身)，并在左侧子数组上重复上述过程。
+
+​	若该元素恰好位于升序序列或者一个局部上升坡度中（通过将 nums[i] 与右侧比较判断)，则说明峰值会在本元素的右边。于是，我们将搜索空间缩小为 mid 的右边，并在右侧子数组上重复上述过程。
+
+​	就这样，我们不断地缩小搜索空间，直到搜索空间中只有一个元素，该元素即为峰值元素。
+
+```java
+//二分扫描
+class Solution {
+    public int findPeakElement(int[] nums) {
+        int left = 0;
+        int right = nums.length - 1;
+        int mid;
+        while (left < right) {
+            mid = (left + right) >> 1;
+            if (nums[mid] < nums[mid + 1]) {
+                //注意这一步
+                //mid和下一个元素比较,左边右移一个
+                left = mid + 1;
+                continue;
+            }
+            //注意这一步
+            right = mid;
+        }
+        return left;
+    }
+}
+```
+
+```java
+//线性扫描
+class Solution {
+    public int findPeakElement(int[] nums) {
+        for (int i = 0; i < nums.length - 1; i++) {
+            if (nums[i] > nums[i + 1]) {
+                return i;
+            }
+        }
+        return nums.length - 1;
     }
 }
 ```
@@ -859,7 +995,7 @@ class Solution {
 
 给定一个二叉搜索树的根节点 `root` ，和一个整数 `k` ，请你设计一个算法查找其中第 `k` 个最小元素（从 1 开始计数）。
 
-![img](Intermediate algorithm.assets/kthtree2.jpg)
+![img](asset/Intermediate algorithm.assets/kthtree2.jpg)
 
 ```python
 输入：root = [5,3,6,2,4,null,null,1], k = 3
@@ -894,6 +1030,172 @@ class Solution {
             return;
         }
         inOrderDFS(root.right,k);
+    }
+}
+```
+
+
+
+编写一个高效的算法来搜索 m x n 矩阵 matrix 中的一个目标值 target 。该矩阵具有以下特性：
+
+- 每行的元素从左到右升序排列。
+- 每列的元素从上到下升序排列。
+
+![img](asset/Intermediate algorithm.assets/searchgrid2.jpg)
+
+```python
+输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 5
+输出：true
+```
+
+---
+
+解题思路:
+
+方法一:
+
+​	暴力，复杂度$O(m \times n)$
+
+方法二:
+
+​	搜索空间的缩减。时间复杂度：$O(nlgn)$。
+
+​	我们可以将已排序的二维矩阵划分为四个子矩阵，其中两个可能包含目标，其中两个肯定不包含。
+
+方法三:
+
+​	主动寻找元素。时间复杂度：*O(n+m)*。
+
+​	首先，我们初始化一个指向矩阵左下角的 (row，col)指针。然后，直到找到目标并返回 true（或者指针指向矩阵维度之外为止）。我们执行以下操作：
+
+​	如果当前指向的值大于目标值，则可以 “向上” 移动一行。 
+
+​	否则，如果当前指向的值小于目标值，则可以移动一列。
+
+​	不难理解为什么这样做永远不会删减正确的答案；因为行是从左到右排序的，所以我们知道当前值右侧的每个值都较大。 因此，如果当前值已经大于目标值，我们知道它右边的每个值会比较大。也可以对列进行非常类似的论证，因此这种搜索方式将始终在矩阵中找到目标（如果存在）。
+
+```java
+class Solution {
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int col = matrix[0].length;
+        int cTemp = 0;
+        int rTemp = matrix.length - 1;
+        while (cTemp < col && rTemp >= 0) {
+            if (matrix[rTemp][cTemp] == target) {
+                return true;
+            }
+            if (matrix[rTemp][cTemp] > target) {
+                rTemp--;
+                continue;
+            }
+            if (matrix[rTemp][cTemp] < target) {
+                cTemp++;
+                continue;
+            }
+        }
+        return false;
+    }
+}
+```
+
+## [300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+
+给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+
+子序列是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+
+```java
+输入：nums = [10,9,2,5,3,7,101,18]
+输出：4
+解释：最长递增子序列是 [2,3,7,101]，因此长度为 4 。
+```
+
+---
+
+解题思路:
+
+方法一:
+
+​	动态规划，时间复杂度$O(n^2)$。 定义 dp[i] 为考虑前 i 个元素，以第 i 个数字结尾的最长上升子序列的长度，注意 nums[i] 必须被选取。
+
+​	我们从小到大计算 dp 数组的值，在计算 dp[i] 之前，我们已经计算出 dp[0…i−1] 的值，则状态转移方程为：
+$$
+dp[i]=max(dp[j])+1, 其中0≤j<i 且 num[j]<num[i]
+$$
+即考虑往 dp[0…i−1] 中最长的上升子序列后面再加一个 nums[i]。由于dp[j] 代表 nums[0…j] 中以 nums[j] 结尾的最长上升子序列，所以如果能从 dp[j] 这个状态转移过来，那么 nums[i] 必然要大于 nums[j]，才能将 nums[i] 放在 nums[j] 后面以形成更长的上升子序列。
+
+​	最后，整个数组的最长上升子序列即所有 \textit{dp}[i]dp[i] 中的最大值。
+
+方法二:
+
+​	贪心+二分，时间复杂度$O(nlog_2{n})$。
+
+```java
+//DP
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int len = nums.length;
+        int[] dp = new int[len];
+        int ans = 1;
+        for (int i = 0; i < len; i++) {
+            dp[i] = 1;
+        }
+        for (int i = 0; i < len; i++) {
+            for (int j = i - 1; j >= 0; j--) {
+                if (nums[j] < nums[i]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            ans = ans < dp[i] ? dp[i] : ans;
+        }
+        return ans;
+    }
+}
+```
+
+
+
+## [322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)
+
+给定不同面额的硬币 coins 和一个总金额 amount。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
+
+你可以认为每种硬币的数量是无限的。
+
+```java
+输入：coins = [1, 2, 5], amount = 11
+输出：3 
+解释：11 = 5 + 5 + 1
+```
+
+---
+
+解题思路:
+
+​	完全背包问题。动态规划解决，创建DP数组dp[amount+1]，dp[i] 表示总金额为i时，需要的最少硬币数。状态转移方程为:
+$$
+dp[i] = \min_{j = 0,1,...n-1}(dp[i-coins[j]]+1)
+$$
+相当于测试了可以凑出当金额 *i* 的组成可能中(i-coins[j])，需要金币数最小的那个。
+
+```java
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        int max = amount+1;
+        for (int i = 0; i < dp.length; i++) {
+            dp[i] = max;
+        }
+        //API自带,但费时间
+        //Arrays.fill(dp,amount+1);
+        dp[0] = 0;
+        for (int i = 0; i <= amount; i++) {
+            for (int j = 0; j < coins.length; j++) {
+                if (i - coins[j] >= 0) {
+                    dp[i] = Math.min(dp[i - coins[j]]+1, dp[i]) ;
+                }
+            }
+        }
+        return dp[amount] > amount ? -1 :dp[amount];
     }
 }
 ```

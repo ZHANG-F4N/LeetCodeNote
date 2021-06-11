@@ -4,7 +4,7 @@
 
 ## Java常见的容器类
 
-<img src="JavaTips.assets/v2-c229d5cd53d9eff59865fe8b7a7f7091_720w.jpg" alt="img" style="zoom:67%;" />
+<img src="asset/JavaTips.assets/v2-c229d5cd53d9eff59865fe8b7a7f7091_720w.jpg" alt="img" style="zoom:67%;" />
 
 容器常用的方法有:
 
@@ -152,7 +152,7 @@ transient Entry<K,V>[] table = (Entry<K,V>[]) EMPTY_TABLE;
 
 ​	Java中*PriorityQueue*实现了*Queue*接口，不允许放入`null`元素；其通过堆实现，具体说是通过完全二叉树（*complete binary tree*）实现的**小顶堆**（任意一个非叶子节点的权值，都不大于其左右子节点的权值），也就意味着可以通过数组来作为*PriorityQueue*的底层实现。
 
-<img src="JavaTips.assets/939998-20160512205540484-823563038.png" alt="PriorityQueue_base.png" style="zoom:80%;" />
+<img src="asset/JavaTips.assets/939998-20160512205540484-823563038.png" alt="PriorityQueue_base.png" style="zoom:80%;" />
 
 ​	**优先队列的作用是能保证每次取出的元素都是队列中权值最小的**（Java的优先队列每次取最小元素，C++的优先队列每次取最大元素）。这里牵涉到了大小关系，**元素大小的评判可以通过元素本身的自然顺序（natural ordering），也可以通过构造时传入的比较器**（*Comparator*，类似于C++的仿函数）。
 
