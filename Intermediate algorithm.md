@@ -767,6 +767,50 @@ class Solution {
 
 
 
+## [171. Excel表列序号](https://leetcode-cn.com/problems/excel-sheet-column-number/)
+
+给定一个Excel表格中的列名称，返回其相应的列序号。
+
+例如，
+
+    A -> 1
+    B -> 2
+    C -> 3
+    ...
+    Z -> 26
+    AA -> 27
+    AB -> 28 
+    ...
+
+```java
+输入: "AB"
+输出: 28
+```
+
+---
+
+解题思路:
+
+​	类似于进制转换，在计算时可以优化。
+
+```java
+class Solution {
+    public int titleToNumber(String columnTitle) {
+        //ZY = 26 * 26 + 25
+        //AAA = 1*26*26 + 1*26 + 1 = (1*26+1)*26 + 1
+        //ABCD = 1*26*26*26 + 2*26*26 + 3*26 + 4 = (((1)*26+2)*26+3)*26 + 4 = 19010
+        int ans = 0;
+        int index = columnTitle.length();
+        for (int i = 0; i < index; i++) {
+            ans = ans * 26 + columnTitle.charAt(i) - 'A' + 1;
+        }
+        return ans;
+    }
+}
+```
+
+
+
 ## [200. 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
 
 给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
@@ -883,6 +927,79 @@ class Solution {
             grid[i][j + 1] = '0';
             DFS(grid, i, j + 1);
         }
+    }
+}
+```
+
+
+
+
+
+## [202. 快乐数](https://leetcode-cn.com/problems/happy-number/)
+
+编写一个算法来判断一个数 n 是不是快乐数。
+
+「快乐数」定义为：
+
+​	对于一个正整数，每一次将该数替换为它每个位置上的数字的平方和。然后重复这个过程直到这个数变为 1，也可能是 无限循环 但始终变不到 1。
+​	如果 可以变为  1，那么这个数就是快乐数。
+​	如果 n 是快乐数就返回 true ；不是，则返回 false 。
+
+```java
+输入：19
+输出：true
+解释：
+12 + 92 = 82
+82 + 22 = 68
+62 + 82 = 100
+12 + 02 + 02 = 1
+
+输入：n = 2
+输出：false
+```
+
+---
+
+解题思路:
+
+有3种情况:
+	第一种:收敛回到1。
+	第二种:最后产生循环。
+	第三种:不收敛，到无限大。
+
+​	对于 3 位数的数字，它不可能大于 (999的快乐数243) 243。这意味着它要么被困在 243 以下的循环内，要么跌到 1。
+​	4 位或 4 位以上的数字在每一步都会丢失一位,这是因为每个位数的平方最大为81，不可能达到三位,所以位数会越来越少,直到降到 3 位为止。但它不会无限期地进行下去，所以我们排除第三种选择。
+
+```java
+class Solution {
+    public  int getNext(int val) {
+        int ans = 0;
+        //用val / 10 == 0 判断需要最后判断一位数
+        while (val > 0) {
+            ans += (val % 10) * (val % 10);
+            val /= 10;
+        }
+        return ans;
+    }
+    //HashSet判断有没有重复元素。
+    //HashSet查重会慢一点
+    public boolean isHappy(int n) {
+        HashSet<Integer> hashSet = new HashSet<>();
+        while (!hashSet.contains(getNext(n)) && n != 1) {
+            hashSet.add(getNext(n));
+            n = getNext(n);
+        }
+        return n == 1;
+    }
+    //快慢指针判断是否存在循环
+    public boolean isHappy(int n) {
+        int slow = n;
+        int fast = getNext(n);
+        while (fast != 1 && fast != slow) {
+            fast = getNext(getNext(fast));
+            slow = getNext(slow);
+        }
+        return fast == 1;
     }
 }
 ```
