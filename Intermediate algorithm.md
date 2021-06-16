@@ -634,6 +634,76 @@ class Solution {
 
 
 
+## [150. 逆波兰表达式求值](https://leetcode-cn.com/problems/evaluate-reverse-polish-notation/)
+
+有效的算符包括 +、-、*、/ 。每个运算对象可以是整数，也可以是另一个逆波兰表达式。
+
+说明：
+
+- 整数除法只保留整数部分。
+- 给定逆波兰表达式总是有效的。换句话说，表达式总会得出有效数值且不存在除数为 0 的情况。
+
+```java
+输入：tokens = ["4","13","5","/","+"]
+输出：6
+解释：该算式转化为常见的中缀算术表达式为：(4 + (13 / 5)) = 6
+```
+
+---
+
+解题思路:
+
+方法一：栈
+
+​	逆波兰表达式严格遵循「从左到右」的运算。计算逆波兰表达式的值时，使用一个栈存储操作数，从左到右遍历逆波兰表达式，进行如下操作：
+
+- 如果遇到操作数，则将操作数入栈；
+
+- 如果遇到运算符，则将两个操作数出栈，其中先出栈的是右操作数，后出栈的是左操作数，使用运算符对两个操作数进行运算，将运算得到的新操作数入栈。
+
+  整个逆波兰表达式遍历完毕之后，栈内只有一个元素，该元素即为逆波兰表达式的值。
+
+方法二：数组模拟栈
+
+\[注意]:符号比较使用`equals`,而不是`==`
+
+```java
+class Solution {
+    public int evalRPN(String[] tokens) {
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < tokens.length; i++) {
+
+            if (tokens[i].equals("+") ) {
+                int rightNum = stack.pop();
+                int leftNum = stack.pop();
+                stack.push(leftNum + rightNum);
+                continue;
+            }
+            if (tokens[i].equals("-")) {
+                int rightNum = stack.pop();
+                int leftNum = stack.pop();
+                stack.push(leftNum - rightNum);
+                continue;
+            }
+            if (tokens[i].equals("*")) {
+                int rightNum = stack.pop();
+                int leftNum = stack.pop();
+                stack.push(leftNum * rightNum);
+                continue;
+            }
+            if (tokens[i].equals("/")) {
+                int rightNum = stack.pop();
+                int leftNum = stack.pop();
+                stack.push(leftNum / rightNum);
+                continue;
+            }
+            stack.push(Integer.valueOf(tokens[i]));
+        }
+        return stack.pop();
+    }
+}
+```
+
 
 
 ## [160. 相交链表](https://leetcode-cn.com/problems/intersection-of-two-linked-lists/)
@@ -765,6 +835,74 @@ class Solution {
 }
 ```
 
+## [169. 多数元素](https://leetcode-cn.com/problems/majority-element/)
+
+给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n/2 ⌋ 的元素。
+
+你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+
+```java
+输入：[2,2,1,1,1,2,2]
+输出：2
+```
+
+---
+
+解题思路：
+
+方法一：
+
+​	HashMap保存出现次数，然后找出出现次数最多的。时间复杂度 *O(n)*，空间复杂度 *O(n)*
+
+方法二:
+
+​	Boyer-Moore 投票算法。如果我们把众数记为 +1，把其他数记为 −1，将它们全部加起来，显然和大于 0，从结果本身我们可以看出众数比其他数多。我们首先给出 Boyer-Moore 算法的详细步骤：
+
+​	我们维护一个候选众数 candidate 和它出现的次数 count。初始时 candidate 可以为任意值，count 为 0；
+
+​	我们遍历数组 nums 中的所有元素，对于每个元素 x，在判断 x 之前，如果 count 的值为 0，我们先将 x 的值赋予 candidate，随后我们判断 x：
+
+​		如果 x 与 candidate 相等，那么计数器 count 的值增加 1；
+
+​		如果 x 与 candidate 不等，那么计数器 count 的值减少 1。
+
+​	在遍历完成后，candidate 即为整个数组的众数。
+
+作为例子，首先写下它在每一步遍历时 candidate 和 count 的值：
+
+```java
+nums:      [7, 7, 5, 7, 5, 1 | 5, 7 | 5, 5, 7, 7 | 7, 7, 7, 7]
+candidate:  7  7  7  7  7  7   5  5   5  5  5  5   7  7  7  7
+count:      1  2  1  2  1  0   1  0   1  2  1  0   1  2  3  4
+```
+
+​	时间复杂度：O(n)。
+
+​	空间复杂度：O(1)。
+
+```java
+
+class Solution {
+    public int majorityElement(int[] nums) {
+        int candidate = 0;
+        int count = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (candidate == nums[i]) {
+                count++;
+            }else {
+                if (count == 0) {
+                    candidate = nums[i];
+                    count = 1;
+                    continue;
+                }
+                count--;
+            }
+        }
+        return candidate;
+    }
+}
+```
+
 
 
 ## [171. Excel表列序号](https://leetcode-cn.com/problems/excel-sheet-column-number/)
@@ -803,6 +941,69 @@ class Solution {
         int index = columnTitle.length();
         for (int i = 0; i < index; i++) {
             ans = ans * 26 + columnTitle.charAt(i) - 'A' + 1;
+        }
+        return ans;
+    }
+}
+```
+
+## [172. 阶乘后的零](https://leetcode-cn.com/problems/factorial-trailing-zeroes/)
+
+给定一个整数 *n*，返回 *n*! 结果尾数中零的数量。
+
+```java
+输入: 5
+输出: 1
+解释: 5! = 120, 尾数中有 1 个零.
+```
+
+---
+
+解题思路:
+
+方法一：计算阶乘
+
+​	这种方法速度太慢了。时间复杂度：低于 $O(n ^ 2)$。
+
+方法二：计算因子 5
+
+​	我们在计算 *n!* 时乘以 10 的次数是多少？只需要找出2和5的因子的个数，就可以算出末尾0的个数。但是2的因子个数肯定多于5的因子的个数，我们可以只统计因子5的个数，但是对于5的次幂，需要重复计算。这也就是方法三的优化来源。
+
+​	时间复杂度：*O(n)*
+
+方法三：快速计算因子5
+
+​	例如 25 的阶乘 ，比25小本身包含了5个{5 10 15 20 25}；25本身包含1个5因子 因为 25 = 5 * 5 一共有 5 + 1 = 6 个因子5
+​	例如 125为例，125及以下有25个5的倍数，25及以下有5个5的倍数，5有1个，一共31个。前面都是要重复计算因子5的个数。
+
+​	时间复杂度：$O(\log n)$。
+
+
+```java
+//O(n)
+class Solution {
+    public int trailingZeroes(int n) {
+        int ans = 0;
+        for (int i = 5; i <= n; i += 5) {
+            int temp = i;
+            while (temp % 5 == 0) {
+                ans++;
+                temp = temp / 5;
+            }
+        }
+        return ans;
+    }
+}
+```
+
+```java
+//O(log(n))
+class Solution {
+    public int trailingZeroes(int n) {
+        int ans = 0;
+        while (n > 0) {
+            n /= 5;
+            ans += n;
         }
         return ans;
     }

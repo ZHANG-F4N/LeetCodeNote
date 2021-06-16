@@ -187,7 +187,25 @@ PriorityQueue<int[]> priorityQueue = new PriorityQueue<>(new Comparator<int[]>()
 
 
 
+## equals 以及 ==
 
+1、“==”比较两个变量本身的值，即两个对象在内存中的首地址。
+
+​	(java中，对象的首地址是它在内存中存放的起始地址，它后面的地址是用来存放它所包含的各个属性的地址，所以内存中会用多个内存块来存放对象的各个参数，而通过这个首地址就可以找到该对象，进而可以找到该对象的各个属性)
+
+2、“equals()”比较字符串中所包含的内容是否相同。
+
+​	StringBuffer类中没有重新定义equals这个方法，因此这个方法就来自Object类，(Object类中的equals方法是用来比较“地址”的，所以等于false)
+
+3、equals方法对于字符串来说是比较内容的，而对于非字符串来说是比较，其指向的对象是否相同的。
+
+4、== 比较符也是比较指向的对象是否相同的也就是对象在对内存中的的首地址。
+
+5、String类中重新定义了equals这个方法，而且比较的是值，而不是地址。所以是true。
+
+6、如果是基本类型比较，那么只能用==来比较，不能用equals ==
+
+7、对于基本类型的包装类型，比如Boolean、Character、Byte、Shot、Integer、Long、Float、Double等的引用变量，==是比较地址的，而equals是比较内容的。
 
 ## 二维数组重写排序方法
 
@@ -278,6 +296,11 @@ public class TreeNode {
 ```
 
 ## 字符串转整型边界
+
+```java
+Integer.valueOf(tokens[i]);		//字符串转整型
+String.valueOf(12);				//整型转字符串
+```
 
 在 Java 中：
 
