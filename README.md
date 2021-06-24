@@ -1,6 +1,6 @@
 # LeetCode Note
 
-## > This project is my LeetCode learning note
+## This project is my LeetCode learning note
 
 ​	Using language including Python、C++ and Java.
 
@@ -8,5 +8,5 @@
 
 ​	
 
-## > Code folder has the source code
+## Code folder has the source code
 

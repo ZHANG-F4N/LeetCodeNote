@@ -2,7 +2,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Scanner;
 
-public class HuaWei6232 {
+public class HuaWei062302 {
 
     public static int freshTomato = 0;
     public static int day = 0;

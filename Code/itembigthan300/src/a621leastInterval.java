@@ -2,7 +2,8 @@ import java.util.*;
 
 public class a621leastInterval {
     public static void main(String[] args) {
-        char tasks[] = {'A', 'A', 'A', 'A', 'A', 'A', 'B', 'B', 'C', 'D', 'E', 'F', 'G'};
+        //char tasks[] = {'A', 'A', 'A', 'A', 'A', 'A', 'B', 'C', 'D', 'E', 'F', 'G'};
+        char tasks[] = {'A', 'A', 'A', 'B', 'B', 'B'};
         int n = 2;
         System.out.println(leastInterval(tasks, n));
     }
@@ -22,14 +23,16 @@ public class a621leastInterval {
             for (; i < list.size() && temp <= n; i++) {
                 if (hashMap.get(list.get(i)) != 0) {
                     hashMap.put(list.get(i), hashMap.get(list.get(i)) - 1);
+//                    if (hashMap.get(i) == 0){
+//                        hashMap.remove(i);
+//                    }
                     ans++;
                     endTask--;
                     temp++;
                 }
             }
-            if (i == list.size() && temp <= n) {
-                ans++;
-                temp++;
+            if (i == list.size() && temp < n && endTask != 0) {
+                ans += n -temp +1;
             }
         }
         return ans;
