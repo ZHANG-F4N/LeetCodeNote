@@ -4,34 +4,49 @@ import java.util.Scanner;
 
 public class HuaWei062302 {
 
-    public static int freshTomato = 0;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int M = Integer.parseInt(scanner.next());
         int N = Integer.parseInt(scanner.next());
         char[][] tomatoGrid = new char[M][N];
-        char[][] tomatoGridTemp = new char[M][N];
         int[][] dayTomatoGrid = new int[M][N];
-
+        int allTomato = 0;
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < N; j++) {
                 tomatoGrid[i][j] = Character.toUpperCase(scanner.next().charAt(0));
-                tomatoGridTemp[i][j] = tomatoGrid[i][j];
+                if (tomatoGrid[i][j] != 'E'){
+                    allTomato++;
+                }
                 dayTomatoGrid[i][j] = Integer.MAX_VALUE;
             }
         }
 
+
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < N; j++) {
                 if (tomatoGrid[i][j] == 'B') {
+                    dayTomatoGrid[i][j] = 1;
                     DFS(tomatoGrid, dayTomatoGrid, i, j, 0);
-//                    for (int k = 0; k < tomatoGrid.length; k++) {
-//                        tomatoGrid[k] = tomatoGridTemp[k].clone();
-//                    }
                 }
             }
         }
+        int ansDay = 0;
+        int badTomato = 0;
+        for (int i = 0; i < M; i++) {
+            for (int j = 0; j < N; j++) {
+                if (dayTomatoGrid[i][j] != Integer.MAX_VALUE && dayTomatoGrid[i][j] > ansDay) {
+                    ansDay = dayTomatoGrid[i][j];
+                }
+                if (dayTomatoGrid[i][j] != Integer.MAX_VALUE) {
+                    badTomato++;
+                }
+
+            }
+        }
+        System.out.println("day: "+ansDay);
+        System.out.println("goodTomato: "+(allTomato-badTomato));
+
     }
 
     public static void DFS(char[][] tomatoGrid, int[][] dayTomatoGrid, int i, int j, int day) {
