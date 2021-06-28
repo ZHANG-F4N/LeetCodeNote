@@ -37,6 +37,7 @@ public class HuaWei062303 {
 //                        +"  "+"weight->"+listHashMap.get(i).get(j).weight);
 //            }
 //        }
+        //--------BEGIN---拓扑排序------------------
         int[] TopologicalOrder = new int[N + 1];
         for (int i = 1; i <= N; i++) {
             for (int j = 0; j < listHashMap.get(i).size(); j++) {
@@ -50,9 +51,27 @@ public class HuaWei062303 {
                 stack.push(entry.getKey());
             }
         }
-        while(!stack.empty()){
-
+        int count = 1;
+        while (!stack.empty()) {
+            int vexTemp = stack.pop();
+            TopologicalOrder[count++] = vexTemp;
+            ArrayList<Node> tempArray = listHashMap.get(vexTemp);
+            for (int i = 0; i < tempArray.size(); i++) {
+                //System.out.println(tempArray.get(i).begin + " - " + tempArray.get(i).end);
+                indegreeHashMap.replace(tempArray.get(i).end, indegreeHashMap.get(tempArray.get(i).end) - 1);
+                if (indegreeHashMap.get(tempArray.get(i).end) == 0) {
+                    stack.push(tempArray.get(i).end);
+                }
+            }
         }
+        //-------END---拓扑排序-----------------
+        //System.out.println(count);
+
+        int[] Ve = new int[N+1];
+        int[] Vl = new int[N+1];
+        int[] ei = new int[R+1];
+        int[] el = new int[R+1];
+
 
     }
 
