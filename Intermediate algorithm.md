@@ -835,6 +835,72 @@ class Solution {
 }
 ```
 
+## [166. 分数到小数](https://leetcode-cn.com/problems/fraction-to-recurring-decimal/)
+
+给定两个整数，分别表示分数的分子 numerator 和分母 denominator，以 字符串形式返回小数 。
+
+如果小数部分为循环小数，则将循环的部分括在括号内。如果存在多个答案，只需返回 任意一个 。对于所有给定的输入，保证 答案字符串的长度小于 $10^4 $。
+
+```
+输入：numerator = 2, denominator = 3
+输出："0.(6)"
+```
+
+```
+输入：numerator = 1, denominator = 2
+输出："0.5"
+```
+
+---
+
+解题思路:
+
+​	长除法: 核心思想是当余数出现循环的时候，对应的商也会循环。
+
+![image-20210715185554366](asset/Intermediate algorithm.assets/image-20210715185554366.png)
+
+```java
+class Solution {
+    public String fractionToDecimal(int numerator, int denominator) {
+        if (numerator == 0) {
+            return "0";
+        }
+        StringBuilder ansStr = new StringBuilder();
+        if (numerator < 0 ^ denominator < 0) {
+            ansStr.append('-');
+        }
+        long dividend = Math.abs(Long.valueOf(numerator));
+        long divisor = Math.abs(Long.valueOf(denominator));
+
+        ansStr.append(String.valueOf(dividend / divisor));//整数
+
+        long remain = dividend % divisor;
+        if (remain == 0) {
+            return ansStr.toString();
+        }
+        ansStr.append('.');
+        HashMap<Long, Integer> hashMap = new HashMap<>();
+
+        while (remain != 0) {
+            if (hashMap.containsKey(remain)) {
+                ansStr.insert(hashMap.get(remain), "(");//这里输入字符'('报错
+                ansStr.append(')');
+                return ansStr.toString();
+            }
+            hashMap.put(remain, ansStr.length());
+
+            ansStr.append(remain * 10 / divisor);
+            remain = remain * 10 % divisor;
+            //System.out.println(ansStr);
+
+        }
+        return ansStr.toString();
+    }
+}
+```
+
+
+
 ## [169. 多数元素](https://leetcode-cn.com/problems/majority-element/)
 
 给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n/2 ⌋ 的元素。
@@ -1690,4 +1756,79 @@ class Solution {
     }
 }
 ```
+
+
+
+## [371. 两整数之和](https://leetcode-cn.com/problems/sum-of-two-integers/)
+
+**不使用**运算符 `+` 和 `-` ，计算两整数 `a` 、`b` 之和。
+
+```python
+示例 1:
+输入: a = -2, b = 3
+输出: 1
+示例 2:
+输入: a = 1, b = 2
+输出: 3
+```
+
+----
+
+解题思路:
+
+​	异或和与运算操作，我们知道，在位运算操作中，异或的一个重要特性是无进位加法。我们来看一个例子：
+
+```tex
+a = 5 = 0101
+b = 4 = 0100
+a ^ b 如下：
+0 1 0 1
+0 1 0 0
+-------
+0 0 0 1
+a ^ b 得到了一个无进位加法结果，如果要得到 a + b 的最终值，我们还要找到进位的数，把这二者相加。在位运算中，我们可以使用与操作获得进位：
+```
+
+```tex
+a = 5 = 0101
+b = 4 = 0100
+a & b 如下：
+0 1 0 1
+0 1 0 0
+-------
+0 1 0 0
+由计算结果可见，0100 并不是我们想要的进位，1 + 1 所获得的进位应该要放置在它的更高位，即左侧位上，因此我们还要把 0100 左移一位，才是我们所要的进位结果。
+```
+
+那么问题就容易了，总结一下：
+
+- a + b 的问题拆分为 (a 和 b 的无进位结果) + (a 和 b 的进位结果)
+- 无进位加法使用异或运算计算得出
+- 进位结果使用与运算和移位运算计算得出
+- 循环此过程，直到进位为 0
+
+```java
+class Solution {
+    public int getSum(int a, int b) {
+        int ans = a ^ b;
+        int carry = (a & b) << 1;
+        while (carry != 0) {
+            int temp = ans ^ carry;
+            carry = (ans & carry)<<1;
+            ans = temp;
+        }
+        return ans;
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
 
