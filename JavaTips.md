@@ -106,6 +106,15 @@ transient Entry<K,V>[] table = (Entry<K,V>[]) EMPTY_TABLE;
 
 简单来说，**HashMap由数组+链表组成的**，数组是HashMap的主体，链表则是主要为了解决哈希冲突而存在的。
 
+---
+
+```java
+//一种遍历方法
+for (Map.Entry<Integer, Integer> entry : hashMap.entrySet()) {}
+```
+
+
+
 | 方法                                                         | 描述                                                         |
 | :----------------------------------------------------------- | :----------------------------------------------------------- |
 | [clear()](https://www.runoob.com/java/java-hashmap-clear.html) | 删除 hashMap 中的所有键/值对                                 |

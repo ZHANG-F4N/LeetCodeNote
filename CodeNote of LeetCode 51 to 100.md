@@ -849,3 +849,55 @@ class Solution {
     }
 }
 ```
+
+
+
+## Question 445 [两数相加 II](https://leetcode-cn.com/problems/add-two-numbers-ii/)
+
+​	给你两个 非空 链表来代表两个非负整数。数字最高位位于链表开始位置。它们的每个节点只存储一位数字。将这两数相加会返回一个新的链表。你可以假设除了数字 0 之外，这两个数字都不会以零开头。
+
+<img src="asset/CodeNote of LeetCode 51 to 100.assets/1626420025-fZfzMX-image.png" alt="img" style="zoom:50%;" />
+
+```latex
+输入：l1 = [7,2,4,3], l2 = [5,6,4]
+输出：[7,8,0,7]
+```
+
+---
+
+解题思路:
+
+​	使用栈进行链表反转。这题主要问题是要注意链表方向，如果不使用反转的方法的话，使用栈来保存逆序后的两个链表，然后弹栈进行计算，并进行头插来逆序插入。
+
+```java
+class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+       ListNode ans = null;
+        Stack<Integer> s1 = new Stack<>();
+        Stack<Integer> s2 = new Stack<>();
+        while (l1 != null) {
+            s1.push(l1.val);
+            l1 = l1.next;
+        }
+        while (l2 != null) {
+            s2.push(l2.val);
+            l2 = l2.next;
+        }
+        int carry = 0;
+        int total = 0;
+        while (!s1.empty() || !s2.empty() || carry != 0) {
+            int a = s1.empty() ? 0 : s1.pop();
+            int b = s2.empty() ? 0 : s2.pop();
+            total = carry + a + b;
+            if (total > 9) {
+                carry = 1;
+            } else {
+                carry = 0;
+            }
+            ans = new ListNode(total % 10, ans);
+        }
+        return ans;
+    }
+}
+```
+
