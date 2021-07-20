@@ -226,6 +226,56 @@ class Solution:
         return ans
 ```
 
+
+
+## Question 11 [盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)
+
+给你 n 个非负整数 a1，a2，...，an，每个数代表坐标中的一个点 (i, ai) 。在坐标内画 n 条垂直线，垂直线 i 的两个端点分别为 (i, ai) 和 (i, 0) 。找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。
+
+说明：你不能倾斜容器。
+
+<img src="asset/CodeNote of LeetCode 1 to 50.assets/question_11.jpg" alt="img" style="zoom:50%;" />
+
+```tex
+输入：[1,8,6,2,5,4,8,3,7]
+输出：49 
+解释：图中垂直线代表输入数组 [1,8,6,2,5,4,8,3,7]。在此情况下，容器能够容纳水（表示为蓝色部分）的最大值为 49。
+```
+
+---
+
+解题思路:
+
+​	1.暴力$O(n^2)$	
+
+​	2.贪心。双指针在初始时，左右指针分别指向数组的左右两端，它们可以容纳的水量为$ \min(1, 7) * 8 = $8
+
+此时我们需要移动一个指针。移动哪一个呢？直觉告诉我们，应该移动对应数字较小的那个指针（即此时的左指针）。这是因为，由于容纳的水量是由 ==两个指针指向的数字中较小值 * 指针之间的距离== 决定的。如果我们移动数字较大的那个指针，那么前者「两个指针指向的数字中较小值」不会增加，后者「指针之间的距离」会减小，那么这个乘积会减小。因此，我们移动数字较大的那个指针是不合理的。因此，我们移动 `数字较小的那个指针`。
+
+```java
+class Solution {
+    public int maxArea(int[] height) {
+        int ans = 0;
+        int left = 0;
+        int right = height.length - 1;
+        while (left < right) {
+            int temp = (right - left) * Math.min(height[left], height[right]);
+            if (temp > ans) {
+                ans = temp;
+            }
+            if (height[left] > height[right]) {
+                right--;
+            } else {
+                left++;
+            }
+        }
+        return ans;
+    }
+}
+```
+
+
+
 ##  Question 15 三数之和
 
 给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有满足条件且不重复的三元组。

@@ -46,6 +46,30 @@ Java容器类库是用来保存对象的，他有两种不同的概念：
 
 
 
+#### HashSet
+
+---
+
+​	HashSet这个类实现了Set集合，实际为一个HashMap的实例。对集合的迭代次序没有任何保证; 特别是，它不能保证订单会随着时间的推移保持不变。这个类允许`null` 元素。
+
+​	由于Set取值的时候是调用值本身来取值的，所以不能重复，如果重复了，根据值去取的时候就会不知道取哪一个。list是根据下标map是根据具体key取值
+
+​	无参数的构造函数，此构造函数创建一个大小为16的容器，加载因子为0.75（容器的大小始终是2的冥，默认为16不在赘述，在后面文章中介绍另外的构造函数，添加指定值的时候会介绍程序是如何保证始终是2的冥，透露一点如果我们传值为5的一个容器大写，那么创建的容器实际大小为8。
+
+```java
+//创建及访问
+HashSet<Integer> hashSet = new HashSet<>();
+for (int num : nums) {
+    hashSet.add(num);
+}
+hashSet.
+Iterator<Integer> iterator = hashSet.iterator();
+while (iterator.hasNext()) {
+    int val = iterator.next();
+}
+
+```
+
 
 
 #### Queue和Deque
@@ -137,6 +161,8 @@ for (Map.Entry<Integer, Integer> entry : hashMap.entrySet()) {}
 | [values()](https://www.runoob.com/java/java-hashmap-values.html) | 返回 hashMap 中存在的所有 value 值。                         |
 | [merge()](https://www.runoob.com/java/java-hashmap-merge.html) | 添加键值对到 hashMap 中                                      |
 | [compute()](https://www.runoob.com/java/java-hashmap-compute.html) | 对 hashMap 中指定 key 的值进行重新计算                       |
+
+
 
 
 
