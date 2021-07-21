@@ -2,6 +2,95 @@
 
 [TOC]
 
+
+
+## [23. 合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
+
+给你一个链表数组，每个链表都已经按升序排列。
+
+请你将所有链表合并到一个升序链表中，返回合并后的链表。
+
+ ```tex
+ 输入：lists = [[1,4,5],[1,3,4],[2,6]]
+ 输出：[1,1,2,3,4,4,5,6]
+ 解释：链表数组如下：
+ [
+   1->4->5,
+   1->3->4,
+   2->6
+ ]
+ 将它们合并到一个有序链表中得到。
+ 1->1->2->3->4->4->5->6
+ ```
+
+---
+
+解题思路:
+
+方法一: 顺序合并。以第一组为主链表，将后面的所有的链表依次插入第一组中，先插第二组，第二组插完再插第三组....以此类推。
+
+渐进时间复杂度为$ O(k^2 n)$
+
+方法二: 两路归并合并。每次选取两组进行合并，每轮合并结束剩下k/2个链表。
+
+渐进时间复杂度为 $O(nk\log k )$​
+
+```java
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        //二路归并
+        if (lists.length == 1) {
+            return lists[0];
+        }
+        if (lists.length == 0) {
+            return null;
+        }
+        int unSort = lists.length;
+        int mid = (lists.length + 1) / 2;
+        while (mid >= 1) {
+            for (int i = 0; i < unSort - mid; i++) {
+                lists[i] = twoMerge(lists[i], lists[mid + i]);
+            }
+            if (mid == 1) {
+                break;
+            }
+            unSort = mid;
+            mid = (unSort + 1) / 2;
+        }
+        return lists[0];
+    }
+    public ListNode twoMerge(ListNode a, ListNode b) {
+        if (a == null || b == null) {
+            return a != null ? a : b;
+        }
+
+        ListNode head = new ListNode(), tail = head, tempA = a, tempB = b;
+        while (tempA != null && tempB != null) {
+            if (tempA.val < tempB.val) {
+                tail.next = tempA;
+                tempA = tempA.next;
+                tail = tail.next;
+            } else {
+                tail.next = tempB;
+                tempB = tempB.next;
+                tail = tail.next;
+            }
+        }
+        if (tempA != null) {
+            tail.next = tempA;
+        }
+        if (tempB != null) {
+            tail.next = tempB;
+        }
+        return head.next;
+    }
+}
+```
+
+
+
+
+
 ## [41. 缺失的第一个正数](https://leetcode-cn.com/problems/first-missing-positive/)
 
 给你一个未排序的整数数组 `nums` ，请你找出其中没有出现的最小的正整数。
@@ -351,6 +440,82 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+## [239. 滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
+
+给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+
+返回滑动窗口中的最大值。
+
+```tex
+输入：nums = [1,3,-1,-3,5,3,6,7], k = 3
+输出：[3,3,5,5,6,7]
+解释：
+滑动窗口的位置                最大值
+---------------               -----
+[1  3  -1] -3  5  3  6  7       3
+ 1 [3  -1  -3] 5  3  6  7       3
+ 1  3 [-1  -3  5] 3  6  7       5
+ 1  3  -1 [-3  5  3] 6  7       5
+ 1  3  -1  -3 [5  3  6] 7       6
+ 1  3  -1  -3  5 [3  6  7]      7
+```
+
+---
+
+解题思路:
+
+方法一:大顶堆.时间复杂度：$O(n \log n)$
+
+方法二: 维护一个最大值队列。
+
+​	我们可以使用一个队列存储所有还没有被移除的下标。在队列中，这些下标按照从小到大的顺序被存储，并且它们在数组 nums 中对应的值是严格单调递减的。因为如果队列中有两个相邻的下标，它们对应的值相等或者递增，那么令前者为 i，后者为 j，就对应了上面所说的情况，即 nums[i] 会被移除，这就产生了矛盾。
+
+​	当滑动窗口向右移动时，我们需要把一个新的元素放入队列中。为了保持队列的性质，我们会不断地将新的元素与队尾的元素相比较，如果前者大于等于后者，那么队尾的元素就可以被永久地移除，我们将其弹出队列。我们需要不断地进行此项操作，直到队列为空或者新的元素小于队尾的元素。
+
+​	由于队列中下标对应的元素是严格单调递减的，因此此时队首下标对应的元素就是滑动窗口中的最大值。但与方法一中相同的是，此时的最大值可能在滑动窗口左边界的左侧，并且随着窗口向右移动，它永远不可能出现在滑动窗口中了。因此我们还需要不断从队首弹出元素，直到队首元素在窗口中为止。
+
+```java
+class Solution {
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums == null || nums.length < 2) {
+            return nums;
+        }
+        ArrayDeque<Integer> deque = new ArrayDeque<>();
+        int[] ans = new int[nums.length - k + 1];
+        for (int i = 0; i < k; i++) {
+            while (!deque.isEmpty() && nums[i] > nums[deque.peekLast()]) {
+                deque.pollLast();
+            }
+            deque.offerLast(i);
+        }
+        ans[0] = nums[deque.peekFirst()];
+        for (int i = k; i < nums.length; i++) {
+            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {
+                deque.pollLast();
+            }
+            deque.offerLast(i);
+            if (deque.peekFirst() < i - k + 1) {
+                deque.pollFirst();
+            }
+            ans[i - k + 1] = nums[deque.peekFirst()];
+        }
+        return ans;
+    }
+}
+```
+
+
+
+
+
+
+
+
 
 ## [287. 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/)
 
