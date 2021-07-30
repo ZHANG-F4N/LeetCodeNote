@@ -294,6 +294,116 @@ class Solution {
 
 
 
+## [148. 排序链表](https://leetcode-cn.com/problems/sort-list/)
+
+给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
+
+进阶：
+
+你可以在 *O(nlogn)* 时间复杂度和常数级空间复杂度下，对链表进行排序吗？
+
+![img](asset/Advanced algorithms.assets/sort_list_1-16276345893531.jpg)
+
+```tex
+输入：head = [4,2,1,3]
+输出：[1,2,3,4]
+```
+
+---
+
+解题思路：
+
+​	链表排序主要有快排和归并排序。时间复杂度 $ O(nlog_n) $​
+
+- 归并排序。统计结点个数，然后分割子串从 1到length 。可以用递归做，也可以递推。
+
+  ```JAVA
+  二路归并
+  step=1: (3->4)->(1->7)->(8->9)->(2->11)->(5->6)
+  step=2: (1->3->4->7)->(2->8->9->11)->(5->6)
+  step=4: (1->2->3->4->7->8->9->11)->(5->6)
+  step=8: (1->2->3->4->5->6->7->8->9->11)
+  ```
+
+- 快速排序。
+
+```java
+class Solution {
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode temp = head;
+        int length = 0;
+        while (temp != null) {
+            length++;
+            temp = temp.next;
+        }
+        int mergeNum = 1;
+        head = new ListNode(0, head);
+        while (mergeNum < length) {
+            ListNode preInsert = head;
+            temp = head.next;
+            while (temp != null) {
+                ListNode preChain = temp;
+
+                ListNode preNode = temp;
+                for (int i = 0; i < mergeNum && temp != null; i++) {
+                    preNode = temp;
+                    temp = temp.next;
+                }
+                preNode.next = null;
+                
+                ListNode retroChain = temp;
+                for (int i = 0; i < mergeNum && temp != null; i++) {
+                    preNode = temp;
+                    temp = temp.next;
+                }
+                preNode.next = null;
+                
+                preInsert.next = merge(preChain, retroChain);
+                ListNode tail = preInsert.next;
+                while (tail.next != null) {
+                    tail = tail.next;
+                }
+                tail.next = temp;
+                preInsert = tail;
+            }
+            mergeNum = mergeNum * 2;
+        }
+        return head.next;
+    }
+    public static ListNode merge(ListNode A, ListNode B) {
+        ListNode ans = new ListNode();
+        ListNode tail = ans;
+        if (A == null || B == null) {
+            return A == null ? B : A;
+        }
+        while (A != null && B != null) {
+            if (A.val < B.val) {
+                tail.next = A;
+                A = A.next;
+            } else {
+                tail.next = B;
+                B = B.next;
+            }
+            tail = tail.next;
+        }
+        while (A != null) {
+            tail.next = A;
+            return ans.next;
+        }
+        while (B != null) {
+            tail.next = B;
+            return ans.next;
+        }
+        return ans.next;
+    }
+}
+```
+
+
+
 ## [289. 生命游戏](https://leetcode-cn.com/problems/game-of-life/)
 
 根据 百度百科 ，生命游戏，简称为生命，是英国数学家约翰·何顿·康威在 1970 年发明的细胞自动机。
