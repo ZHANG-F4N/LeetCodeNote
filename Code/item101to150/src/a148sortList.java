@@ -2,16 +2,15 @@ import java.util.List;
 
 public class a148sortList {
     public static void main(String[] args) {
-        int[] nums = {-1,5,3,4,0};
+        int[] nums = {-1, 5, 3, 4, 0};
         ListNode head = new ListNode();
         ListNode tail = head;
         for (int i = 0; i < nums.length; i++) {
             tail.next = new ListNode(nums[i]);
             tail = tail.next;
         }
-
-
-        head = sortList(head.next);
+//        head = sortList(head.next);
+        head = quickSort(head.next);
 
         while (head != null) {
             System.out.println(head.val);
@@ -73,6 +72,52 @@ public class a148sortList {
 
         return head.next;
     }
+
+    // quickSort
+    public static ListNode quickSort(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+
+        ListNode pin = head;
+        head = head.next;
+
+        ListNode smallHead = new ListNode();
+        ListNode smallTail = smallHead;
+        ListNode bigHead = new ListNode();
+        ListNode bigTail =  bigHead;
+
+
+        while (head !=null){
+            ListNode nextTemp = head.next;
+            head.next = null;
+            if (head.val < pin.val){
+                smallTail.next = head;
+                smallTail = smallTail.next;
+            }else {
+                bigTail.next = head;
+                bigTail = bigTail.next;
+            }
+            head = nextTemp;
+        }
+        smallHead = quickSort(smallHead.next);
+        bigHead = quickSort(bigHead.next);
+
+        ListNode temp = smallHead;
+        if (temp == null){
+            pin.next = bigHead;
+            head = pin;
+        }else {
+            while (temp.next != null) {
+                temp = temp.next;
+            }
+            temp.next = pin;
+            pin.next = bigHead;
+            head = smallHead;
+        }
+        return head;
+    }
+
 
     //Merge
     public static ListNode merge(ListNode A, ListNode B) {

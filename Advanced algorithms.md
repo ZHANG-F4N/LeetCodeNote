@@ -294,6 +294,85 @@ class Solution {
 
 
 
+## [130. 被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/)
+
+给你一个 `m x n` 的矩阵 `board` ，由若干字符 `'X'` 和 `'O'` ，找到所有被 `'X'` 围绕的区域，并将这些区域里所有的 `'O'` 用 `'X'` 填充。
+
+![img](C:/Users/Administrator/Desktop/Project/LeetCodeNote/asset/Advanced%20algorithms.assets/xogrid.jpg)
+
+```java
+输入：board = [["X","X","X","X"],["X","O","O","X"],["X","X","O","X"],["X","O","X","X"]]
+输出：[["X","X","X","X"],["X","X","X","X"],["X","X","X","X"],["X","O","X","X"]]
+解释：被围绕的区间不会存在于边界上，换句话说，任何边界上的 'O' 都不会被填充为 'X'。 任何不在边界上，或不与边界上的 'O' 相连的 'O' 最终都会被填充为 'X'。如果两个元素在水平或垂直方向相邻，则称它们是“相连”的。
+```
+
+----
+
+解题思路：
+
+- DFS
+
+  这一题的重点是处理和边界相连的联通区域，所以可以从边界出发进行DFS，如果和边界相连，那么就先标记成`A`，搜索完之后，我们的矩阵中的`O`就是所有不在边界的`O`，只需要遍历修改即可。
+
+```java
+class Solution {
+    public void solve(char[][] board) {
+        int n = board.length;
+        int m = board[0].length;
+
+        //搜索左右边界
+        for (int i = 0; i < n; i++) {
+            if (board[i][0] == 'O') {
+                DFS(board, i, 0);
+            }
+            if (board[i][m - 1] == 'O') {
+                DFS(board, i, m - 1);
+            }
+        }
+        //搜索上下边界
+        for (int i = 0; i < m; i++) {
+            if (board[0][i] == 'O') {
+                DFS(board, 0, i);
+            }
+            if (board[n - 1][i] == 'O') {
+                DFS(board, n - 1, i);
+            }
+        }
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == 'O') {
+                    board[i][j] = 'X';
+                }
+                if (board[i][j] == 'A') {
+                    board[i][j] = 'O';
+                }
+            }
+        }
+
+    }
+    public void DFS(char[][] board, int i, int j) {
+        int n = board.length;
+        int m = board[0].length;
+        int[][] direct = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+        if (i < 0 || i >= n || j < 0 || j >= m ) {
+            return;
+        }
+        if (board[i][j] == 'O'){
+            board[i][j] = 'A';
+        }else {
+            return;
+        }
+        for (int k = 0; k < direct.length; k++) {
+            DFS(board,i+direct[k][0],j+direct[k][1]);
+        }
+    }
+}
+```
+
+
+
 ## [148. 排序链表](https://leetcode-cn.com/problems/sort-list/)
 
 给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
@@ -325,9 +404,58 @@ class Solution {
   step=8: (1->2->3->4->5->6->7->8->9->11)
   ```
 
-- 快速排序。
+- 快速排序。 选择基准后，重新创建两个链表，一个 存储比基准大的，一个存储比基准小的，然后递归快排这两个字串，然后合并即可。
 
 ```java
+//快排
+class Solution {
+    public ListNode sortList(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+
+        ListNode pin = head;
+        head = head.next;
+
+        ListNode smallHead = new ListNode();
+        ListNode smallTail = smallHead;
+        ListNode bigHead = new ListNode();
+        ListNode bigTail =  bigHead;
+
+        while (head !=null){
+            ListNode nextTemp = head.next;
+            head.next = null;
+            if (head.val < pin.val){
+                smallTail.next = head;
+                smallTail = smallTail.next;
+            }else {
+                bigTail.next = head;
+                bigTail = bigTail.next;
+            }
+            head = nextTemp;
+        }
+        smallHead = sortList(smallHead.next);
+        bigHead = sortList(bigHead.next);
+
+        ListNode temp = smallHead;
+        if (temp == null){
+            pin.next = bigHead;
+            head = pin;
+        }else {
+            while (temp.next != null) {
+                temp = temp.next;
+            }
+            temp.next = pin;
+            pin.next = bigHead;
+            head = smallHead;
+        }
+        return head;
+    }
+}
+```
+
+```java
+//归并
 class Solution {
     public ListNode sortList(ListNode head) {
         if (head == null || head.next == null) {
@@ -398,6 +526,69 @@ class Solution {
             return ans.next;
         }
         return ans.next;
+    }
+}
+```
+
+
+
+## [236. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+
+给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+
+![img](C:/Users/Administrator/Desktop/Project/LeetCodeNote/asset/Advanced%20algorithms.assets/binarytree.png)
+
+```java
+输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+输出：3
+解释：节点 5 和节点 1 的最近公共祖先是节点 3 。
+```
+
+---
+
+解题思路：
+
+- 搜索判断。
+
+  ​	递归遍历整棵二叉树，定义 $f_x$ 表示 x 节点的子树中是否包含 p 节点或 q 节点，如果包含为 true，否则为 false。那么符合条件的最近公共祖先 x 一定满足如下条件：
+
+$$
+(f_{\text{lson}}\ \&\&\ f_{\text{rson}})\ ||\ ((x\ =\ p\ ||\ x\ =\ q)\ \&\&\ (f_{\text{lson}}\ ||\ f_{\text{rson}}))
+$$
+
+​	其中 $\text{lson}$ 和$ \text{rson}$ 分别代表 x 节点的左孩子和右孩子。
+
+- 哈希表存储所有节点的父节点。
+
+  ​	查找所有节点的父节点，保存在HashMap中，然后搜索 p ，q 的父节点链表，然后查找两个链表相交点。
+
+```java
+class Solution {
+    public static TreeNode ans;
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+       if (root == null || root == p || root == q) {
+            return root;
+        }
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+
+        if (left != null && right != null){
+            return root;
+        }
+        return left == null? right:left;
+    }
+    public boolean judgeContains(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) {
+            return false;
+        }
+        boolean left = judgeContains(root.left, p, q);
+        boolean right = judgeContains(root.right, p, q);
+        if ((left && right) || (root == q || root == p) && (left || right)) {
+            ans = root;
+        }
+        return (left || right) || (root == q || root == p);
     }
 }
 ```
