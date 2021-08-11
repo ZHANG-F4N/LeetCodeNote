@@ -875,6 +875,104 @@ class Solution {
 
 
 
+
+
+## [329. 矩阵中的最长递增路径](https://leetcode-cn.com/problems/longest-increasing-path-in-a-matrix/)
+
+给定一个 m x n 整数矩阵 matrix ，找出其中 最长递增路径 的长度。
+
+对于每个单元格，你可以往上，下，左，右四个方向移动。 你 不能 在 对角线 方向上移动或移动到 边界外（即不允许环绕）。
+
+![img](C:/Users/Administrator/Desktop/Project/LeetCodeNote/asset/Advanced%20algorithms.assets/grid1-16281700382091.jpg)
+
+```
+输入：matrix = [[9,9,4],[6,6,8],[2,1,1]]
+输出：4 
+解释：最长递增路径为 [1, 2, 6, 9]。
+```
+
+---
+
+解题思路：
+
+- 深度优先搜索。
+
+  ​		深度优先搜索是非常直观的方法。从一个单元格开始进行深度优先搜索，即可找到从该单元格开始的最长递增路径。对每个单元格分别进行深度优先搜索之后，即可得到矩阵中的最长递增路径的长度。
+
+  ​		但是如果使用朴素深度优先搜索，时间复杂度是指数级，会超出时间限制，因此必须加以优化。使用lenMatrix [i]\[j]保存单元格(i , j )的最大路径长度。使用记忆化深度优先搜索，当访问到一个单元格 (i,j) 时，如果 $lenMatrix [i][j] \neq0$​​​，说明该单元格的结果已经计算过，则直接从缓存中读取结果。
+
+  ​		时间复杂度：*O(mn)*，其中 m 和 n 分别是矩阵的行数和列数。深度优先搜索的时间复杂度是O(V+E)，其中 V 是节点数，E 是边数。在矩阵中，O(V)=O(mn)，$O(E)\approx O(4mn) = O(mn)$。
+
+```java
+class Solution {
+    public int longestIncreasingPath(int[][] matrix) {
+        
+        int ans = 0;
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        int[][] lenMatrix = new int[rows][cols];
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                DFS(matrix, lenMatrix, i, j);
+                if (ans < lenMatrix[i][j]) {
+                    ans = lenMatrix[i][j];
+                }
+            }
+        }
+        return ans + 1;
+    }
+    public void DFS(int[][] matrix, int[][] lenMatrix, int i, int j) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        if (i < 0 || i >= rows || j < 0 || j >= cols) {
+            return;
+        }
+        if (lenMatrix[i][j] > 0) {
+            return;
+        }
+        
+        if (i + 1 < rows && matrix[i + 1][j] > matrix[i][j]) {
+            DFS(matrix, lenMatrix, i + 1, j);
+            lenMatrix[i][j] = Math.max(lenMatrix[i][j], lenMatrix[i + 1][j] + 1);
+        }
+        if (i - 1 >= 0 && matrix[i - 1][j] > matrix[i][j]) {
+            DFS(matrix, lenMatrix, i - 1, j);
+            lenMatrix[i][j] = Math.max(lenMatrix[i][j], lenMatrix[i - 1][j] + 1);
+        }
+        if (j + 1 < cols && matrix[i][j + 1] > matrix[i][j]) {
+            DFS(matrix, lenMatrix, i, j + 1);
+            lenMatrix[i][j] = Math.max(lenMatrix[i][j], lenMatrix[i][j + 1] + 1);
+        }
+        if (j - 1 >= 0 && matrix[i][j - 1] > matrix[i][j]) {
+            DFS(matrix, lenMatrix, i, j - 1);
+            lenMatrix[i][j] = Math.max(lenMatrix[i][j], lenMatrix[i][j - 1] + 1);
+        }
+        // 可以用下面的循环代替，会稍微慢一点点
+//      int[][] direct = {{-1, 0}, {1, 0}, {0, 1}, {0, -1}};
+//        for (int k = 0; k < direct.length; k++) {
+//            int dx = i + direct[k][0];
+//            int dy = j + direct[k][1];
+//            if (dx < 0 || dx >= rows || dy < 0 || dy >= cols) {
+//                continue;
+//            }
+//            if (matrix[dx][dy] > matrix[i][j]) {
+//                if (lenMatrix[dx][dy] == 0) {
+//                    DFS(matrix, lenMatrix, dx, dy);
+//                }
+//                lenMatrix[i][j] = Math.max(lenMatrix[i][j], lenMatrix[dx][dy] + 1);
+//            }
+//        }
+
+
+    }
+}
+```
+
+
+
+
+
 ## [454. 四数相加 II](https://leetcode-cn.com/problems/4sum-ii/)
 
 给定四个包含整数的数组列表 A , B , C , D ,计算有多少个元组 (i, j, k, l) ，使得 A[i] + B[j] + C[k] + D[l] = 0。
