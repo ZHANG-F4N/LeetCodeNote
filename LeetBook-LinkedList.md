@@ -12,7 +12,7 @@
 
 - 删除操作
 
-  <img src="C:/Users/Administrator/Desktop/Project/LeetCodeNote/asset/LeetBook-LinkedList.assets/screen-shot-2018-04-26-at-203558.png" alt="img" style="zoom:67%;" />
+  <img src="asset/LeetBook-LinkedList.assets/screen-shot-2018-04-26-at-203558-16287585297222.png" alt="img" style="zoom:67%;" />
 
   `prev.next = prev.next.next;`  
 
@@ -54,7 +54,7 @@ return false;   // change return value to fit specific problem
 
    如何判断相交点呢？
 
-   <img src="C:/Users/Administrator/Desktop/Project/LeetCodeNote/asset/LeetBook-LinkedList.assets/142_fig1.png" alt="fig1" style="zoom: 50%;" />
+   <img src="asset/LeetBook-LinkedList.assets/142_fig1-16287585366313.png" alt="fig1" style="zoom: 50%;" />
 
    ​		当个 fast指针 和 slow指针 相遇时，fast指针 走了$a  +b +n(b+c) $， slow指针 走了 $ a+b$ ，fast指针 由于每次走2步，所以$ a+b+n(b+c) = 2(a+b)$，可以导出$a = c+(n-1)(b+c)$。
 
@@ -88,7 +88,7 @@ val：一个表示 Node.val 的整数。
 random_index：随机指针指向的节点索引（范围从 0 到 n-1）；如果不指向任何节点，则为  null 。
 你的代码 只 接受原链表的头节点 head 作为传入参数。
 
-![img](C:/Users/Administrator/Desktop/Project/LeetCodeNote/asset/LeetBook-LinkedList.assets/e1.png)
+![img](asset/LeetBook-LinkedList.assets/e1-16287585390984.png)
 
 输入：head = [[7,null],[13,0],[11,4],[10,2],[1,0]]
 输出：[[7,null],[13,0],[11,4],[10,2],[1,0]]
@@ -146,7 +146,7 @@ class Solution {
 
 进阶：你是否可以使用 O(1) 空间解决此题？
 
-![img](C:/Users/Administrator/Desktop/Project/LeetCodeNote/asset/LeetBook-LinkedList.assets/circularlinkedlist.png)
+![img](asset/LeetBook-LinkedList.assets/circularlinkedlist-16287585418385.png)
 
 ```
 输入：head = [3,2,0,-4], pos = 1
@@ -193,7 +193,7 @@ public class Solution {
 
 给你一个链表的头节点 `head` 和一个整数 `val` ，请你删除链表中所有满足 `Node.val == val` 的节点，并返回 **新的头节点** 。
 
-![img](C:/Users/Administrator/Desktop/Project/LeetCodeNote/asset/LeetBook-LinkedList.assets/removelinked-list.jpg)
+![img](asset/LeetBook-LinkedList.assets/removelinked-list-16287585448936.jpg)
 
 ```java
 输入：head = [1,2,6,3,4,5,6], val = 6

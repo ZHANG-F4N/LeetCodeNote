@@ -179,6 +179,19 @@ for (Map.Entry<Integer, Integer> entry : hashMap.entrySet()) {}
 
 - 首先说运行速度，或者说是执行速度，**在这方面运行速度快慢为：StringBuilder > StringBuffer > String**
 
+- 我们知道每个类其基类都是Object，Object默认的equals方式是:
+
+  ```java
+  public boolean equals(Object obj) {
+      if (this == obj) {//先进行地址比较
+          return true;
+  }
+  ```
+
+  上面可以看出Object的equals方法比较两个对象的地址是否相等。
+
+  String中 `==`比较的是地址，`equals` 比较字符串的值。 StringBuilder 和 StringBuffer  的`equals`也都是使用地址比较。
+
 
 
 ## PriorityQueue 优先队列
