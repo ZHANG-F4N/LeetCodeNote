@@ -2,6 +2,95 @@
 
 [TOC]
 
+
+
+## [23. 合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
+
+给你一个链表数组，每个链表都已经按升序排列。
+
+请你将所有链表合并到一个升序链表中，返回合并后的链表。
+
+ ```tex
+ 输入：lists = [[1,4,5],[1,3,4],[2,6]]
+ 输出：[1,1,2,3,4,4,5,6]
+ 解释：链表数组如下：
+ [
+   1->4->5,
+   1->3->4,
+   2->6
+ ]
+ 将它们合并到一个有序链表中得到。
+ 1->1->2->3->4->4->5->6
+ ```
+
+---
+
+解题思路:
+
+方法一: 顺序合并。以第一组为主链表，将后面的所有的链表依次插入第一组中，先插第二组，第二组插完再插第三组....以此类推。
+
+渐进时间复杂度为$ O(k^2 n)$
+
+方法二: 两路归并合并。每次选取两组进行合并，每轮合并结束剩下k/2个链表。
+
+渐进时间复杂度为 $O(nk\log k )$​
+
+```java
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        //二路归并
+        if (lists.length == 1) {
+            return lists[0];
+        }
+        if (lists.length == 0) {
+            return null;
+        }
+        int unSort = lists.length;
+        int mid = (lists.length + 1) / 2;
+        while (mid >= 1) {
+            for (int i = 0; i < unSort - mid; i++) {
+                lists[i] = twoMerge(lists[i], lists[mid + i]);
+            }
+            if (mid == 1) {
+                break;
+            }
+            unSort = mid;
+            mid = (unSort + 1) / 2;
+        }
+        return lists[0];
+    }
+    public ListNode twoMerge(ListNode a, ListNode b) {
+        if (a == null || b == null) {
+            return a != null ? a : b;
+        }
+
+        ListNode head = new ListNode(), tail = head, tempA = a, tempB = b;
+        while (tempA != null && tempB != null) {
+            if (tempA.val < tempB.val) {
+                tail.next = tempA;
+                tempA = tempA.next;
+                tail = tail.next;
+            } else {
+                tail.next = tempB;
+                tempB = tempB.next;
+                tail = tail.next;
+            }
+        }
+        if (tempA != null) {
+            tail.next = tempA;
+        }
+        if (tempB != null) {
+            tail.next = tempB;
+        }
+        return head.next;
+    }
+}
+```
+
+
+
+
+
 ## [41. 缺失的第一个正数](https://leetcode-cn.com/problems/first-missing-positive/)
 
 给你一个未排序的整数数组 `nums` ，请你找出其中没有出现的最小的正整数。
@@ -205,6 +294,307 @@ class Solution {
 
 
 
+## [130. 被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/)
+
+给你一个 `m x n` 的矩阵 `board` ，由若干字符 `'X'` 和 `'O'` ，找到所有被 `'X'` 围绕的区域，并将这些区域里所有的 `'O'` 用 `'X'` 填充。
+
+![img](C:/Users/Administrator/Desktop/Project/LeetCodeNote/asset/Advanced%20algorithms.assets/xogrid.jpg)
+
+```java
+输入：board = [["X","X","X","X"],["X","O","O","X"],["X","X","O","X"],["X","O","X","X"]]
+输出：[["X","X","X","X"],["X","X","X","X"],["X","X","X","X"],["X","O","X","X"]]
+解释：被围绕的区间不会存在于边界上，换句话说，任何边界上的 'O' 都不会被填充为 'X'。 任何不在边界上，或不与边界上的 'O' 相连的 'O' 最终都会被填充为 'X'。如果两个元素在水平或垂直方向相邻，则称它们是“相连”的。
+```
+
+----
+
+解题思路：
+
+- DFS
+
+  这一题的重点是处理和边界相连的联通区域，所以可以从边界出发进行DFS，如果和边界相连，那么就先标记成`A`，搜索完之后，我们的矩阵中的`O`就是所有不在边界的`O`，只需要遍历修改即可。
+
+```java
+class Solution {
+    public void solve(char[][] board) {
+        int n = board.length;
+        int m = board[0].length;
+
+        //搜索左右边界
+        for (int i = 0; i < n; i++) {
+            if (board[i][0] == 'O') {
+                DFS(board, i, 0);
+            }
+            if (board[i][m - 1] == 'O') {
+                DFS(board, i, m - 1);
+            }
+        }
+        //搜索上下边界
+        for (int i = 0; i < m; i++) {
+            if (board[0][i] == 'O') {
+                DFS(board, 0, i);
+            }
+            if (board[n - 1][i] == 'O') {
+                DFS(board, n - 1, i);
+            }
+        }
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == 'O') {
+                    board[i][j] = 'X';
+                }
+                if (board[i][j] == 'A') {
+                    board[i][j] = 'O';
+                }
+            }
+        }
+
+    }
+    public void DFS(char[][] board, int i, int j) {
+        int n = board.length;
+        int m = board[0].length;
+        int[][] direct = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+        if (i < 0 || i >= n || j < 0 || j >= m ) {
+            return;
+        }
+        if (board[i][j] == 'O'){
+            board[i][j] = 'A';
+        }else {
+            return;
+        }
+        for (int k = 0; k < direct.length; k++) {
+            DFS(board,i+direct[k][0],j+direct[k][1]);
+        }
+    }
+}
+```
+
+
+
+## [148. 排序链表](https://leetcode-cn.com/problems/sort-list/)
+
+给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
+
+进阶：
+
+你可以在 *O(nlogn)* 时间复杂度和常数级空间复杂度下，对链表进行排序吗？
+
+![img](asset/Advanced algorithms.assets/sort_list_1-16276345893531.jpg)
+
+```tex
+输入：head = [4,2,1,3]
+输出：[1,2,3,4]
+```
+
+---
+
+解题思路：
+
+​	链表排序主要有快排和归并排序。时间复杂度 $ O(nlog_n) $​
+
+- 归并排序。统计结点个数，然后分割子串从 1到length 。可以用递归做，也可以递推。
+
+  ```JAVA
+  二路归并
+  step=1: (3->4)->(1->7)->(8->9)->(2->11)->(5->6)
+  step=2: (1->3->4->7)->(2->8->9->11)->(5->6)
+  step=4: (1->2->3->4->7->8->9->11)->(5->6)
+  step=8: (1->2->3->4->5->6->7->8->9->11)
+  ```
+
+- 快速排序。 选择基准后，重新创建两个链表，一个 存储比基准大的，一个存储比基准小的，然后递归快排这两个字串，然后合并即可。
+
+```java
+//快排
+class Solution {
+    public ListNode sortList(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+
+        ListNode pin = head;
+        head = head.next;
+
+        ListNode smallHead = new ListNode();
+        ListNode smallTail = smallHead;
+        ListNode bigHead = new ListNode();
+        ListNode bigTail =  bigHead;
+
+        while (head !=null){
+            ListNode nextTemp = head.next;
+            head.next = null;
+            if (head.val < pin.val){
+                smallTail.next = head;
+                smallTail = smallTail.next;
+            }else {
+                bigTail.next = head;
+                bigTail = bigTail.next;
+            }
+            head = nextTemp;
+        }
+        smallHead = sortList(smallHead.next);
+        bigHead = sortList(bigHead.next);
+
+        ListNode temp = smallHead;
+        if (temp == null){
+            pin.next = bigHead;
+            head = pin;
+        }else {
+            while (temp.next != null) {
+                temp = temp.next;
+            }
+            temp.next = pin;
+            pin.next = bigHead;
+            head = smallHead;
+        }
+        return head;
+    }
+}
+```
+
+```java
+//归并
+class Solution {
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode temp = head;
+        int length = 0;
+        while (temp != null) {
+            length++;
+            temp = temp.next;
+        }
+        int mergeNum = 1;
+        head = new ListNode(0, head);
+        while (mergeNum < length) {
+            ListNode preInsert = head;
+            temp = head.next;
+            while (temp != null) {
+                ListNode preChain = temp;
+
+                ListNode preNode = temp;
+                for (int i = 0; i < mergeNum && temp != null; i++) {
+                    preNode = temp;
+                    temp = temp.next;
+                }
+                preNode.next = null;
+                
+                ListNode retroChain = temp;
+                for (int i = 0; i < mergeNum && temp != null; i++) {
+                    preNode = temp;
+                    temp = temp.next;
+                }
+                preNode.next = null;
+                
+                preInsert.next = merge(preChain, retroChain);
+                ListNode tail = preInsert.next;
+                while (tail.next != null) {
+                    tail = tail.next;
+                }
+                tail.next = temp;
+                preInsert = tail;
+            }
+            mergeNum = mergeNum * 2;
+        }
+        return head.next;
+    }
+    public static ListNode merge(ListNode A, ListNode B) {
+        ListNode ans = new ListNode();
+        ListNode tail = ans;
+        if (A == null || B == null) {
+            return A == null ? B : A;
+        }
+        while (A != null && B != null) {
+            if (A.val < B.val) {
+                tail.next = A;
+                A = A.next;
+            } else {
+                tail.next = B;
+                B = B.next;
+            }
+            tail = tail.next;
+        }
+        while (A != null) {
+            tail.next = A;
+            return ans.next;
+        }
+        while (B != null) {
+            tail.next = B;
+            return ans.next;
+        }
+        return ans.next;
+    }
+}
+```
+
+
+
+## [236. 二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+
+给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+
+![img](C:/Users/Administrator/Desktop/Project/LeetCodeNote/asset/Advanced%20algorithms.assets/binarytree.png)
+
+```java
+输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+输出：3
+解释：节点 5 和节点 1 的最近公共祖先是节点 3 。
+```
+
+---
+
+解题思路：
+
+- 搜索判断。
+
+  ​	递归遍历整棵二叉树，定义 $f_x$ 表示 x 节点的子树中是否包含 p 节点或 q 节点，如果包含为 true，否则为 false。那么符合条件的最近公共祖先 x 一定满足如下条件：
+
+$$
+(f_{\text{lson}}\ \&\&\ f_{\text{rson}})\ ||\ ((x\ =\ p\ ||\ x\ =\ q)\ \&\&\ (f_{\text{lson}}\ ||\ f_{\text{rson}}))
+$$
+
+​	其中 $\text{lson}$ 和$ \text{rson}$ 分别代表 x 节点的左孩子和右孩子。
+
+- 哈希表存储所有节点的父节点。
+
+  ​	查找所有节点的父节点，保存在HashMap中，然后搜索 p ，q 的父节点链表，然后查找两个链表相交点。
+
+```java
+class Solution {
+    public static TreeNode ans;
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+       if (root == null || root == p || root == q) {
+            return root;
+        }
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+
+        if (left != null && right != null){
+            return root;
+        }
+        return left == null? right:left;
+    }
+    public boolean judgeContains(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) {
+            return false;
+        }
+        boolean left = judgeContains(root.left, p, q);
+        boolean right = judgeContains(root.right, p, q);
+        if ((left && right) || (root == q || root == p) && (left || right)) {
+            ans = root;
+        }
+        return (left || right) || (root == q || root == p);
+    }
+}
+```
+
+
+
 ## [289. 生命游戏](https://leetcode-cn.com/problems/game-of-life/)
 
 根据 百度百科 ，生命游戏，简称为生命，是英国数学家约翰·何顿·康威在 1970 年发明的细胞自动机。
@@ -352,6 +742,82 @@ class Solution {
 }
 ```
 
+
+
+
+
+## [239. 滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum/)
+
+给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+
+返回滑动窗口中的最大值。
+
+```tex
+输入：nums = [1,3,-1,-3,5,3,6,7], k = 3
+输出：[3,3,5,5,6,7]
+解释：
+滑动窗口的位置                最大值
+---------------               -----
+[1  3  -1] -3  5  3  6  7       3
+ 1 [3  -1  -3] 5  3  6  7       3
+ 1  3 [-1  -3  5] 3  6  7       5
+ 1  3  -1 [-3  5  3] 6  7       5
+ 1  3  -1  -3 [5  3  6] 7       6
+ 1  3  -1  -3  5 [3  6  7]      7
+```
+
+---
+
+解题思路:
+
+方法一:大顶堆.时间复杂度：$O(n \log n)$
+
+方法二: 维护一个最大值队列。
+
+​	我们可以使用一个队列存储所有还没有被移除的下标。在队列中，这些下标按照从小到大的顺序被存储，并且它们在数组 nums 中对应的值是严格单调递减的。因为如果队列中有两个相邻的下标，它们对应的值相等或者递增，那么令前者为 i，后者为 j，就对应了上面所说的情况，即 nums[i] 会被移除，这就产生了矛盾。
+
+​	当滑动窗口向右移动时，我们需要把一个新的元素放入队列中。为了保持队列的性质，我们会不断地将新的元素与队尾的元素相比较，如果前者大于等于后者，那么队尾的元素就可以被永久地移除，我们将其弹出队列。我们需要不断地进行此项操作，直到队列为空或者新的元素小于队尾的元素。
+
+​	由于队列中下标对应的元素是严格单调递减的，因此此时队首下标对应的元素就是滑动窗口中的最大值。但与方法一中相同的是，此时的最大值可能在滑动窗口左边界的左侧，并且随着窗口向右移动，它永远不可能出现在滑动窗口中了。因此我们还需要不断从队首弹出元素，直到队首元素在窗口中为止。
+
+```java
+class Solution {
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums == null || nums.length < 2) {
+            return nums;
+        }
+        ArrayDeque<Integer> deque = new ArrayDeque<>();
+        int[] ans = new int[nums.length - k + 1];
+        for (int i = 0; i < k; i++) {
+            while (!deque.isEmpty() && nums[i] > nums[deque.peekLast()]) {
+                deque.pollLast();
+            }
+            deque.offerLast(i);
+        }
+        ans[0] = nums[deque.peekFirst()];
+        for (int i = k; i < nums.length; i++) {
+            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {
+                deque.pollLast();
+            }
+            deque.offerLast(i);
+            if (deque.peekFirst() < i - k + 1) {
+                deque.pollFirst();
+            }
+            ans[i - k + 1] = nums[deque.peekFirst()];
+        }
+        return ans;
+    }
+}
+```
+
+
+
+
+
+
+
+
+
 ## [287. 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/)
 
 给定一个==包含 n + 1 个整数的数组 nums== ，其==数字都在 1 到 n 之间（包括 1 和 n）==，可知至少存在一个重复的整数。
@@ -406,6 +872,104 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+## [329. 矩阵中的最长递增路径](https://leetcode-cn.com/problems/longest-increasing-path-in-a-matrix/)
+
+给定一个 m x n 整数矩阵 matrix ，找出其中 最长递增路径 的长度。
+
+对于每个单元格，你可以往上，下，左，右四个方向移动。 你 不能 在 对角线 方向上移动或移动到 边界外（即不允许环绕）。
+
+![img](C:/Users/Administrator/Desktop/Project/LeetCodeNote/asset/Advanced%20algorithms.assets/grid1-16281700382091.jpg)
+
+```
+输入：matrix = [[9,9,4],[6,6,8],[2,1,1]]
+输出：4 
+解释：最长递增路径为 [1, 2, 6, 9]。
+```
+
+---
+
+解题思路：
+
+- 深度优先搜索。
+
+  ​		深度优先搜索是非常直观的方法。从一个单元格开始进行深度优先搜索，即可找到从该单元格开始的最长递增路径。对每个单元格分别进行深度优先搜索之后，即可得到矩阵中的最长递增路径的长度。
+
+  ​		但是如果使用朴素深度优先搜索，时间复杂度是指数级，会超出时间限制，因此必须加以优化。使用lenMatrix [i]\[j]保存单元格(i , j )的最大路径长度。使用记忆化深度优先搜索，当访问到一个单元格 (i,j) 时，如果 $lenMatrix [i][j] \neq0$​​​，说明该单元格的结果已经计算过，则直接从缓存中读取结果。
+
+  ​		时间复杂度：*O(mn)*，其中 m 和 n 分别是矩阵的行数和列数。深度优先搜索的时间复杂度是O(V+E)，其中 V 是节点数，E 是边数。在矩阵中，O(V)=O(mn)，$O(E)\approx O(4mn) = O(mn)$。
+
+```java
+class Solution {
+    public int longestIncreasingPath(int[][] matrix) {
+        
+        int ans = 0;
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        int[][] lenMatrix = new int[rows][cols];
+
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                DFS(matrix, lenMatrix, i, j);
+                if (ans < lenMatrix[i][j]) {
+                    ans = lenMatrix[i][j];
+                }
+            }
+        }
+        return ans + 1;
+    }
+    public void DFS(int[][] matrix, int[][] lenMatrix, int i, int j) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        if (i < 0 || i >= rows || j < 0 || j >= cols) {
+            return;
+        }
+        if (lenMatrix[i][j] > 0) {
+            return;
+        }
+        
+        if (i + 1 < rows && matrix[i + 1][j] > matrix[i][j]) {
+            DFS(matrix, lenMatrix, i + 1, j);
+            lenMatrix[i][j] = Math.max(lenMatrix[i][j], lenMatrix[i + 1][j] + 1);
+        }
+        if (i - 1 >= 0 && matrix[i - 1][j] > matrix[i][j]) {
+            DFS(matrix, lenMatrix, i - 1, j);
+            lenMatrix[i][j] = Math.max(lenMatrix[i][j], lenMatrix[i - 1][j] + 1);
+        }
+        if (j + 1 < cols && matrix[i][j + 1] > matrix[i][j]) {
+            DFS(matrix, lenMatrix, i, j + 1);
+            lenMatrix[i][j] = Math.max(lenMatrix[i][j], lenMatrix[i][j + 1] + 1);
+        }
+        if (j - 1 >= 0 && matrix[i][j - 1] > matrix[i][j]) {
+            DFS(matrix, lenMatrix, i, j - 1);
+            lenMatrix[i][j] = Math.max(lenMatrix[i][j], lenMatrix[i][j - 1] + 1);
+        }
+        // 可以用下面的循环代替，会稍微慢一点点
+//      int[][] direct = {{-1, 0}, {1, 0}, {0, 1}, {0, -1}};
+//        for (int k = 0; k < direct.length; k++) {
+//            int dx = i + direct[k][0];
+//            int dy = j + direct[k][1];
+//            if (dx < 0 || dx >= rows || dy < 0 || dy >= cols) {
+//                continue;
+//            }
+//            if (matrix[dx][dy] > matrix[i][j]) {
+//                if (lenMatrix[dx][dy] == 0) {
+//                    DFS(matrix, lenMatrix, dx, dy);
+//                }
+//                lenMatrix[i][j] = Math.max(lenMatrix[i][j], lenMatrix[dx][dy] + 1);
+//            }
+//        }
+
+
+    }
+}
+```
+
+
 
 
 
