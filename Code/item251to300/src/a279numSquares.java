@@ -38,7 +38,7 @@ public class a279numSquares {
         }
         return x % 8 == 7;
     }
-
+    //动态规划
     public static int numSquares(int n) {
         int[] dp = new int[n + 1];
         //Arrays.fill(dp, Integer.MAX_VALUE);
