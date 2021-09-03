@@ -2,6 +2,78 @@
 
 [TOC]
 
+
+
+
+
+
+
+## [165. 比较版本号](https://leetcode-cn.com/problems/compare-version-numbers/)
+
+给你两个版本号 version1 和 version2 ，请你比较它们。
+
+版本号由一个或多个修订号组成，各修订号由一个 '.' 连接。每个修订号由 多位数字 组成，可能包含 前导零 。每个版本号至少包含一个字符。修订号从左到右编号，下标从 0 开始，最左边的修订号下标为 0 ，下一个修订号下标为 1 ，以此类推。例如，2.5.33 和 0.1 都是有效的版本号。
+
+比较版本号时，请按从左到右的顺序依次比较它们的修订号。比较修订号时，只需比较 忽略任何前导零后的整数值 。也就是说，修订号 1 和修订号 001 相等 。如果版本号没有指定某个下标处的修订号，则该修订号视为 0 。例如，版本 1.0 小于版本 1.1 ，因为它们下标为 0 的修订号相同，而下标为 1 的修订号分别为 0 和 1 ，0 < 1 。
+
+返回规则如下：
+
+如果 version1 > version2 返回 1，
+如果 version1 < version2 返回 -1，
+除此之外返回 0。
+
+```java
+输入：version1 = "1.0", version2 = "1.0.0"
+输出：0
+解释：version1 没有指定下标为 2 的修订号，即视为 "0"
+```
+
+---
+
+解题思路：
+
+- 分割字符串后转为数字比较。
+- 可以使用双指针。
+
+```java
+class Solution {
+    public int compareVersion(String version1, String version2) {
+       String[] number1 = version1.split("\\.");
+        String[] number2 = version2.split("\\.");
+        int i = 0, j = 0;
+        while (i < number1.length && j < number2.length) {
+            int ver1 = Integer.parseInt(number1[i]);
+            int ver2 = Integer.parseInt(number2[j]);
+            if (ver1 > ver2) {
+                return 1;
+            } else if (ver1 < ver2) {
+                return -1;
+            }
+            i++;
+            j++;
+        }
+
+        while (i < number1.length) {
+            if (Integer.parseInt(number1[i]) != 0) {
+                return 1;
+            }
+            i++;
+        }
+        while (j < number2.length) {
+            if (Integer.parseInt(number2[j]) != 0) {
+                return -1;
+            }
+            j++;
+        }
+        return 0;
+    }
+}
+```
+
+
+
+
+
 ## [307. 区域和检索 - 数组可修改](https://leetcode-cn.com/problems/range-sum-query-mutable/)
 
 给你一个数组 nums ，请你完成两类查询，其中一类查询要求更新数组下标对应的值，另一类查询要求返回数组中某个范围内元素的总和。
