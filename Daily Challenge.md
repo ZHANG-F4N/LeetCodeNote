@@ -177,6 +177,121 @@ class NumArray {
  */
 ```
 
+## [470. 用 Rand7() 实现 Rand10()](https://leetcode-cn.com/problems/implement-rand10-using-rand7/)
+
+已有方法 rand7 可生成 1 到 7 范围内的均匀随机整数，试写一个方法 rand10 生成 1 到 10 范围内的均匀随机整数。
+
+不要使用系统的 Math.random() 方法。
+
+---
+
+解题思路：
+
+- 7进制+拒绝采样。
+
+  7进制解法，将用7进制映射到0-48；采用拒绝采样 ，使用0-39共40个数，取模。
+
+```java
+/**
+ * The rand7() API is already defined in the parent class SolBase.
+ * public int rand7();
+ * @return a random integer in the range 1 to 7
+ */
+class Solution extends SolBase {
+    public int rand10() {
+        // 7进制解法，将用7进制映射到0-48；
+        // 采用拒绝采样 ，使用0-39共40个数，取模。
+        int num1 = rand7()-1;
+        int num2 = rand7()-1;
+        int ans = num1*7 + num2;
+        while(ans >= 40){
+            num1 = rand7()-1;
+            num2 = rand7()-1;
+            ans = num1*7 + num2;
+        }
+        return (ans) % 10 +1;
+    }
+}
+```
+
+
+
+## [502. IPO](https://leetcode-cn.com/problems/ipo/)
+
+假设 力扣（LeetCode）即将开始 IPO 。为了以更高的价格将股票卖给风险投资公司，力扣 希望在 IPO 之前开展一些项目以增加其资本。 由于资源有限，它只能在 IPO 之前完成最多 k 个不同的项目。帮助 力扣 设计完成最多 k 个不同项目后得到最大总资本的方式。
+
+给你 n 个项目。对于每个项目 i ，它都有一个纯利润 profits[i] ，和启动该项目需要的最小资本 capital[i] 。
+
+最初，你的资本为 w 。当你完成一个项目时，你将获得纯利润，且利润将被添加到你的总资本中。
+
+总而言之，从给定项目中选择 最多 k 个不同项目的列表，以 最大化最终资本 ，并输出最终可获得的最多资本。
+
+答案保证在 32 位有符号整数范围内。
+
+```java
+输入：k = 2, w = 0, profits = [1,2,3], capital = [0,1,1]
+输出：4
+解释：
+由于你的初始资本为 0，你仅可以从 0 号项目开始。
+在完成后，你将获得 1 的利润，你的总资本将变为 1。
+此时你可以选择开始 1 号或 2 号项目。
+由于你最多可以选择两个项目，所以你需要完成 2 号项目以获得最大的资本。
+因此，输出最后最大化的资本，为 0 + 1 + 3 = 4。
+```
+
+---
+
+解题思路：
+
+- 贪心算法。和解决死锁问题的银行家算法一致，但是有许多编程上的技巧。
+
+  先排成本，从成本里可以启动的里面选利润最高的。
+
+  - 使用数组要比使用优先级队列`PriorityQueue`快的多。
+  - 可以快速分支，将一些简单情况直接处理，代码虽然长了，但是快了。
+
+```java
+class Solution {
+    public int findMaximizedCapital(int k, int w, int[] profits, int[] capital) {
+       // 快速分支-当初始资本可以开启所有项目时，从最赚钱的项目开始投资，用到优先队列
+        int n = profits.length;
+        boolean speedUp = true;
+        for (int i = 0; i < n; i++) {
+            if (w < capital[i]) {
+                speedUp = false;
+                break;
+            }
+        }
+        if (speedUp) {
+            Arrays.sort(profits);
+            for (int i = 0; i < Math.min(k, n); i++) {
+                w += profits[n - 1 - i];
+            }
+            return w;
+        }
+
+        for (int i = 0; i < Math.min(k, n); i++) {
+            //记录上一个最大资本的位置
+            int idx = -1;
+            for (int j = 0; j < n; j++) {
+                if (w >= capital[j]) {
+                    if (idx == -1) {
+                        idx = j;
+                    } else if (profits[j] > profits[idx]) {
+                        idx = j;
+                    }
+                }
+            }
+            if (idx == -1) break;
+            w += profits[idx];
+            //使用过的项目置为最大
+            capital[idx] = Integer.MAX_VALUE;
+        }
+        return w;
+    }
+}
+```
+
 
 
 

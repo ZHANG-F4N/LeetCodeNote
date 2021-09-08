@@ -172,6 +172,111 @@ class Solution {
 }
 ```
 
+## [剑指 Offer 26. 树的子结构](https://leetcode-cn.com/problems/shu-de-zi-jie-gou-lcof/)
+
+输入两棵二叉树A和B，判断B是不是A的子结构。(约定空树不是任意一个树的子结构)
+
+B是A的子结构， 即 A中有出现和B相同的结构和节点值。
+
+
+
+    例如:
+    给定的树 A:  
+      3
+     / \
+    4   5
+       / \
+      1   2
+    给定的树 B：
+       4 
+      /
+     1
+    返回 true，因为 B 与 A 的一个子树拥有相同的结构和节点值。
+---
+
+解题思路：
+
+​	若树 B 是树 A 的子结构，则子结构的根节点可能为树 A 的任意一个节点。因此，判断树 B 是否是树 A 的子结构，需完成以下两步工作：
+
+- 先序遍历树 A 中的每个节点 $n_A$ 对应函数 isSubStructure(A, B)
+- 判断树 A 中 以 $n_A$为根节点的子树 是否包含树 B 。（对应函数 recur(A, B)）
+
+```java
+class Solution {
+    public boolean isSubStructure(TreeNode A, TreeNode B) {
+        if (A == null || B == null) {
+            return false;
+        }
+
+        return recur(A, B) || (isSubStructure(A.left, B) || isSubStructure(A.right, B));
+    }
+    public  boolean recur(TreeNode A, TreeNode B) {
+        if (B == null) {
+            return true;
+        } else if (A == null) {
+            return false;
+        }
+
+        if (A.val != B.val) {
+            return false;
+        } else {
+            return recur(A.left, B.left) && recur(A.right, B.right);
+        }
+    }
+}
+```
+
+## [剑指 Offer 28. 对称的二叉树](https://leetcode-cn.com/problems/dui-cheng-de-er-cha-shu-lcof/)
+
+
+
+请实现一个函数，用来判断一棵二叉树是不是对称的。如果一棵二叉树和它的镜像一样，那么它是对称的。
+
+例如，二叉树 [1,2,2,3,4,4,3] 是对称的。
+
+        1
+       / \
+      2   2
+     / \ / \
+    3  4 4  3
+
+但是下面这个 [1,2,2,null,3,null,3] 则不是镜像对称的:
+
+        1
+       / \
+      2   2
+       \   \
+       3    3
+---
+
+解题思路：
+
+递归判断。
+
+- 判断两节点 `L.left` 和 `R.right` 是否对称；
+- 判断两节点 `L.right` 和 `R.left` 是否对称；
+
+```java
+class Solution {
+    public boolean isSymmetric(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        return judge(root.left, root.right);
+    }
+    public boolean judge(TreeNode left, TreeNode right) {
+        if (left == null && right == null) {
+            return true;
+        }
+        if (left != null && right != null && left.val == right.val) {
+            return judge(left.left, right.right) && judge(left.right, right.left);
+        } else {
+            return false;
+        }
+    }
+}
+```
+
 
 
 ## [剑指 Offer 30. 包含min函数的栈](https://leetcode-cn.com/problems/bao-han-minhan-shu-de-zhan-lcof/)
