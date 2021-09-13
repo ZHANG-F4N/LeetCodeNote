@@ -1,4 +1,4 @@
-public class a327oddEvenList {
+public class a328oddEvenList {
     public static void main(String[] args) {
         int[] head = {1, 2, 3, 4, 5};
         ListNode start = new ListNode(0);
