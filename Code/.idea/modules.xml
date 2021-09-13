@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Contest/Contest.iml" filepath="$PROJECT_DIR$/Contest/Contest.iml" />
       <module fileurl="file://$PROJECT_DIR$/Interview/Interview.iml" filepath="$PROJECT_DIR$/Interview/Interview.iml" />
       <module fileurl="file://$PROJECT_DIR$/Item201to250/Item201to250.iml" filepath="$PROJECT_DIR$/Item201to250/Item201to250.iml" />
       <module fileurl="file://$PROJECT_DIR$/LeetBook-LinkedList/LeetBook-LinkedList.iml" filepath="$PROJECT_DIR$/LeetBook-LinkedList/LeetBook-LinkedList.iml" />

@@ -388,3 +388,111 @@ class Solution {
 }
 ```
 
+
+
+## [剑指 Offer 46. 把数字翻译成字符串](https://leetcode-cn.com/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/)
+
+给定一个数字，我们按照如下规则把它翻译为字符串：0 翻译成 “a” ，1 翻译成 “b”，……，11 翻译成 “l”，……，25 翻译成 “z”。一个数字可能有多个翻译。请编程实现一个函数，用来计算一个数字有多少种不同的翻译方法。
+
+```java
+示例 1:
+输入: 12258
+输出: 5
+解释: 12258有5种不同的翻译，分别是"bccfi", "bwfi", "bczi", "mcfi"和"mzi"
+```
+
+---
+
+解题思路：
+
+- 动态规划。
+  $$
+  dp[i] = \begin{cases}
+  dp[i-1]+dp[i-2],& 10\le x_i x_{i-1} \le25 \\
+  dp[i-1],&else \\
+  \end{cases}
+  $$
+  
+
+```java
+class Solution {
+    public int translateNum(int num) {
+        String str = String.valueOf(num);
+        int n = str.length();
+        if (n == 1) {
+            return 1;
+        }
+        if (n == 2) {
+            if (num <= 25) {
+                return 2;
+            }
+            return 1;
+        }
+        int[] dp = new int[str.length()];
+        dp[0] = 1;
+        int temp = Integer.parseInt(str.substring(0, 2));
+        dp[1] = temp <= 25  && temp >= 10? 2 : 1;
+        for (int i = 2; i < n; i++) {
+            temp = Integer.parseInt(str.substring(i - 1, i + 1));
+            if (temp >= 10 && temp <= 25) {
+                dp[i] = dp[i - 1] + dp[i - 2];
+            } else {
+                dp[i] = dp[i - 1];
+            }
+        }
+        return dp[n - 1];
+    }
+}
+```
+
+
+
+## [剑指 Offer 48. 最长不含重复字符的子字符串](https://leetcode-cn.com/problems/zui-chang-bu-han-zhong-fu-zi-fu-de-zi-zi-fu-chuan-lcof/)
+
+请从字符串中找出一个最长的不包含重复字符的子字符串，计算该最长子字符串的长度。
+
+```java
+示例 1:
+输入: "abcabcbb"
+输出: 3 
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+```
+
+---
+
+解题思路：
+
+- 双指针+哈希表。
+
+  哈希表存储字符最后一次出现的索引，遍历字符串，双指针统计`最长不含重复字符`的子串。
+
+  右指针依次遍历每个字符。
+
+  当右指针指向的元素在前面出现过时，更新左指针。$$left = Math.max(hashMap.get(ch) + 1, left);$$
+
+```java
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+         HashMap<Character, Integer> hashMap = new HashMap<>();
+        if (s.length() == 0) {
+            return 0;
+        }
+        int max = 1;
+        int left = 0;
+        int right = 0;
+        while (right < s.length()) {
+            char ch = s.charAt(right);
+            if (hashMap.containsKey(ch)) {
+                left = Math.max(hashMap.get(ch) + 1, left);
+                hashMap.replace(ch, right);
+            } else {
+                hashMap.put(ch, right);
+            }
+            max = max > right - left + 1 ? max : right - left + 1;
+            right++;
+        }
+        return max;
+    }
+}
+```
+

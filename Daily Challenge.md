@@ -4,7 +4,123 @@
 
 
 
+## [68. 文本左右对齐](https://leetcode-cn.com/problems/text-justification/)
 
+给定一个单词数组和一个长度 maxWidth，重新排版单词，使其成为每行恰好有 maxWidth 个字符，且左右两端对齐的文本。
+
+你应该使用“贪心算法”来放置给定的单词；也就是说，尽可能多地往每行中放置单词。必要时可用空格 ' ' 填充，使得每行恰好有 maxWidth 个字符。
+
+要求尽可能均匀分配单词间的空格数量。如果某一行单词间的空格不能均匀分配，则左侧放置的空格数要多于右侧的空格数。
+
+文本的最后一行应为左对齐，且单词之间不插入额外的空格。
+
+说明:
+
+单词是指由非空格字符组成的字符序列。
+每个单词的长度大于 0，小于等于 maxWidth。
+输入单词数组 words 至少包含一个单词。
+
+```java
+输入:
+words = ["Science","is","what","we","understand","well","enough","to","explain",
+         "to","a","computer.","Art","is","everything","else","we","do"]
+maxWidth = 20
+输出:
+[
+  "Science  is  what we",
+  "understand      well",
+  "enough to explain to",
+  "a  computer.  Art is",
+  "everything  else  we",
+  "do                  "
+]
+```
+
+---
+
+解题思路：
+
+- 模拟。
+  - 先统计一行会==最多==多少个单词。
+  - 然后均匀处理。
+
+```java
+// 模拟，又臭又长
+class Solution {
+    public List<String> fullJustify(String[] words, int maxWidth) {
+        StringBuilder temp = new StringBuilder();
+        List<String> list = new ArrayList<>();
+
+        int index = 0;
+        int i = 0;
+        int[] coordinate = new int[maxWidth];
+        while (index < words.length) {
+            // 判断加上下一个单词会不会超出范围
+            //  如果第一个单词就达到边界，需要特殊处理
+            // 因为除过最后一个单词，其他单词后面默认加一个空格
+            // 计算时要注意加一处理
+            if (temp.length() + words[index].length() >= maxWidth) {
+                if (temp.length() == 0){
+                    coordinate[i++] = words[index].length();
+                    temp.append(words[index++]);
+                    list.add(adjust(temp, maxWidth, Arrays.copyOfRange(coordinate, 0, i)).toString());
+                    //调整均匀
+                    i = 0;
+                    temp = new StringBuilder();
+                    continue;
+                }
+                list.add(adjust(temp, maxWidth, Arrays.copyOfRange(coordinate, 0, i)).toString());
+                //调整均匀
+                i = 0;
+                temp = new StringBuilder();
+            }
+            if (temp.length() != 0) {
+                temp.append(' ');
+            }
+            if (index >= words.length) {
+                break;
+            }
+            coordinate[i++] = words[index].length();
+            temp.append(words[index++]);
+        }
+        if (temp.length() != 0){
+            while (temp.length() < maxWidth) {
+                temp.append(' ');
+            }
+            list.add(temp.toString());
+        }
+        return list;
+    }
+    public StringBuilder adjust(StringBuilder str, int maxWidth, int[] coordinate) {
+        //n个位置添加空格
+        int n = coordinate.length - 1;
+        // 需要添加的空格个数
+        int space = maxWidth - str.length();
+        //平均每个位置add个空格
+        if (n == 0) {
+             while (str.length() < maxWidth) {
+                str.append(' ');
+            }
+            return str;
+        }
+        int add = space / n;
+        // 左侧需要额外添加空格的位置
+        int left = space - (n * add);
+        // 下一个添加空格的位置
+        int nextSpace = coordinate[0];
+        for (int i = 0; i < n; i++) {
+            if (i < left) {
+                str.insert(nextSpace++, ' ');
+            }
+            for (int j = 0; j < add; j++) {
+                str.insert(nextSpace++, ' ');
+            }
+            nextSpace += coordinate[i+1]+1;
+        }
+        return str;
+    }
+}
+```
 
 
 
@@ -176,6 +292,57 @@ class NumArray {
  * int param_2 = obj.sumRange(left,right);
  */
 ```
+
+
+
+## [447. 回旋镖的数量](https://leetcode-cn.com/problems/number-of-boomerangs/)
+
+给定平面上 n 对 互不相同 的点 points ，其中 points[i] = [xi, yi] 。回旋镖 是由点 (i, j, k) 表示的元组 ，其中 i 和 j 之间的距离和 i 和 k 之间的距离相等（需要考虑元组的顺序）。
+
+返回平面上所有回旋镖的数量。
+
+```java
+输入：points = [[0,0],[1,0],[2,0]]
+输出：2
+解释：两个回旋镖为 [[1,0],[0,0],[2,0]] 和 [[1,0],[2,0],[0,0]]
+```
+
+---
+
+解题思路:
+
+- 枚举 + 哈希表。
+
+  ​	题目所描述的回旋镖可以视作一个 V 型的折线。我们可以枚举每个 points[i]，将其当作 V 型的拐点。设 points 中有 m 个点到 points[i] 的距离均相等，我们需要从这 m 点中选出 2 个点当作回旋镖的 2 个端点，由于题目要求考虑元组的顺序，因此方案数即为在 m 个元素中选出 22 个不同元素的排列数，即：$A_m^2 = m\cdot(m-1)$
+
+  ​	我们可以遍历 points，计算并统计所有点到 points[i] 的距离，将每个距离的出现次数记录在哈希表中，然后遍历哈希表，并用上述公式计算并累加回旋镖的个数。
+
+```java
+class Solution {
+    public int numberOfBoomerangs(int[][] points) {
+        int res = 0;
+        for (int[] point : points) {
+
+            HashMap<Integer, Integer> hashMap = new HashMap<>();
+
+            for (int[] ints : points) {
+                int dis = (point[0] - ints[0]) * (point[0] - ints[0]) + (point[1] - ints[1]) * (point[1] - ints[1]);
+                hashMap.put(dis, hashMap.getOrDefault(dis, 0) + 1);
+            }
+
+            for (Map.Entry<Integer, Integer> en : hashMap.entrySet()) {
+
+                res += en.getValue() * (en.getValue() - 1);
+            }
+        }
+        return res;
+    }
+}
+```
+
+
+
+
 
 ## [470. 用 Rand7() 实现 Rand10()](https://leetcode-cn.com/problems/implement-rand10-using-rand7/)
 
