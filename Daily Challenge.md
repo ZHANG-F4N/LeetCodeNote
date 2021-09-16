@@ -459,6 +459,81 @@ class Solution {
 }
 ```
 
+## [524. 通过删除字母匹配到字典里最长单词](https://leetcode-cn.com/problems/longest-word-in-dictionary-through-deleting/)
+
+给你一个字符串 `s` 和一个字符串数组 `dictionary` 作为字典，找出并返回字典中最长的字符串，该字符串可以通过删除 `s` 中的某些字符得到。
+
+如果答案不止一个，返回长度最长且字典序最小的字符串。如果答案不存在，则返回空字符串。
+
+**示例 1：**
+
+```
+输入：s = "abpcplea", dictionary = ["ale","apple","monkey","plea"]
+输出："apple"
+```
+
+---
+
+解题思路:
+
+- 双指针+排序
+
+  我们初始化两个指针 i 和 j，分别指向 t 和 s 的初始位置。每次贪心地匹配，匹配成功则 i 和 j 同时右移，匹配 t 的下一个位置，匹配失败则 j 右移，i 不变，尝试用 s 的下一个字符匹配 t。
+
+  最终如果 i 移动到 t 的末尾，则说明 t 是 s 的子序列。
+
+  我们可以先将 dictionary 依据字符串长度的降序和字典序的升序进行排序，然后从前向后找到第一个符合条件的字符串直接返回即可。
+
+
+```java
+class Solution {
+    public String findLongestWord(String s, List<String> dictionary) {
+         String ans = "{";
+        for (int i = 0; i < dictionary.size(); i++) {
+            String str = dictionary.get(i);
+            if (judge(s, str)) {
+                if (ans.length() < str.length()) {
+                    ans = str;
+                    continue;
+                }
+                if (ans.length() == str.length() && ans.compareTo(str) > 0) {
+                    ans = str;
+                }
+            }
+        }
+        if (ans.equals("{")) {
+            return "";
+        }
+        return ans;
+    }
+    public boolean judge(String str, String sub) {
+        int index1 = 0;
+        int index2 = 0;
+        int M = str.length() - 1;
+        int N = sub.length() - 1;
+        while (index1 <= M && index2 <= N) {
+            if (str.charAt(index1) == sub.charAt(index2)) {
+                index1++;
+                index2++;
+                continue;
+            }
+            while (index1 <= M && str.charAt(index1) != sub.charAt(index2)) {
+                index1++;
+            }
+            if (index1 > M && index2 <= N) {
+                return false;
+            }
+        }
+        if (index1 > M && index2 <= N) {
+            return false;
+        }
+        return true;
+    }
+}
+```
+
+
+
 
 
 
