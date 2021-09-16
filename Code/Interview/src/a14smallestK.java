@@ -1,12 +1,14 @@
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.PriorityQueue;
 
 public class a14smallestK {
     public static void main(String[] args) {
         int[] arr = {1, 3, 5, 7, 2, 4, 6, 8};
         int k = 4;
-        System.out.println(Arrays.toString(smallestK2(arr, k)));
+        //System.out.println(Arrays.toString(smallestK2(arr, k)));
+        System.out.println(firstUniqChar("loveleetcode"));
     }
 
     //快排实现
@@ -72,5 +74,20 @@ public class a14smallestK {
             ans[i] = priorityQueue.poll();
         }
         return ans;
+    }
+
+    public static char firstUniqChar(String s) {
+
+        HashMap<Character, Integer> num = new HashMap<>();
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            num.put(s.charAt(i), num.getOrDefault(s.charAt(i), 0)+1);
+        }
+        for (int i = 0; i < n; i++) {
+            if (num.get(s.charAt(i)) == 1){
+                return s.charAt(i);
+            }
+        }
+        return ' ';
     }
 }

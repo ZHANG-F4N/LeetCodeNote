@@ -17,6 +17,7 @@ public class a641MyCircularDeque {
         boolean param_2 = obj.insertLast(2);
         obj.insertLast(3);
         obj.insertLast(4);
+        param_2 =obj.insertLast(5);
         boolean param_3 = obj.deleteFront();
         boolean param_4 = obj.deleteLast();
         int param_5 = obj.getFront();
@@ -85,7 +86,7 @@ public class a641MyCircularDeque {
             if (tail == head) {
                 return false;
             }
-            tail = (tail - 1) % (size - 1);
+            tail = (tail - 1) % (size + 1);
             return true;
         }
 
