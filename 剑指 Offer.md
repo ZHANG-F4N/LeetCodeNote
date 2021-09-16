@@ -336,6 +336,71 @@ class MinStack {
 
 
 
+## [剑指 Offer 34. 二叉树中和为某一值的路径](https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/)
+
+输入一棵二叉树和一个整数，打印出二叉树中节点值的和为输入整数的所有路径。从树的根节点开始往下一直到叶节点所经过的节点形成一条路径。
+
+```java
+示例:
+给定如下二叉树，以及目标和 target = 22，
+              5
+             / \
+            4   8
+           /   / \
+          11  13  4
+         /  \    / \
+        7    2  5   1
+返回:
+[
+   [5,4,11,2],
+   [5,8,4,5]
+]
+```
+
+---
+
+解题思路:
+
+- DFS
+- BFS
+
+```java
+class Solution {
+    public List<List<Integer>> pathSum(TreeNode root, int target) {
+        List<Integer> list = new ArrayList<>();
+        List<List<Integer>> ans = new ArrayList<>();
+        DFS(root, list, target, 0, ans);
+        return ans;
+    }
+    public  void DFS(TreeNode root, List<Integer> list, int tar, int sum, List<List<Integer>> ans) {
+        if (root == null ) {
+            return;
+        }
+        // if (root.val + sum == tar && (root.left != null || root.right != null)) {
+        //     return;
+        // }
+        if (root.val + sum == tar && root.left == null && root.right == null) {
+            list.add(root.val);
+            List<Integer> temp = new ArrayList<Integer>();
+            Iterator<Integer> it = list.iterator();
+            while (it.hasNext()) {
+                temp.add(it.next());
+            }
+            ans.add(temp);
+            list.remove(list.size() - 1);
+            return;
+        }
+        list.add(root.val);
+        DFS(root.left, list, tar, sum + root.val, ans);
+        DFS(root.right, list, tar, sum + root.val, ans);
+        list.remove(list.size() - 1);
+
+    }
+}
+```
+
+
+
 
 
 ## [剑指 Offer 35. 复杂链表的复制](https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/)
@@ -384,6 +449,54 @@ class Solution {
         }
         return ans.next;
 
+    }
+}
+```
+
+## [剑指 Offer 45. 把数组排成最小的数](https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/)
+
+输入一个非负整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
+
+```python
+输入: [3,30,34,5,9]
+输出: "3033459"
+```
+
+---
+
+解题思路:
+
+- 重写排序。
+
+  设数组 nums 中任意两数字的字符串为 x 和 y ，则规定 排序判断规则 为：
+
+  若拼接字符串 x + y > y + x ，则 x “大于” y ；
+  反之，若 x + y < y + x，则 x “小于” y ；
+  x “小于” y 代表：排序完成后，数组中 x 应在 y 左边；“大于” 则反之。
+
+  根据以上规则，套用任何排序方法对 numsnums 执行排序即可。
+
+
+```java
+class Solution {
+    public String minNumber(int[] nums) {
+        String[] number = new String[nums.length];
+        for (int i = 0; i < number.length; i++) {
+            number[i] = String.valueOf(nums[i]);
+        }
+        Arrays.sort(number, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                String s1 = o1 + o2;
+                String s2 = o2 + o1;
+                return s1.compareTo(s2);
+            }
+        });
+        StringBuilder ans = new StringBuilder();
+        for (String s : number) {
+            ans.append(s);
+        }
+        return ans.toString();
     }
 }
 ```
@@ -443,6 +556,147 @@ class Solution {
         return dp[n - 1];
     }
 }
+```
+
+
+
+## [剑指 Offer 36. 二叉搜索树与双向链表](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/)
+
+输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的循环双向链表。要求不能创建任何新的节点，只能调整树中节点指针的指向。
+
+为了让您更好地理解问题，以下面的二叉搜索树为例：
+
+<img src="asset/%E5%89%91%E6%8C%87%20Offer.assets/1599401091-PKIjds-Picture1.png" alt="Picture1.png" style="zoom:67%;" />
+
+我们希望将这个二叉搜索树转化为双向循环链表。链表中的每个节点都有一个前驱和后继指针。对于双向循环链表，第一个节点的前驱是最后一个节点，最后一个节点的后继是第一个节点。
+
+下图展示了上面的二叉搜索树转化成的链表。“head” 表示指向链表中有最小元素的节点。
+
+特别地，我们希望可以就地完成转换操作。当转化完成以后，树中节点的左指针需要指向前驱，树中节点的右指针需要指向后继。还需要返回链表中的第一个节点的指针。
+
+---
+
+解题思路:
+
+- 中序遍历，中序遍历排序二叉树，所得的结果序列递增。所以选择中序遍历，在遍历过程中修改指针。
+
+```java
+class Solution {
+    static Node pre, head;
+    public Node treeToDoublyList(Node root) {
+        if (root == null) {
+            return null;
+        }
+        pre= null;
+        head = null;
+        midOrder(root);
+        head.left = pre;
+        pre.right = head;
+        return head;
+    }
+    public void midOrder(Node root) {
+        if (root == null) {
+            return;
+        }
+        midOrder(root.left);
+//      1. 修改前一个节点的后 为当前节点
+//      2. 修改当前节点的前 为前一个节点
+//      3. 更新当前节点为前一个节点
+        if (pre != null) {
+            pre.right = root;
+        } else {
+            head = root;
+        }
+        root.left = pre;
+
+        pre = root;
+        midOrder(root.right);
+
+    }
+}
+```
+
+## [剑指 Offer 41. 数据流中的中位数](https://leetcode-cn.com/problems/shu-ju-liu-zhong-de-zhong-wei-shu-lcof/)
+
+如何得到一个数据流中的中位数？如果从数据流中读出奇数个数值，那么中位数就是所有数值排序之后位于中间的数值。如果从数据流中读出偶数个数值，那么中位数就是所有数值排序之后中间两个数的平均值。
+
+例如，
+
+[2,3,4] 的中位数是 3
+
+[2,3] 的中位数是 (2 + 3) / 2 = 2.5
+
+设计一个支持以下两种操作的数据结构：
+
+void addNum(int num) - 从数据流中添加一个整数到数据结构中。
+double findMedian() - 返回目前所有元素的中位数。
+
+```java
+示例 1：
+输入：
+["MedianFinder","addNum","addNum","findMedian","addNum","findMedian"]
+[[],[1],[2],[],[3],[]]
+输出：[null,null,null,1.50000,null,2.00000]
+```
+
+---
+
+解题思路:
+
+- 大顶堆 + 小顶堆。
+
+  建立一个 小顶堆 AA 和 大顶堆 BB ，各保存列表的一半元素，且规定：
+
+  - A 保存 较大 的一半，长度为 $\frac{N}{2}$ （N 为偶数）或 $\frac{N+1}{2}$ （N为奇数）;
+
+  - BB 保存 较小 的一半，长度为 $\frac{N}{2}$ （N 为偶数）或 $\frac{N-1}{2} $（NN 为奇数）；
+
+    随后，中位数可仅根据 A,B 的堆顶元素计算得到。
+
+```java
+class MedianFinder {
+    /** initialize your data structure here. */
+    private PriorityQueue<Integer> smallHeap;
+        private PriorityQueue<Integer> bigHeap;
+    public MedianFinder() {
+        smallHeap = new PriorityQueue<>();
+            bigHeap = new PriorityQueue<>(new Comparator<Integer>() {
+                @Override
+                public int compare(Integer o1, Integer o2) {
+                    return o2 - o1;
+                }
+            });
+    }
+    public void addNum(int num) {
+        if (bigHeap.isEmpty() || num <= bigHeap.peek()) {
+                bigHeap.offer(num);
+            } else {
+                smallHeap.offer(num);
+            }
+            int N1 = bigHeap.size();
+            int N2 = smallHeap.size();
+            if (N1 - N2 > 1) {
+                smallHeap.offer(bigHeap.poll());
+            }
+            if (N1 - N2 <= -1) {
+                bigHeap.offer(smallHeap.poll());
+            }
+    }
+    public double findMedian() {
+        int N1 = bigHeap.size();
+            int N2 = smallHeap.size();
+            if (N1 == N2) {
+                return ((double) smallHeap.peek() + bigHeap.peek()) / 2;
+            }
+            return bigHeap.peek();
+    }
+}
+/**
+ * Your MedianFinder object will be instantiated and called as such:
+ * MedianFinder obj = new MedianFinder();
+ * obj.addNum(num);
+ * double param_2 = obj.findMedian();
+ */
 ```
 
 

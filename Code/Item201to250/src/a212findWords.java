@@ -3,23 +3,22 @@ import java.util.List;
 
 public class a212findWords {
     public static void main(String[] args) {
-//        char[][] board = {
-//                {'o', 'a', 'a', 'n'},
-//                {'e', 't', 'a', 'e'},
-//                {'i', 'h', 'k', 'r'},
-//                {'i', 'f', 'l', 'v'}
-//        };
-//        String[] words = {"oath", "pea", "eat", "rain"};
-
         char[][] board = {
-                {'a'}
+                {'o', 'a', 'a', 'n'},
+                {'e', 't', 'a', 'e'},
+                {'i', 'h', 'k', 'r'},
+                {'i', 'f', 'l', 'v'}
         };
-        String[] words = {"a"};
+        String[] words = {"oath", "pea", "eat", "rain"};
+
+//        char[][] board = {
+//                {'a'}
+//        };
+//        String[] words = {"a"};
         findWords2Trie(board, words);
-
-
     }
 
+    //=====================================================================
     //Trie字典树解决
     //DFS 可以解决，但超时
     public static List<String> findWords2Trie(char[][] board, String[] words) {
