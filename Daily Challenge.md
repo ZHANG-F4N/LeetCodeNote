@@ -188,6 +188,78 @@ class Solution {
 
 
 
+## [300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+
+给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+
+子序列是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+
+```java
+输入：nums = [10,9,2,5,3,7,101,18]
+输出：4
+解释：最长递增子序列是 [2,3,7,101]，因此长度为 4 。
+```
+
+---
+
+解题思路:
+
+- 动态规划。O(N^2)
+
+  *dp*[*i*]=max(*dp*[*j*])+1,其中0≤*j*<*i*且*num*[*j*]<*num*[*i*]
+
+- 动态规划 + 二分。O(NlogN)
+
+```java
+//动态规划 + 二分。O(NlogN)
+	// dp+二分
+    // 我们考虑维护一个列表 tails，
+    // 其中每个元素 tails[k] 的值代表 长度为 k+1 的子序列尾部元素的值。
+    // nums     10  9   2   5   3   7  21  18
+    // index    0   1   2   3   4   5   6
+    // tails    10  5   7   21
+    //          9   3       18
+    //          2
+    // tails 的长度就是答案
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[] tails = new int[nums.length];
+        int res = 0;
+        for(int num : nums) {
+            int i = 0, j = res;
+            while(i < j) {
+                int m = (i + j) / 2;
+                if(tails[m] < num) i = m + 1;
+                else j = m;
+            }
+            tails[i] = num;
+            if(res == j) res++;
+        }
+        return res;
+    }
+}
+//动态规划
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[] dp = new int[nums.length];
+        int ans = 1;
+        dp[0] = 1;
+        for (int i = 1; i < nums.length; i++) {
+            int max = 0;
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    max = max > dp[j] ? max : dp[j];
+                }
+            }
+            dp[i] = max + 1;
+            ans = ans > dp[i] ? ans : dp[i];
+        }
+        return ans;
+    }
+}
+
+```
+
 
 
 ## [307. 区域和检索 - 数组可修改](https://leetcode-cn.com/problems/range-sum-query-mutable/)
@@ -291,6 +363,63 @@ class NumArray {
  * obj.update(index,val);
  * int param_2 = obj.sumRange(left,right);
  */
+```
+
+## [430. 扁平化多级双向链表](https://leetcode-cn.com/problems/flatten-a-multilevel-doubly-linked-list/)
+
+多级双向链表中，除了指向下一个节点和前一个节点指针之外，它还有一个子链表指针，可能指向单独的双向链表。这些子列表也可能会有一个或多个自己的子项，依此类推，生成多级数据结构，如下面的示例所示。
+
+给你位于列表第一级的头节点，请你扁平化列表，使所有结点出现在单级双链表中。
+
+示例:
+
+<img src="asset/Daily%20Challenge.assets/multilevellinkedlist.png" alt="img" style="zoom:67%;" />
+
+扁平化后:
+
+![img](asset/Daily%20Challenge.assets/multilevellinkedlistflattened.png)
+
+---
+
+解题思路:
+
+- 顺序遍历。
+
+  当遇到一个含有子链表的节点时，先把子链表插入到当前节点的后面，不用处理子链表包含的子链表。
+
+  当连接之后，继续顺序访问，依次处理，就可以将所有子链表顺序化。
+
+```java
+class Solution {
+    public Node flatten(Node head) {
+        if(head == null){
+            return null;
+        }
+        Node temp = head;
+        while(temp != null){
+            if(temp.child == null){
+                temp = temp.next;
+                continue;
+            }
+            Node subHead = temp.child;
+            Node subEnd = temp.child;
+            while(subEnd.next!=null){
+                subEnd = subEnd.next;
+            }
+            subHead.prev = temp;
+            subEnd.next = temp.next;
+            Node tempNext = temp.next;
+            temp.next = subHead;
+            if(tempNext!=null){
+                tempNext.prev = subEnd;
+            }
+            
+            temp.child= null;
+            temp = temp.next;
+        }
+        return head;
+    }
+}
 ```
 
 
@@ -528,6 +657,78 @@ class Solution {
             return false;
         }
         return true;
+    }
+}
+```
+
+
+
+## [725. 分隔链表](https://leetcode-cn.com/problems/split-linked-list-in-parts/)
+
+给你一个头结点为 head 的单链表和一个整数 k ，请你设计一个算法将链表分隔为 k 个连续的部分。
+
+每部分的长度应该尽可能的相等：任意两部分的长度差距不能超过 1 。这可能会导致有些部分为 null 。
+
+这 k 个部分应该按照在链表中出现的顺序排列，并且排在前面的部分的长度应该大于或等于排在后面的长度。
+
+返回一个由上述 k 部分组成的数组。
+
+```java
+输入：head = [1,2,3], k = 5
+输出：[[1],[2],[3],[],[]]
+解释：
+第一个元素 output[0] 为 output[0].val = 1 ，output[0].next = null 。
+最后一个元素 output[4] 为 null ，但它作为 ListNode 的字符串表示是 [] 。
+```
+
+```java
+输入：head = [1,2,3,4,5,6,7,8,9,10], k = 3
+输出：[[1,2,3,4],[5,6,7],[8,9,10]]
+解释：
+输入被分成了几个连续的部分，并且每部分的长度相差不超过 1 。前面部分的长度大于等于后面部分的长度。
+```
+
+---
+
+解题思路:
+
+- 分隔链表时，注意一些微操作。
+  - 在切断链表时，需要前一个节点的指针，可以手动添加一个头结点简化操作。
+  - 在处理 `每部分的长度相差不超过 1` 时,可以使用下标操作。
+
+```java
+class Solution {
+    public ListNode[] splitListToParts(ListNode head, int k) {
+        ListNode temp = head;
+        int count = 0;
+        while (temp != null) {
+            count++;
+            temp = temp.next;
+        }
+
+        int nodeNum = count / k;
+        int residue = count - nodeNum * k - 1;
+
+        temp = head;
+
+        ListNode[] ans = new ListNode[k];
+        for (int i = 0; i < k; i++) {
+            int num = nodeNum;
+            if (i <= residue) {
+                num = num + 1;
+            }
+
+            ListNode node = new ListNode();
+            node.next = temp;
+            ListNode pre = node;
+            for (int j = 0; j < num && temp != null; j++) {
+                pre = temp;
+                temp = temp.next;
+            }
+            pre.next = null;
+            ans[i] = node.next;
+        }
+        return ans;
     }
 }
 ```

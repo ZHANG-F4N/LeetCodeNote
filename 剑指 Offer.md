@@ -42,6 +42,58 @@ class Solution {
 }
 ```
 
+## [剑指 Offer II 55. 平衡二叉树](https://leetcode-cn.com/problems/ping-heng-er-cha-shu-lcof/)
+
+输入一棵二叉树的根节点，判断该树是不是平衡二叉树。如果某二叉树中任意节点的左右子树的深度相差不超过1，那么它就是一棵平衡二叉树。
+
+ 
+
+示例 1:
+
+给定二叉树 [3,9,20,null,null,15,7]
+
+    	3
+       / \
+      9  20
+        /  \
+       15   7
+    返回 true 。
+---
+
+解题思路:
+
+- 自底而上递归。
+
+  自底向上递归的做法类似于后序遍历，对于当前遍历到的节点，先递归地判断其左右子树是否平衡，再判断以当前节点为根的子树是否平衡。如果一棵子树是平衡的，则返回其高度（高度一定是非负整数），否则返回 -1。如果存在一棵子树不平衡，则整个二叉树一定不平衡。
+
+
+```java
+class Solution {
+    static boolean ans = true;
+    public boolean isBalanced(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        ans = true;
+        DFS(root);
+        return ans;
+    }
+    public int DFS(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int left = DFS(root.left);
+        int right = DFS(root.right);
+        if (ans && Math.abs(left - right) <= 1) {
+            return Math.max(left, right) + 1;
+        } else {
+            ans = false;
+            return -1;
+        }
+    }
+}
+```
+
 
 
 ## [剑指 Offer 06. 从尾到头打印链表](https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/)
@@ -134,6 +186,75 @@ class CQueue {
  * int param_2 = obj.deleteHead();
  */
 ```
+
+## [剑指 Offer 14- I. 剪绳子](https://leetcode-cn.com/problems/jian-sheng-zi-lcof/)
+
+给你一根长度为 n 的绳子，请把绳子剪成整数长度的 m 段（m、n都是整数，n>1并且m>1），每段绳子的长度记为 k[0],k[1]...k[m-1] 。请问 k[0]*k[1]*...*k[m-1] 可能的最大乘积是多少？例如，当绳子的长度是8时，我们把它剪成长度分别为2、3、3的三段，此时得到的最大乘积是18。
+
+```java
+示例 1：
+输入: 2
+输出: 1
+解释: 2 = 1 + 1, 1 × 1 = 1
+    
+示例 2:
+输入: 10
+输出: 36
+解释: 10 = 3 + 3 + 4, 3 × 3 × 4 = 36
+```
+
+---
+
+解题思路:
+
+- 数学推理。
+
+  设将长度为 n 的绳子切为 a 段：
+  $n = n_1 + n_2 + ... + n_a$ 本题等价于求解：$\max(n_1 \times n_2 \times ... \times n_a)$
+
+  以下公式为“算术几何均值不等式” ，等号当且仅当 $n_1 = n_2 = ... = n_a $时成立。$\frac{n_1 + n_2 + ... + n_a}{a} \geq \sqrt[a]{n_1 n_2 ... n_a}$
+
+  > **推论一：** 将绳子 **以相等的长度等分为多段** ，得到的乘积最大。
+
+  即就是求下式的最值，求导后得最值点为 x = e，取最近的整数点3。
+  $$
+  x^a=x^{\frac {x}{n}}=(x^{\frac {1}{x}})^n
+  $$
+
+  > **推论二：** 尽可能将绳子以长度 33 等分为多段时，乘积最大。
+
+  当 n≤3 时，按照规则应不切分，但由于题目要求必须剪成 m>1 段，因此必须剪出一段长度为 1 的绳子，即返回 n - 1 。
+  当 n>3 时，求 n 除以 3 的 整数部分 a 和 余数部分 b （即 n = 3a + b），并分为以下三种情况：
+  当 b = 0 时，直接返回 $3^a $
+
+  当 b = 1 时，要将一个 1 + 3 转换为 2+2，因此返回 $3^{a-1} \times 4$
+
+  当 b = 2 时，返回 $3^a \times 2$
+
+- 动态规划。
+
+```java
+class Solution {
+    public int cuttingRope(int n) {
+        if (n <= 3) {
+            return n - 1;
+        }
+        int residue = n % 3;
+        int quotient = n / 3;
+        if (residue == 0) {
+            return (int) (Math.pow(3,quotient));
+        } else if (residue == 1) {
+            return (int) (Math.pow(3,quotient-1))*4;
+        } else {
+            return (int) (Math.pow(3,quotient)) *2 ;
+        }
+    }
+}
+```
+
+
+
+
 
 
 
@@ -334,6 +455,77 @@ class MinStack {
 }
 ```
 
+## [剑指 Offer 31. 栈的压入、弹出序列](https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/)
+
+入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如，序列 {1,2,3,4,5} 是某栈的压栈序列，序列 {4,5,3,2,1} 是该压栈序列对应的一个弹出序列，但 {4,3,5,1,2} 就不可能是该压栈序列的弹出序列。
+
+```
+输入：pushed = [1,2,3,4,5], popped = [4,5,3,2,1]
+输出：true
+解释：我们可以按以下顺序执行：
+push(1), push(2), push(3), push(4), pop() -> 4,
+push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
+
+输入：pushed = [1,2,3,4,5], popped = [4,3,5,1,2]
+输出：false
+解释：1 不能在 2 之前弹出。
+```
+
+---
+
+解题思路：
+
+- 模拟。创建一个栈，用出栈顺序和进栈顺序可以模拟是否可以为一个弹出序列。
+
+```java
+class Solution {
+    public boolean validateStackSequences(int[] pushed, int[] popped) {
+        if (pushed.length == 0) {
+            return true;
+        }
+        Stack<Integer> stack = new Stack<>();
+        int pushIndex = 0;
+        int popIndex = 0;
+        while (pushIndex < pushed.length && popIndex < popped.length) {
+            if (stack.empty()) {
+                stack.push(pushed[pushIndex++]);
+            }
+            while (pushIndex < pushed.length && stack.peek() != popped[popIndex]) {
+                stack.push(pushed[pushIndex++]);
+            }
+            while (popIndex < popped.length && !stack.empty() && stack.peek() == popped[popIndex]) {
+                popIndex++;
+                stack.pop();
+            }
+            if (stack.empty() && popIndex == popped.length) {
+                return true;
+            }
+            if (pushIndex == pushed.length && !stack.empty()) {
+                return false;
+            }
+        }
+        return false;
+    }
+}
+class Solution {
+    public boolean validateStackSequences(int[] pushed, int[] popped) {
+        Stack<Integer> stack = new Stack<>();
+        int i = 0;
+        for(int num : pushed) {
+            stack.push(num); // num 入栈
+            while(!stack.isEmpty() && stack.peek() == popped[i]) { // 循环判断与出栈
+                stack.pop();
+                i++;
+            }
+        }
+        return stack.isEmpty();
+    }
+}
+
+
+
+```
+
 
 
 ## [剑指 Offer 34. 二叉树中和为某一值的路径](https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/)
@@ -453,6 +645,66 @@ class Solution {
 }
 ```
 
+
+
+## [剑指 Offer 36. 二叉搜索树与双向链表](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/)
+
+输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的循环双向链表。要求不能创建任何新的节点，只能调整树中节点指针的指向。
+
+为了让您更好地理解问题，以下面的二叉搜索树为例：
+
+<img src="asset/%E5%89%91%E6%8C%87%20Offer.assets/1599401091-PKIjds-Picture1.png" alt="Picture1.png" style="zoom:67%;" />
+
+我们希望将这个二叉搜索树转化为双向循环链表。链表中的每个节点都有一个前驱和后继指针。对于双向循环链表，第一个节点的前驱是最后一个节点，最后一个节点的后继是第一个节点。
+
+下图展示了上面的二叉搜索树转化成的链表。“head” 表示指向链表中有最小元素的节点。
+
+特别地，我们希望可以就地完成转换操作。当转化完成以后，树中节点的左指针需要指向前驱，树中节点的右指针需要指向后继。还需要返回链表中的第一个节点的指针。
+
+---
+
+解题思路:
+
+- 中序遍历，中序遍历排序二叉树，所得的结果序列递增。所以选择中序遍历，在遍历过程中修改指针。
+
+```java
+class Solution {
+    static Node pre, head;
+    public Node treeToDoublyList(Node root) {
+        if (root == null) {
+            return null;
+        }
+        pre= null;
+        head = null;
+        midOrder(root);
+        head.left = pre;
+        pre.right = head;
+        return head;
+    }
+    public void midOrder(Node root) {
+        if (root == null) {
+            return;
+        }
+        midOrder(root.left);
+//      1. 修改前一个节点的后 为当前节点
+//      2. 修改当前节点的前 为前一个节点
+//      3. 更新当前节点为前一个节点
+        if (pre != null) {
+            pre.right = root;
+        } else {
+            head = root;
+        }
+        root.left = pre;
+
+        pre = root;
+        midOrder(root.right);
+
+    }
+}
+```
+
+
+
 ## [剑指 Offer 45. 把数组排成最小的数](https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/)
 
 输入一个非负整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
@@ -559,62 +811,6 @@ class Solution {
 ```
 
 
-
-## [剑指 Offer 36. 二叉搜索树与双向链表](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/)
-
-输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的循环双向链表。要求不能创建任何新的节点，只能调整树中节点指针的指向。
-
-为了让您更好地理解问题，以下面的二叉搜索树为例：
-
-<img src="asset/%E5%89%91%E6%8C%87%20Offer.assets/1599401091-PKIjds-Picture1.png" alt="Picture1.png" style="zoom:67%;" />
-
-我们希望将这个二叉搜索树转化为双向循环链表。链表中的每个节点都有一个前驱和后继指针。对于双向循环链表，第一个节点的前驱是最后一个节点，最后一个节点的后继是第一个节点。
-
-下图展示了上面的二叉搜索树转化成的链表。“head” 表示指向链表中有最小元素的节点。
-
-特别地，我们希望可以就地完成转换操作。当转化完成以后，树中节点的左指针需要指向前驱，树中节点的右指针需要指向后继。还需要返回链表中的第一个节点的指针。
-
----
-
-解题思路:
-
-- 中序遍历，中序遍历排序二叉树，所得的结果序列递增。所以选择中序遍历，在遍历过程中修改指针。
-
-```java
-class Solution {
-    static Node pre, head;
-    public Node treeToDoublyList(Node root) {
-        if (root == null) {
-            return null;
-        }
-        pre= null;
-        head = null;
-        midOrder(root);
-        head.left = pre;
-        pre.right = head;
-        return head;
-    }
-    public void midOrder(Node root) {
-        if (root == null) {
-            return;
-        }
-        midOrder(root.left);
-//      1. 修改前一个节点的后 为当前节点
-//      2. 修改当前节点的前 为前一个节点
-//      3. 更新当前节点为前一个节点
-        if (pre != null) {
-            pre.right = root;
-        } else {
-            head = root;
-        }
-        root.left = pre;
-
-        pre = root;
-        midOrder(root.right);
-
-    }
-}
-```
 
 ## [剑指 Offer 41. 数据流中的中位数](https://leetcode-cn.com/problems/shu-ju-liu-zhong-de-zhong-wei-shu-lcof/)
 
@@ -749,4 +945,35 @@ class Solution {
     }
 }
 ```
+
+## [剑指 Offer 64. 求1+2+…+n](https://leetcode-cn.com/problems/qiu-12n-lcof/)
+
+求 1+2+...+n ，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
+
+```java
+示例 1：
+输入: n = 3
+输出: 6
+```
+
+---
+
+解题思路:
+
+- 递归。
+
+  不使用循环时，递归是一个很好的办法，但是要求不使用if语句，所以难点是处理递归出口，解决办法是利用`&&`的短路运算性质。
+
+```java
+class Solution {
+    public int sumNums(int n) {
+        boolean flag = n > 0 && (n += sumNums(n - 1)) > 0;
+        return n;
+    }
+}
+```
+
+
+
+
 
