@@ -122,6 +122,72 @@ class Solution {
 }
 ```
 
+## [91. 解码方法](https://leetcode-cn.com/problems/decode-ways/)
+
+一条包含字母 A-Z 的消息通过以下映射进行了 编码 ：
+
+'A' -> 1
+'B' -> 2
+...
+'Z' -> 26
+要 解码 已编码的消息，所有数字必须基于上述映射的方法，反向映射回字母（可能有多种方法）。例如，"11106" 可以映射为：
+
+"AAJF" ，将消息分组为 (1 1 10 6)
+"KJF" ，将消息分组为 (11 10 6)
+注意，消息不能分组为  (1 11 06) ，因为 "06" 不能映射为 "F" ，这是由于 "6" 和 "06" 在映射中并不等价。
+
+给你一个只含数字的 非空 字符串 s ，请计算并返回 解码 方法的 总数 。
+
+题目数据保证答案肯定是一个 32 位 的整数。
+
+```
+输入：s = "226"
+输出：3
+解释：它可以解码为 "BZ" (2 26), "VF" (22 6), 或者 "BBF" (2 2 6) 。
+输入：s = "06"
+输出：0
+解释："06" 不能映射到 "F" ，因为字符串含有前导 0（"6" 和 "06" 在映射中并不等价）。
+```
+
+---
+
+解题思路:
+
+- 动态规划。
+
+  ![image.png](asset/Daily%20Challenge.assets/c09dc70d3085792b2b8417843e297f6841fd12f921b0e4fe28a2c4a8dc86dd1e-image.png)
+
+```java
+class Solution {
+    public int numDecodings(String s) {
+        //含前导0就返回false
+        int N = s.length();
+        if (N == 0 || s.charAt(0) == '0') {
+            return 0;
+        }
+        int dp[] = new int[N + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 1; i < N; i++) {
+            char prCh = s.charAt(i - 1);
+            char ch = s.charAt(i);
+            if (ch == '0') {
+                if (prCh == '2' || prCh == '1') {
+                    dp[i + 1] = dp[i - 1];
+                } else {
+                    return 0;
+                }
+            } else if (prCh == '1' || (ch <= '6' && ch > '0') && prCh == '2') {
+                dp[i + 1] = dp[i] + dp[i - 1];
+            } else {
+                dp[i + 1] = dp[i];
+            }
+        }
+        return dp[N];
+    }
+}
+```
+
 
 
 ## [165. 比较版本号](https://leetcode-cn.com/problems/compare-version-numbers/)
@@ -587,6 +653,76 @@ class Solution {
     }
 }
 ```
+
+## [517. 超级洗衣机](https://leetcode-cn.com/problems/super-washing-machines/)
+
+假设有 n 台超级洗衣机放在同一排上。开始的时候，每台洗衣机内可能有一定量的衣服，也可能是空的。
+
+在每一步操作中，你可以选择任意 m (1 <= m <= n) 台洗衣机，与此同时将每台洗衣机的一件衣服送到相邻的一台洗衣机。
+
+给定一个整数数组 machines 代表从左至右每台洗衣机中的衣物数量，请给出能让所有洗衣机中剩下的衣物的数量相等的 最少的操作步数 。如果不能使每台洗衣机中衣物的数量相等，则返回 -1 。
+
+```java
+示例 1：
+
+输入：machines = [1,0,5]
+输出：3
+解释：
+第一步:    1     0 <-- 5    =>    1     1     4
+第二步:    1 <-- 1 <-- 4    =>    2     1     3    
+第三步:    2     1 <-- 3    =>    2     2     2   
+```
+
+---
+
+阶梯思路:
+
+- 贪心算法。
+
+  将前 *i* 台洗衣机看成一组，记作 *A*，其余洗衣机看成另一组，记作 *B*。
+
+  再构造两个数组 
+
+  - sum -- 表示前i个洗衣机总共 缺了少了或多了多少件衣服。
+  - status -- 表示位置i的洗衣机需要或多了 machine[i] - avg件衣服。
+
+  组间 : A 与 B 两组之间的衣服，最多需要 $\max_{i=0}^{n-1}|\textit{sum}[i]$ 次衣服移动；
+
+  组内 : 某一台洗衣机内的衣服数量过多，需要向左右两侧移出衣服，这最多需要 $\max_{i=0}^{n-1}\textit{machines}[i]$次衣服移动。
+
+```java
+class Solution {
+    public int findMinMoves(int[] machines) {
+        int N = machines.length;
+        int count = 0;
+        count = Arrays.stream(machines).sum();
+//        for (int machine : machines) {
+//            count += machine;
+//        }
+        if (count % N != 0) {
+            return -1;
+        }
+        int ans = 0;
+        int status = 0;
+        int sum = 0;
+        int average = count / N;
+        for (int i = 0; i < N; i++) {
+            status = machines[i] - average;
+            sum += status;
+            ans = Math.max(ans, Math.max(status, Math.abs(sum)));
+        }
+        return ans;
+    }   
+}
+```
+
+
+
+
+
+
+
+
 
 ## [524. 通过删除字母匹配到字典里最长单词](https://leetcode-cn.com/problems/longest-word-in-dictionary-through-deleting/)
 

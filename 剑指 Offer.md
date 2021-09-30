@@ -946,6 +946,112 @@ class Solution {
 }
 ```
 
+## [剑指 Offer 49. 丑数](https://leetcode-cn.com/problems/chou-shu-lcof/)
+
+我们把只包含质因子 2、3 和 5 的数称作丑数（Ugly Number）。求按从小到大的顺序的第 n 个丑数。
+
+```java
+示例:
+输入: n = 10
+输出: 12
+解释: 1, 2, 3, 4, 5, 6, 8, 9, 10, 12 是前 10 个丑数。
+```
+
+---
+
+解题思路:
+
+- 动态规划。 和选择素数一样，只需要从1开始，选择所有丑数的2 、 3 、5 倍数，自然就是丑数，当需要顺序找到第几个时，需要用三个指针来判断顺序。
+
+```java
+class Solution {
+    public int nthUglyNumber(int n) {
+        if (n == 1) {
+            return 1;
+        }
+
+        int[] flag = new int[n + 1];
+        flag[1] = 1;
+        int p2 = 1;
+        int p3 = 1;
+        int p5 = 1;
+        for (int i = 2; i <= n; i++) {
+            int num2 = flag[p2] * 2;
+            int num3 = flag[p3] * 3;
+            int num5 = flag[p5] * 5;
+            int min = Math.min(num2, Math.min(num3, num5));
+            flag[i] = min;
+            if (min == num2) {
+                p2++;
+            }
+            if (min == num3) {
+                p3++;
+            }
+            if (min == num5) {
+                p5++;
+            }
+        }
+        return flag[n];
+    }
+}
+```
+
+
+
+
+
+## [剑指 Offer 60. n个骰子的点数](https://leetcode-cn.com/problems/nge-tou-zi-de-dian-shu-lcof/)
+
+把n个骰子扔在地上，所有骰子朝上一面的点数之和为s。输入n，打印出s的所有可能的值出现的概率。
+
+ 你需要用一个浮点数数组返回答案，其中第 i 个元素代表这 n 个骰子所能掷出的点数集合中第 i 小的那个的概率。
+
+```java
+输入: 2
+输出: [0.02778,0.05556,0.08333,0.11111,0.13889,0.16667,0.13889,0.11111,0.08333,0.05556,0.02778]
+```
+
+---
+
+解题思路:
+
+- 暴力。超时
+
+- 动态规划。
+
+  ![image-20210929162210939](asset/%E5%89%91%E6%8C%87%20Offer.assets/image-20210929162210939.png)
+
+  ![image-20210929162222971](asset/%E5%89%91%E6%8C%87%20Offer.assets/image-20210929162222971.png)
+
+  ![image-20210929162247423](asset/%E5%89%91%E6%8C%87%20Offer.assets/image-20210929162247423.png)
+
+  以此类推，前一次掷的骰子概率×1/6，然后求和就好。
+
+```java
+class Solution {
+    public double[] dicesProbability(int n) {
+        double[] dp = new double[6];
+        Arrays.fill(dp, 1.0 / 6);
+        for (int i = 2; i <= n; i++) {
+            double[] ans = new double[i * 5 + 1];
+            for (int j = 0; j < dp.length; j++) {
+                for (int k = 0; k < 6; k++) {
+                    ans[j + k] += dp[j] / 6.0;
+                }
+            }
+            dp = ans;
+        }
+        return dp;
+    }
+}
+```
+
+
+
+
+
+
+
 ## [剑指 Offer 64. 求1+2+…+n](https://leetcode-cn.com/problems/qiu-12n-lcof/)
 
 求 1+2+...+n ，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
