@@ -901,3 +901,152 @@ class Solution {
 }
 ```
 
+## [641. 设计循环双端队列](https://leetcode-cn.com/problems/design-circular-deque/)
+
+设计实现双端队列。
+你的实现需要支持以下操作：
+
+MyCircularDeque(k)：构造函数,双端队列的大小为k。
+insertFront()：将一个元素添加到双端队列头部。 如果操作成功返回 true。
+insertLast()：将一个元素添加到双端队列尾部。如果操作成功返回 true。
+deleteFront()：从双端队列头部删除一个元素。 如果操作成功返回 true。
+deleteLast()：从双端队列尾部删除一个元素。如果操作成功返回 true。
+getFront()：从双端队列头部获得一个元素。如果双端队列为空，返回 -1。
+getRear()：获得双端队列的最后一个元素。 如果双端队列为空，返回 -1。
+isEmpty()：检查双端队列是否为空。
+isFull()：检查双端队列是否满了。
+
+```java
+示例：
+
+MyCircularDeque circularDeque = new MycircularDeque(3); // 设置容量大小为3
+circularDeque.insertLast(1);			        // 返回 true
+circularDeque.insertLast(2);			        // 返回 true
+circularDeque.insertFront(3);			        // 返回 true
+circularDeque.insertFront(4);			        // 已经满了，返回 false
+circularDeque.getRear();  				// 返回 2
+circularDeque.isFull();				        // 返回 true
+circularDeque.deleteLast();			        // 返回 true
+circularDeque.insertFront(4);			        // 返回 true
+circularDeque.getFront();				// 返回 4
+```
+
+---
+
+解题思路:
+
+- 循环双端队列的实现，可以使用数组加头尾指针实现。
+
+  在逻辑上，循环双端队列是个圆形的链表，用数组可以实现快速访问，要注意头尾指针代表的含义，因为判空和判满操作要使用头尾指针的性质。
+
+  头指针：指向第一个元素。
+
+  尾指针：指向最后一个元素的下一个位置。（数组是N+1的，所以两个指针只有在链表空时才相遇。）
+
+  判空：`tail == head`	判满：`(tail + 1) % size == head`
+
+```java
+class MyCircularDeque {
+
+        int[] val;
+        int head;
+        int tail;
+        int size;
+
+        /**
+         * Initialize your data structure here. Set the size of the deque to be k.
+         */
+        public MyCircularDeque(int k) {
+            val = new int[k + 1];
+            head = 0;
+            tail = 0;
+            size = k + 1;
+        }
+        /**
+         * Adds an item at the front of Deque. Return true if the operation is successful.
+         */
+        public boolean insertFront(int value) {
+            if ((tail + 1) % size == head) {
+                return false;
+            }
+            if (tail == head) {
+                val[head] = value;
+                tail = (tail + 1) % size;
+                return true;
+            }
+            head = (head + size-1) % size;
+            val[head] = value;
+            return true;
+        }
+        /**
+         * Adds an item at the rear of Deque. Return true if the operation is successful.
+         */
+        public boolean insertLast(int value) {
+            if ((tail + 1) % size == head) {
+                return false;
+            }
+            val[tail] = value;
+            tail = (tail + 1) % size;
+            return true;
+        }
+        /**
+         * Deletes an item from the front of Deque. Return true if the operation is successful.
+         */
+        public boolean deleteFront() {
+            if (tail == head) {
+                return false;
+            }
+            head = (head + size + 1) % size;
+            return true;
+        }
+        /**
+         * Deletes an item from the rear of Deque. Return true if the operation is successful.
+         */
+        public boolean deleteLast() {
+            if (tail == head) {
+                return false;
+            }
+            tail = (tail + size-1) % size;
+            return true;
+        }
+        /**
+         * Get the front item from the deque.
+         */
+        public int getFront() {
+            if (tail == head) {
+                return -1;
+            }
+            return val[head];
+        }
+        /**
+         * Get the last item from the deque.
+         */
+        public int getRear() {
+            if (tail == head) {
+                return -1;
+            }
+            int index = (tail + size-1) % size;
+            return val[index];
+        }
+        /**
+         * Checks whether the circular deque is empty or not.
+         */
+        public boolean isEmpty() {
+            if (tail == head) {
+                return true;
+            }
+            return false;
+
+        }
+        /**
+         * Checks whether the circular deque is full or not.
+         */
+        public boolean isFull() {
+            if ((tail + 1) % size == head) {
+                return true;
+            }
+            return false;
+        }
+    }
+```
+

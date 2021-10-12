@@ -12,18 +12,30 @@ public class a641MyCircularDeque {
          * boolean param_7 = obj.isEmpty();
          * boolean param_8 = obj.isFull();
          */
-        MyCircularDeque obj = new MyCircularDeque(4);
-        boolean param_1 = obj.insertFront(1);
+        MyCircularDeque obj = new MyCircularDeque(3);
+        boolean param_1 = obj.insertLast(1);
         boolean param_2 = obj.insertLast(2);
-        obj.insertLast(3);
-        obj.insertLast(4);
-        param_2 =obj.insertLast(5);
-        boolean param_3 = obj.deleteFront();
-        boolean param_4 = obj.deleteLast();
-        int param_5 = obj.getFront();
-        int param_6 = obj.getRear();
-        boolean param_7 = obj.isEmpty();
-        boolean param_8 = obj.isFull();
+        param_2 = obj.insertFront(3);
+        param_2 = obj.insertFront(4);
+        int param_3 = obj.getRear();
+        boolean param_4 = obj.isFull();
+        boolean param_5 = obj.deleteLast();
+        param_2 = obj.insertLast(4);
+        int param_6 = obj.getFront();
+
+////        param_2 = obj.insertLast(5);
+////        param_2 = obj.insertLast(6);
+//        boolean param_3 = obj.deleteFront();
+//        param_3 = obj.deleteFront();
+//
+//        param_2 = obj.insertLast(6);
+//        param_2 = obj.insertLast(6);
+//        param_2 = obj.insertLast(6);
+////        boolean param_4 = obj.deleteLast();
+//        int param_5 = obj.getFront();
+//        int param_6 = obj.getRear();
+//        boolean param_7 = obj.isEmpty();
+//        boolean param_8 = obj.isFull();
 
     }
 
@@ -41,7 +53,7 @@ public class a641MyCircularDeque {
             val = new int[k + 1];
             head = 0;
             tail = 0;
-            size = k;
+            size = k + 1;
         }
 
         /**
@@ -51,7 +63,12 @@ public class a641MyCircularDeque {
             if ((tail + 1) % size == head) {
                 return false;
             }
-            head = ((head + size) % (size + 1));
+            if (tail == head) {
+                val[head] = value;
+                tail = (tail + 1) % size;
+                return true;
+            }
+            head = (head + size-1) % size;
             val[head] = value;
             return true;
         }
@@ -60,11 +77,11 @@ public class a641MyCircularDeque {
          * Adds an item at the rear of Deque. Return true if the operation is successful.
          */
         public boolean insertLast(int value) {
-            if ((tail + 1) % (size + 1) == head) {
+            if ((tail + 1) % size == head) {
                 return false;
             }
             val[tail] = value;
-            tail = (tail + 1) % (size + 1);
+            tail = (tail + 1) % size;
             return true;
         }
 
@@ -75,7 +92,7 @@ public class a641MyCircularDeque {
             if (tail == head) {
                 return false;
             }
-            head = (head - 1) % (size + 1);
+            head = (head + size + 1) % size;
             return true;
         }
 
@@ -86,7 +103,7 @@ public class a641MyCircularDeque {
             if (tail == head) {
                 return false;
             }
-            tail = (tail - 1) % (size + 1);
+            tail = (tail + size-1) % size;
             return true;
         }
 
@@ -107,7 +124,8 @@ public class a641MyCircularDeque {
             if (tail == head) {
                 return -1;
             }
-            return val[tail];
+            int index = (tail + size-1) % size;
+            return val[index];
         }
 
         /**
@@ -125,7 +143,7 @@ public class a641MyCircularDeque {
          * Checks whether the circular deque is full or not.
          */
         public boolean isFull() {
-            if ((tail + 1) % (size + 1) == head) {
+            if ((tail + 1) % size == head) {
                 return true;
             }
             return false;

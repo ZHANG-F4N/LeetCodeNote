@@ -122,6 +122,72 @@ class Solution {
 }
 ```
 
+## [91. 解码方法](https://leetcode-cn.com/problems/decode-ways/)
+
+一条包含字母 A-Z 的消息通过以下映射进行了 编码 ：
+
+'A' -> 1
+'B' -> 2
+...
+'Z' -> 26
+要 解码 已编码的消息，所有数字必须基于上述映射的方法，反向映射回字母（可能有多种方法）。例如，"11106" 可以映射为：
+
+"AAJF" ，将消息分组为 (1 1 10 6)
+"KJF" ，将消息分组为 (11 10 6)
+注意，消息不能分组为  (1 11 06) ，因为 "06" 不能映射为 "F" ，这是由于 "6" 和 "06" 在映射中并不等价。
+
+给你一个只含数字的 非空 字符串 s ，请计算并返回 解码 方法的 总数 。
+
+题目数据保证答案肯定是一个 32 位 的整数。
+
+```
+输入：s = "226"
+输出：3
+解释：它可以解码为 "BZ" (2 26), "VF" (22 6), 或者 "BBF" (2 2 6) 。
+输入：s = "06"
+输出：0
+解释："06" 不能映射到 "F" ，因为字符串含有前导 0（"6" 和 "06" 在映射中并不等价）。
+```
+
+---
+
+解题思路:
+
+- 动态规划。
+
+  ![image.png](asset/Daily%20Challenge.assets/c09dc70d3085792b2b8417843e297f6841fd12f921b0e4fe28a2c4a8dc86dd1e-image.png)
+
+```java
+class Solution {
+    public int numDecodings(String s) {
+        //含前导0就返回false
+        int N = s.length();
+        if (N == 0 || s.charAt(0) == '0') {
+            return 0;
+        }
+        int dp[] = new int[N + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 1; i < N; i++) {
+            char prCh = s.charAt(i - 1);
+            char ch = s.charAt(i);
+            if (ch == '0') {
+                if (prCh == '2' || prCh == '1') {
+                    dp[i + 1] = dp[i - 1];
+                } else {
+                    return 0;
+                }
+            } else if (prCh == '1' || (ch <= '6' && ch > '0') && prCh == '2') {
+                dp[i + 1] = dp[i] + dp[i - 1];
+            } else {
+                dp[i + 1] = dp[i];
+            }
+        }
+        return dp[N];
+    }
+}
+```
+
 
 
 ## [165. 比较版本号](https://leetcode-cn.com/problems/compare-version-numbers/)
@@ -186,7 +252,153 @@ class Solution {
 }
 ```
 
+## [187. 重复的DNA序列](https://leetcode-cn.com/problems/repeated-dna-sequences/)
 
+所有 DNA 都由一系列缩写为 'A'，'C'，'G' 和 'T' 的核苷酸组成，例如："ACGAATTCCG"。在研究 DNA 时，识别 DNA 中的重复序列有时会对研究非常有帮助。
+
+编写一个函数来找出所有目标子串，目标子串的长度为 10，且在 DNA 字符串 s 中出现次数超过一次。
+
+```
+输入：s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"
+输出：["AAAAACCCCC","CCCCCAAAAA"]
+输入：s = "AAAAAAAAAAAAA"
+输出：["AAAAAAAAAA"]
+```
+
+---
+
+解题思路:
+
+- hash表，把每十个字符保存进hashmap来检验，统计出现次数。
+- 二进制，把每个字符转化为二进制，然后滑动窗口检验。
+
+```java
+//二进制
+class Solution {
+    public List<String> findRepeatedDnaSequences(String s) {
+        List<String> ans = new ArrayList<>();
+        HashMap<Character, Integer> map = new HashMap<>() {
+            {
+                put('A', 0);
+                put('C', 1);
+                put('G', 2);
+                put('T', 3);
+            }
+        };
+        if (s.length() < 11) {
+            return ans;
+        }
+        int temp = 0;
+        for (int i = 0; i < 9; i++) {
+            temp = (temp << 2) | map.get(s.charAt(i));
+        }
+        HashMap<Integer, Integer> hashMap = new HashMap<>();
+        for (int i = 0; i < s.length() - 9; i++) {
+            temp = (((temp << 2) | map.get(s.charAt(i + 9))) & ((1 << 20) - 1));
+            hashMap.put(temp, hashMap.getOrDefault(temp, 0) + 1);
+            if (hashMap.get(temp) == 2) {
+                ans.add(s.substring(i, i + 10));
+            }
+        }
+        return ans;
+    }
+}
+class Solution {
+    public List<String> findRepeatedDnaSequences(String s) {
+        List<String> ans = new ArrayList<>();
+        HashMap<String, Integer> hashMap = new HashMap<>();
+        if (s.length() < 11) {
+            return ans;
+        }
+        for (int i = 9; i < s.length(); i++) {
+            String subStr = s.substring(i - 9, i + 1);
+            hashMap.put(subStr, hashMap.getOrDefault(subStr, 0) + 1);
+            if (hashMap.get(subStr) == 2) {
+                ans.add(subStr);
+            }
+        }
+        return ans;
+    }
+}
+```
+
+
+
+
+
+
+
+## [300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+
+给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+
+子序列是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+
+```java
+输入：nums = [10,9,2,5,3,7,101,18]
+输出：4
+解释：最长递增子序列是 [2,3,7,101]，因此长度为 4 。
+```
+
+---
+
+解题思路:
+
+- 动态规划。O(N^2)
+
+  *dp*[*i*]=max(*dp*[*j*])+1,其中0≤*j*<*i*且*num*[*j*]<*num*[*i*]
+
+- 动态规划 + 二分。O(NlogN)
+
+```java
+//动态规划 + 二分。O(NlogN)
+	// dp+二分
+    // 我们考虑维护一个列表 tails，
+    // 其中每个元素 tails[k] 的值代表 长度为 k+1 的子序列尾部元素的值。
+    // nums     10  9   2   5   3   7  21  18
+    // index    0   1   2   3   4   5   6
+    // tails    10  5   7   21
+    //          9   3       18
+    //          2
+    // tails 的长度就是答案
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[] tails = new int[nums.length];
+        int res = 0;
+        for(int num : nums) {
+            int i = 0, j = res;
+            while(i < j) {
+                int m = (i + j) / 2;
+                if(tails[m] < num) i = m + 1;
+                else j = m;
+            }
+            tails[i] = num;
+            if(res == j) res++;
+        }
+        return res;
+    }
+}
+//动态规划
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int[] dp = new int[nums.length];
+        int ans = 1;
+        dp[0] = 1;
+        for (int i = 1; i < nums.length; i++) {
+            int max = 0;
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    max = max > dp[j] ? max : dp[j];
+                }
+            }
+            dp[i] = max + 1;
+            ans = ans > dp[i] ? ans : dp[i];
+        }
+        return ans;
+    }
+}
+
+```
 
 
 
@@ -291,6 +503,177 @@ class NumArray {
  * obj.update(index,val);
  * int param_2 = obj.sumRange(left,right);
  */
+```
+
+## [352. 将数据流变为多个不相交区间](https://leetcode-cn.com/problems/data-stream-as-disjoint-intervals/)
+
+ 给你一个由非负整数 a1, a2, ..., an 组成的数据流输入，请你将到目前为止看到的数字总结为不相交的区间列表。
+
+实现 SummaryRanges 类：
+
+SummaryRanges() 使用一个空数据流初始化对象。
+void addNum(int val) 向数据流中加入整数 val 。
+int[][] getIntervals() 以不相交区间 [starti, endi] 的列表形式返回对数据流中整数的总结。
+
+```java
+输入：
+["SummaryRanges", "addNum", "getIntervals", "addNum", "getIntervals", "addNum", "getIntervals", "addNum", "getIntervals", "addNum", "getIntervals"]
+[[], [1], [], [3], [], [7], [], [2], [], [6], []]
+输出：
+[null, null, [[1, 1]], null, [[1, 1], [3, 3]], null, [[1, 1], [3, 3], [7, 7]], null, [[1, 3], [7, 7]], null, [[1, 3], [6, 7]]]
+
+解释：
+SummaryRanges summaryRanges = new SummaryRanges();
+summaryRanges.addNum(1);      // arr = [1]
+summaryRanges.getIntervals(); // 返回 [[1, 1]]
+summaryRanges.addNum(3);      // arr = [1, 3]
+summaryRanges.getIntervals(); // 返回 [[1, 1], [3, 3]]
+summaryRanges.addNum(7);      // arr = [1, 3, 7]
+summaryRanges.getIntervals(); // 返回 [[1, 1], [3, 3], [7, 7]]
+summaryRanges.addNum(2);      // arr = [1, 2, 3, 7]
+summaryRanges.getIntervals(); // 返回 [[1, 3], [7, 7]]
+summaryRanges.addNum(6);      // arr = [1, 2, 3, 6, 7]
+summaryRanges.getIntervals(); // 返回 [[1, 3], [6, 7]]
+```
+
+---
+
+解题思路:
+
+- 分类讨论,每次插入,对每个区间的进行判断,总共五种情况:
+  - 区间绝对包含 区间不变
+  - 插入后 左边包含 左边-1
+  - 插入后 右边包含 右边+1
+  - 插入后合并 两个合并
+  - 插入后单独一组
+
+```java
+class SummaryRanges {
+    // 并不需要存储所有值,只需要存储区间
+    TreeMap<Integer, Integer> section;
+    public SummaryRanges() {
+        section = new TreeMap<>();
+    }
+    public void addNum(int val) {
+        if (section.isEmpty()) {
+            section.put(val, val);
+            return;
+        }
+        Integer left = 0;
+        Integer right = 0;
+        Integer preLeft = Integer.MAX_VALUE - 1;
+        Integer preRight = Integer.MAX_VALUE - 1;
+        for (Map.Entry<Integer, Integer> en : section.entrySet()) {
+            left = en.getKey();
+            right = en.getValue();
+            // 包含
+            if (val <= right && val >= left) {
+                return;
+            }
+            //与前一个区间合并
+            if (val == left - 1 && val == preRight + 1) {
+                section.remove(left);
+                section.replace(preLeft, right);
+                return;
+            }
+            //添加在当前的前面
+            if (val == left - 1) {
+                section.remove(left);
+                section.put(val, right);
+                return;
+            }
+            // 添加在前面的后面
+            if (val == preRight + 1) {
+                section.replace(preLeft, val);
+                return;
+            }
+            if (val < left && val > preRight) {
+                section.put(val, val);
+                return;
+            }
+            preLeft = left;
+            preRight = right;
+        }
+        if (val == right + 1) {
+            section.replace(left, val);
+            return;
+        }
+        section.put(val, val);
+    }
+    public int[][] getIntervals() {
+        int[][] ans = new int[section.size()][2];
+        int i = 0;
+        for (Map.Entry<Integer, Integer> en : section.entrySet()) {
+            ans[i++] = new int[]{en.getKey(), en.getValue()};
+        }
+        return ans;
+    }
+}
+/**
+ * Your SummaryRanges object will be instantiated and called as such:
+ * SummaryRanges obj = new SummaryRanges();
+ * obj.addNum(val);
+ * int[][] param_2 = obj.getIntervals();
+ */
+```
+
+
+
+## [430. 扁平化多级双向链表](https://leetcode-cn.com/problems/flatten-a-multilevel-doubly-linked-list/)
+
+多级双向链表中，除了指向下一个节点和前一个节点指针之外，它还有一个子链表指针，可能指向单独的双向链表。这些子列表也可能会有一个或多个自己的子项，依此类推，生成多级数据结构，如下面的示例所示。
+
+给你位于列表第一级的头节点，请你扁平化列表，使所有结点出现在单级双链表中。
+
+示例:
+
+<img src="asset/Daily%20Challenge.assets/multilevellinkedlist.png" alt="img" style="zoom:67%;" />
+
+扁平化后:
+
+![img](asset/Daily%20Challenge.assets/multilevellinkedlistflattened.png)
+
+---
+
+解题思路:
+
+- 顺序遍历。
+
+  当遇到一个含有子链表的节点时，先把子链表插入到当前节点的后面，不用处理子链表包含的子链表。
+
+  当连接之后，继续顺序访问，依次处理，就可以将所有子链表顺序化。
+
+```java
+class Solution {
+    public Node flatten(Node head) {
+        if(head == null){
+            return null;
+        }
+        Node temp = head;
+        while(temp != null){
+            if(temp.child == null){
+                temp = temp.next;
+                continue;
+            }
+            Node subHead = temp.child;
+            Node subEnd = temp.child;
+            while(subEnd.next!=null){
+                subEnd = subEnd.next;
+            }
+            subHead.prev = temp;
+            subEnd.next = temp.next;
+            Node tempNext = temp.next;
+            temp.next = subHead;
+            if(tempNext!=null){
+                tempNext.prev = subEnd;
+            }
+            
+            temp.child= null;
+            temp = temp.next;
+        }
+        return head;
+    }
+}
 ```
 
 
@@ -459,6 +842,76 @@ class Solution {
 }
 ```
 
+## [517. 超级洗衣机](https://leetcode-cn.com/problems/super-washing-machines/)
+
+假设有 n 台超级洗衣机放在同一排上。开始的时候，每台洗衣机内可能有一定量的衣服，也可能是空的。
+
+在每一步操作中，你可以选择任意 m (1 <= m <= n) 台洗衣机，与此同时将每台洗衣机的一件衣服送到相邻的一台洗衣机。
+
+给定一个整数数组 machines 代表从左至右每台洗衣机中的衣物数量，请给出能让所有洗衣机中剩下的衣物的数量相等的 最少的操作步数 。如果不能使每台洗衣机中衣物的数量相等，则返回 -1 。
+
+```java
+示例 1：
+
+输入：machines = [1,0,5]
+输出：3
+解释：
+第一步:    1     0 <-- 5    =>    1     1     4
+第二步:    1 <-- 1 <-- 4    =>    2     1     3    
+第三步:    2     1 <-- 3    =>    2     2     2   
+```
+
+---
+
+阶梯思路:
+
+- 贪心算法。
+
+  将前 *i* 台洗衣机看成一组，记作 *A*，其余洗衣机看成另一组，记作 *B*。
+
+  再构造两个数组 
+
+  - sum -- 表示前i个洗衣机总共 缺了少了或多了多少件衣服。
+  - status -- 表示位置i的洗衣机需要或多了 machine[i] - avg件衣服。
+
+  组间 : A 与 B 两组之间的衣服，最多需要 $\max_{i=0}^{n-1}|\textit{sum}[i]$ 次衣服移动；
+
+  组内 : 某一台洗衣机内的衣服数量过多，需要向左右两侧移出衣服，这最多需要 $\max_{i=0}^{n-1}\textit{machines}[i]$次衣服移动。
+
+```java
+class Solution {
+    public int findMinMoves(int[] machines) {
+        int N = machines.length;
+        int count = 0;
+        count = Arrays.stream(machines).sum();
+//        for (int machine : machines) {
+//            count += machine;
+//        }
+        if (count % N != 0) {
+            return -1;
+        }
+        int ans = 0;
+        int status = 0;
+        int sum = 0;
+        int average = count / N;
+        for (int i = 0; i < N; i++) {
+            status = machines[i] - average;
+            sum += status;
+            ans = Math.max(ans, Math.max(status, Math.abs(sum)));
+        }
+        return ans;
+    }   
+}
+```
+
+
+
+
+
+
+
+
+
 ## [524. 通过删除字母匹配到字典里最长单词](https://leetcode-cn.com/problems/longest-word-in-dictionary-through-deleting/)
 
 给你一个字符串 `s` 和一个字符串数组 `dictionary` 作为字典，找出并返回字典中最长的字符串，该字符串可以通过删除 `s` 中的某些字符得到。
@@ -528,6 +981,78 @@ class Solution {
             return false;
         }
         return true;
+    }
+}
+```
+
+
+
+## [725. 分隔链表](https://leetcode-cn.com/problems/split-linked-list-in-parts/)
+
+给你一个头结点为 head 的单链表和一个整数 k ，请你设计一个算法将链表分隔为 k 个连续的部分。
+
+每部分的长度应该尽可能的相等：任意两部分的长度差距不能超过 1 。这可能会导致有些部分为 null 。
+
+这 k 个部分应该按照在链表中出现的顺序排列，并且排在前面的部分的长度应该大于或等于排在后面的长度。
+
+返回一个由上述 k 部分组成的数组。
+
+```java
+输入：head = [1,2,3], k = 5
+输出：[[1],[2],[3],[],[]]
+解释：
+第一个元素 output[0] 为 output[0].val = 1 ，output[0].next = null 。
+最后一个元素 output[4] 为 null ，但它作为 ListNode 的字符串表示是 [] 。
+```
+
+```java
+输入：head = [1,2,3,4,5,6,7,8,9,10], k = 3
+输出：[[1,2,3,4],[5,6,7],[8,9,10]]
+解释：
+输入被分成了几个连续的部分，并且每部分的长度相差不超过 1 。前面部分的长度大于等于后面部分的长度。
+```
+
+---
+
+解题思路:
+
+- 分隔链表时，注意一些微操作。
+  - 在切断链表时，需要前一个节点的指针，可以手动添加一个头结点简化操作。
+  - 在处理 `每部分的长度相差不超过 1` 时,可以使用下标操作。
+
+```java
+class Solution {
+    public ListNode[] splitListToParts(ListNode head, int k) {
+        ListNode temp = head;
+        int count = 0;
+        while (temp != null) {
+            count++;
+            temp = temp.next;
+        }
+
+        int nodeNum = count / k;
+        int residue = count - nodeNum * k - 1;
+
+        temp = head;
+
+        ListNode[] ans = new ListNode[k];
+        for (int i = 0; i < k; i++) {
+            int num = nodeNum;
+            if (i <= residue) {
+                num = num + 1;
+            }
+
+            ListNode node = new ListNode();
+            node.next = temp;
+            ListNode pre = node;
+            for (int j = 0; j < num && temp != null; j++) {
+                pre = temp;
+                temp = temp.next;
+            }
+            pre.next = null;
+            ans[i] = node.next;
+        }
+        return ans;
     }
 }
 ```
