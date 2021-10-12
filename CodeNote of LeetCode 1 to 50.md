@@ -862,6 +862,56 @@ class Solution:
 ```
 
 
+
+## [45. 跳跃游戏 II](https://leetcode-cn.com/problems/jump-game-ii/)
+
+给你一个非负整数数组 nums ，你最初位于数组的第一个位置。数组中的每个元素代表你在该位置可以跳跃的最大长度。你的目标是使用最少的跳跃次数到达数组的最后一个位置。
+
+假设你总是可以到达数组的最后一个位置。
+
+```java
+输入: nums = [2,3,1,1,4]
+输出: 2
+解释: 跳到最后一个位置的最小跳跃数是 2。
+     从下标为 0 跳到下标为 1 的位置，跳 1 步，然后跳 3 步到达数组的最后一个位置。
+```
+
+---
+
+解题思路:
+
+- 贪心。 模拟选择每一步，每次都选择可以到达最远的点。
+
+```java
+class Solution {
+    public int jump(int[] nums) {
+        int N = nums.length;
+        if (N == 1) {
+            return 0;
+        }
+        int ans = 1;
+        int MaxStep = nums[0];
+        int nowStep = 0;
+        while (nowStep < N - 1 && MaxStep < N - 1) {
+            int tempMax = nowStep + nums[nowStep];
+            for (int j = nowStep + 1; j <= tempMax && j < N - 1; j++) {
+                if (j + nums[j] > MaxStep) {
+                    MaxStep = j + nums[j];
+                    nowStep = j;
+                }
+            }
+            ans++;
+            if (MaxStep >= N - 1) {
+                return ans;
+            }
+        }
+        return ans;
+    }
+}
+```
+
+
+
 ##  Question 48 旋转图像
 
 给定一个 n × n 的二维矩阵表示一个图像。

@@ -252,6 +252,80 @@ class Solution {
 }
 ```
 
+## [187. 重复的DNA序列](https://leetcode-cn.com/problems/repeated-dna-sequences/)
+
+所有 DNA 都由一系列缩写为 'A'，'C'，'G' 和 'T' 的核苷酸组成，例如："ACGAATTCCG"。在研究 DNA 时，识别 DNA 中的重复序列有时会对研究非常有帮助。
+
+编写一个函数来找出所有目标子串，目标子串的长度为 10，且在 DNA 字符串 s 中出现次数超过一次。
+
+```
+输入：s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"
+输出：["AAAAACCCCC","CCCCCAAAAA"]
+输入：s = "AAAAAAAAAAAAA"
+输出：["AAAAAAAAAA"]
+```
+
+---
+
+解题思路:
+
+- hash表，把每十个字符保存进hashmap来检验，统计出现次数。
+- 二进制，把每个字符转化为二进制，然后滑动窗口检验。
+
+```java
+//二进制
+class Solution {
+    public List<String> findRepeatedDnaSequences(String s) {
+        List<String> ans = new ArrayList<>();
+        HashMap<Character, Integer> map = new HashMap<>() {
+            {
+                put('A', 0);
+                put('C', 1);
+                put('G', 2);
+                put('T', 3);
+            }
+        };
+        if (s.length() < 11) {
+            return ans;
+        }
+        int temp = 0;
+        for (int i = 0; i < 9; i++) {
+            temp = (temp << 2) | map.get(s.charAt(i));
+        }
+        HashMap<Integer, Integer> hashMap = new HashMap<>();
+        for (int i = 0; i < s.length() - 9; i++) {
+            temp = (((temp << 2) | map.get(s.charAt(i + 9))) & ((1 << 20) - 1));
+            hashMap.put(temp, hashMap.getOrDefault(temp, 0) + 1);
+            if (hashMap.get(temp) == 2) {
+                ans.add(s.substring(i, i + 10));
+            }
+        }
+        return ans;
+    }
+}
+class Solution {
+    public List<String> findRepeatedDnaSequences(String s) {
+        List<String> ans = new ArrayList<>();
+        HashMap<String, Integer> hashMap = new HashMap<>();
+        if (s.length() < 11) {
+            return ans;
+        }
+        for (int i = 9; i < s.length(); i++) {
+            String subStr = s.substring(i - 9, i + 1);
+            hashMap.put(subStr, hashMap.getOrDefault(subStr, 0) + 1);
+            if (hashMap.get(subStr) == 2) {
+                ans.add(subStr);
+            }
+        }
+        return ans;
+    }
+}
+```
+
+
+
+
+
 
 
 ## [300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
@@ -430,6 +504,120 @@ class NumArray {
  * int param_2 = obj.sumRange(left,right);
  */
 ```
+
+## [352. 将数据流变为多个不相交区间](https://leetcode-cn.com/problems/data-stream-as-disjoint-intervals/)
+
+ 给你一个由非负整数 a1, a2, ..., an 组成的数据流输入，请你将到目前为止看到的数字总结为不相交的区间列表。
+
+实现 SummaryRanges 类：
+
+SummaryRanges() 使用一个空数据流初始化对象。
+void addNum(int val) 向数据流中加入整数 val 。
+int[][] getIntervals() 以不相交区间 [starti, endi] 的列表形式返回对数据流中整数的总结。
+
+```java
+输入：
+["SummaryRanges", "addNum", "getIntervals", "addNum", "getIntervals", "addNum", "getIntervals", "addNum", "getIntervals", "addNum", "getIntervals"]
+[[], [1], [], [3], [], [7], [], [2], [], [6], []]
+输出：
+[null, null, [[1, 1]], null, [[1, 1], [3, 3]], null, [[1, 1], [3, 3], [7, 7]], null, [[1, 3], [7, 7]], null, [[1, 3], [6, 7]]]
+
+解释：
+SummaryRanges summaryRanges = new SummaryRanges();
+summaryRanges.addNum(1);      // arr = [1]
+summaryRanges.getIntervals(); // 返回 [[1, 1]]
+summaryRanges.addNum(3);      // arr = [1, 3]
+summaryRanges.getIntervals(); // 返回 [[1, 1], [3, 3]]
+summaryRanges.addNum(7);      // arr = [1, 3, 7]
+summaryRanges.getIntervals(); // 返回 [[1, 1], [3, 3], [7, 7]]
+summaryRanges.addNum(2);      // arr = [1, 2, 3, 7]
+summaryRanges.getIntervals(); // 返回 [[1, 3], [7, 7]]
+summaryRanges.addNum(6);      // arr = [1, 2, 3, 6, 7]
+summaryRanges.getIntervals(); // 返回 [[1, 3], [6, 7]]
+```
+
+---
+
+解题思路:
+
+- 分类讨论,每次插入,对每个区间的进行判断,总共五种情况:
+  - 区间绝对包含 区间不变
+  - 插入后 左边包含 左边-1
+  - 插入后 右边包含 右边+1
+  - 插入后合并 两个合并
+  - 插入后单独一组
+
+```java
+class SummaryRanges {
+    // 并不需要存储所有值,只需要存储区间
+    TreeMap<Integer, Integer> section;
+    public SummaryRanges() {
+        section = new TreeMap<>();
+    }
+    public void addNum(int val) {
+        if (section.isEmpty()) {
+            section.put(val, val);
+            return;
+        }
+        Integer left = 0;
+        Integer right = 0;
+        Integer preLeft = Integer.MAX_VALUE - 1;
+        Integer preRight = Integer.MAX_VALUE - 1;
+        for (Map.Entry<Integer, Integer> en : section.entrySet()) {
+            left = en.getKey();
+            right = en.getValue();
+            // 包含
+            if (val <= right && val >= left) {
+                return;
+            }
+            //与前一个区间合并
+            if (val == left - 1 && val == preRight + 1) {
+                section.remove(left);
+                section.replace(preLeft, right);
+                return;
+            }
+            //添加在当前的前面
+            if (val == left - 1) {
+                section.remove(left);
+                section.put(val, right);
+                return;
+            }
+            // 添加在前面的后面
+            if (val == preRight + 1) {
+                section.replace(preLeft, val);
+                return;
+            }
+            if (val < left && val > preRight) {
+                section.put(val, val);
+                return;
+            }
+            preLeft = left;
+            preRight = right;
+        }
+        if (val == right + 1) {
+            section.replace(left, val);
+            return;
+        }
+        section.put(val, val);
+    }
+    public int[][] getIntervals() {
+        int[][] ans = new int[section.size()][2];
+        int i = 0;
+        for (Map.Entry<Integer, Integer> en : section.entrySet()) {
+            ans[i++] = new int[]{en.getKey(), en.getValue()};
+        }
+        return ans;
+    }
+}
+/**
+ * Your SummaryRanges object will be instantiated and called as such:
+ * SummaryRanges obj = new SummaryRanges();
+ * obj.addNum(val);
+ * int[][] param_2 = obj.getIntervals();
+ */
+```
+
+
 
 ## [430. 扁平化多级双向链表](https://leetcode-cn.com/problems/flatten-a-multilevel-doubly-linked-list/)
 

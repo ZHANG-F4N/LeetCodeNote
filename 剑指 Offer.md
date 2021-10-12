@@ -42,6 +42,93 @@ class Solution {
 }
 ```
 
+## [剑指 Offer 14- II. 剪绳子 II](https://leetcode-cn.com/problems/jian-sheng-zi-ii-lcof/)
+
+给你一根长度为 n 的绳子，请把绳子剪成整数长度的 m 段（m、n都是整数，n>1并且m>1），每段绳子的长度记为 k[0],k[1]...k[m - 1] 。请问 k[0]*k[1]*...*k[m - 1] 可能的最大乘积是多少？例如，当绳子的长度是8时，我们把它剪成长度分别为2、3、3的三段，此时得到的最大乘积是18。
+
+答案需要取模 1e9+7（1000000007），如计算初始结果为：1000000008，请返回 1。
+
+```
+输入: 10
+输出: 36
+解释: 10 = 3 + 3 + 4, 3 × 3 × 4 = 36
+2 <= n <= 1000
+```
+
+---
+
+解题思路:
+
+- 基本不等式+快速幂
+
+  大数求余解法：
+  大数越界： 当 a 增大时，最后返回的 $3^a$大小以指数级别增长，可能超出 int32 甚至 int64 的取值范围，导致返回值错误。
+  大数求余问题： 在仅使用 int32 类型存储的前提下，正确计算 $x^a$ 对 p 求余（即 $x^a \odot p$）的值。解决方案： 循环求余 、 快速幂求余 ，其中后者的时间复杂度更低，两种方法均基于以下求余运算规则推出：$(xy) \odot p = [(x \odot p)(y \odot p)] \odot p
+  (xy)⊙p=[(x⊙p)(y⊙p)]⊙p$
+
+  - 循环求余 可通过循环操作依次求 $x^1, x^2, ..., x^{a-1}, x^a$  对 p 的余数，保证每轮中间值 rem 都在 int32 取值范围中。
+
+  - 快速幂求余
+
+    ```java
+     // 求 (x^a) % p —— 快速幂求余
+        public long remainder(long num, int quotient, int MOD) {
+            long rem = 1;
+            while (quotient > 0) {
+                if ((quotient & 1) == 1) {
+                    rem *=  num;
+                    rem %= MOD;
+                }
+                num *= num;
+                num %= MOD;
+                quotient >>= 1;
+            }
+            return rem;
+        }
+    ```
+
+```java
+class Solution {
+    public int cuttingRope(int n) {
+        final int MOD = 1000000007;
+        int ans = 0;
+        if (n <= 3) {
+            return n-1;
+        }
+        int residue = n % 3;
+        int quotient = n / 3;
+        if (residue == 0) {
+            ans = (int)remainder(3, quotient, MOD) % MOD;
+        } else if (residue == 1) {
+            ans = (int)((remainder(3, quotient - 1, MOD) * 4) % MOD);
+        } else {
+            ans = (int)(remainder(3, quotient, MOD) * 2) % MOD;
+        }
+        return ans;
+    }
+    // 求 (x^a) % p —— 快速幂求余
+    public long remainder(long num, int quotient, int MOD) {
+        long rem = 1;
+        while (quotient > 0) {
+            if ((quotient & 1) == 1) {
+                rem *=  num;
+                rem %= MOD;
+            }
+            num *= num;
+            num %= MOD;
+            quotient >>= 1;
+        }
+        return rem;
+    }
+}
+```
+
+
+
+
+
+
+
 ## [剑指 Offer II 55. 平衡二叉树](https://leetcode-cn.com/problems/ping-heng-er-cha-shu-lcof/)
 
 输入一棵二叉树的根节点，判断该树是不是平衡二叉树。如果某二叉树中任意节点的左右子树的深度相差不超过1，那么它就是一棵平衡二叉树。
