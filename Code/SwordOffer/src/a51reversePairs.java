@@ -1,37 +1,83 @@
-import java.util.*;
+import java.util.Arrays;
 
-public class a315countSmaller {
+public class a51reversePairs {
     public static void main(String[] args) {
-        int[] nums = {2, 0, 1};
 
-        List<Integer> ans = countSmaller(nums);
-        Iterator<Integer> it = ans.iterator();
-        while (it.hasNext()) {
-            System.out.print(it.next() + "\t");
-        }
+        int[] num = {7, 5, 6, 4};
+        System.out.println(reversePairs2(num));
     }
 
-    public static List<Integer> countSmaller(int[] nums) {
+    // 二路归并查找
+    public static int reversePairs(int[] nums) {
         int N = nums.length;
+
+        int ans = 0;
+        // 一组的长度
+        int len = 1;
+        int i = 0;
+        while (len < N) {
+            int[] tempArr = new int[N];
+            while (i < N) {
+                int lidx = i;
+                int lend = i + len - 1;
+                int ridx = i + len;
+                int rend = i + len + len - 1;
+                if (lend >= N) {
+                    lend = N - 1;
+                    while (lidx <= lend) {
+                        tempArr[i++] = nums[lidx++];
+                    }
+                    break;
+                }
+                if (rend >= N) {
+                    rend = N - 1;
+                }
+                while (lidx <= lend && ridx <= rend) {
+                    if (nums[lidx] <= nums[ridx]) {
+                        tempArr[i++] = nums[lidx++];
+                    } else {
+                        tempArr[i++] = nums[ridx++];
+                        // 核心步骤
+                        // 原因 子区间有序
+                        ans += lend - lidx + 1;
+                    }
+                }
+                while (lidx <= lend) {
+                    tempArr[i++] = nums[lidx++];
+                }
+                while (ridx <= rend) {
+                    tempArr[i++] = nums[ridx++];
+                }
+            }
+            len <<= 1;
+            i = 0;
+            nums = tempArr;
+        }
+
+        return ans;
+    }
+
+    // 离散化树状数组
+    public static int reversePairs2(int[] nums) {
+        int N = nums.length;
+        int ans = 0;
         int[] copy = new int[N];
         System.arraycopy(nums, 0, copy, 0, N);
         Arrays.sort(copy);
-        for (int i = 0; i < N; i++) {
+
+        for (int i = 0; i < nums.length; i++) {
             nums[i] = Arrays.binarySearch(copy, nums[i]) + 1;
         }
+        BIT bit = new BIT(N);
 
-        BIT bit = new BIT(N + 1);
-
-
-
-        Integer[] ans = new Integer[N];
-        for (int i = N - 1; i >= 0; i--) {
-            ans[i] = bit.query(nums[i] - 1);
+        for (int i = N - 1; i >= 0; --i) {
+            // 查询前面有几个比他小的数
+            ans += bit.query(nums[i - 1]);
             bit.update(nums[i]);
         }
-        return Arrays.asList(ans);
-
+        return ans;
     }
+
 }
 
 // Binary Indexed Tree
@@ -92,5 +138,4 @@ class BIT {
         // 包含 3 的节点有 11、100、1000···
     }
 }
-
 
