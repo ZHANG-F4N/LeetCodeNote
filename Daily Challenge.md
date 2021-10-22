@@ -1121,3 +1121,62 @@ class Solution {
 }
 ```
 
+## [1277. 统计全为 1 的正方形子矩阵](https://leetcode-cn.com/problems/count-square-submatrices-with-all-ones/)
+
+给你一个 `m * n` 的矩阵，矩阵中的元素不是 `0` 就是 `1`，请你统计并返回其中完全由 `1` 组成的 **正方形** 子矩阵的个数。
+
+```java
+输入：matrix =
+[
+  [0,1,1,1],
+  [1,1,1,1],
+  [0,1,1,1]
+]
+输出：15
+解释： 
+边长为 1 的正方形有 10 个。
+边长为 2 的正方形有 4 个。
+边长为 3 的正方形有 1 个。
+正方形的总数 = 10 + 4 + 1 = 15.
+```
+
+---
+
+解题思路:
+
+- dp。我们用 `f[i][j]` 表示以 `(i, j)` 为右下角的正方形的最大边长。
+
+  *f*\[*i*][*j*]=min( *f*\[*i*][*j*−1],*f*\[*i*− 1][*j*],*f*\[*i*−1][*j*−1])+1；
+
+```java
+class Solution {
+    public int countSquares(int[][] matrix) {
+        int ans = 0;
+        int N = matrix.length;
+        int M = matrix[0].length;
+        int[][] dp = new int[N][M];
+        for (int i = 0; i < N; i++) {
+            if (matrix[i][0] == 1) {
+                dp[i][0] = 1;
+                ans++;
+            }
+        }
+        for (int i = 1; i < M; i++) {
+            if (matrix[0][i] == 1) {
+                dp[0][i] = 1;
+                ans++;
+            }
+        }
+        for (int i = 1; i < N; i++) {
+            for (int j = 1; j < M; j++) {
+                if (matrix[i][j] == 1) {
+                    dp[i][j] = Math.min(dp[i - 1][j - 1], Math.min(dp[i - 1][j], dp[i][j - 1])) + 1;
+                    ans += dp[i][j];
+                }
+            }
+        }
+        return ans;
+    }
+}
+```
+
