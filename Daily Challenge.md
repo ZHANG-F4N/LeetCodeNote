@@ -764,6 +764,57 @@ class Solution extends SolBase {
 }
 ```
 
+## [496. 下一个更大元素 I](https://leetcode-cn.com/problems/next-greater-element-i/)
+
+给你两个 没有重复元素 的数组 nums1 和 nums2 ，其中nums1 是 nums2 的子集。
+
+请你找出 nums1 中每个元素在 nums2 中的下一个比其大的值。
+
+nums1 中数字 x 的下一个更大元素是指 x 在 nums2 中对应位置的右边的第一个比 x 大的元素。如果不存在，对应位置输出 -1 。
+
+```java
+输入: nums1 = [4,1,2], nums2 = [1,3,4,2].
+输出: [-1,3,-1]
+解释:
+    对于 num1 中的数字 4 ，你无法在第二个数组中找到下一个更大的数字，因此输出 -1 。
+    对于 num1 中的数字 1 ，第二个数组中数字1右边的下一个较大数字是 3 。
+    对于 num1 中的数字 2 ，第二个数组中没有下一个更大的数字，因此输出 -1 。
+```
+
+---
+
+解题思路:
+
+- 暴力。
+
+- 单调栈+hashMap。
+
+  只需要求nums2中所有元素的右边第一个大于它本身的数即可。单调栈求第一个数，hashMap保存下标。
+
+```java
+class Solution {
+    public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+        Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+        Deque<Integer> stack = new ArrayDeque<Integer>();
+        for (int i = nums2.length - 1; i >= 0; --i) {
+            int num = nums2[i];
+            while (!stack.isEmpty() && num >= stack.peek()) {
+                stack.pop();
+            }
+            map.put(num, stack.isEmpty() ? -1 : stack.peek());
+            stack.push(num);
+        }
+        int[] res = new int[nums1.length];
+        for (int i = 0; i < nums1.length; ++i) {
+            res[i] = map.get(nums1[i]);
+        }
+        return res;
+    }
+}
+```
+
+
+
 
 
 ## [502. IPO](https://leetcode-cn.com/problems/ipo/)
@@ -1057,11 +1108,66 @@ class Solution {
 }
 ```
 
+## [869. 重新排序得到 2 的幂](https://leetcode-cn.com/problems/reordered-power-of-2/)
 
+给定正整数 N ，我们按任何顺序（包括原始顺序）将数字重新排序，注意其前导数字不能为零。
 
+如果我们可以通过上述方式得到 2 的幂，返回 true；否则，返回 false。
 
+```java
+输入：46
+输出：true
+输入：16
+输出：true
+输入：10
+输出：false
+```
 
+---
 
+解题思路:
+
+- 预处理所有2的次幂+变位词验证。
+
+```java
+class Solution {
+    public boolean reorderedPowerOf2(int n) {
+        // 判断一个数 是不是二的整数幂
+        // x & (-x) == x
+        if ((n & (-n)) == n) {
+            return true;
+        }
+        long[] table = new long[32];
+        for (int i = 0; i < 32; i++) {
+            table[i] = (long) 1 << i;
+        }
+        String string = Integer.toString(n);
+        int len = string.length();
+        for (int i = 0; i < 32; i++) {
+            String str = Long.toString(table[i]);
+            if (str.length() < len) continue;
+            if (str.length() > len) break;
+            int[] flag = new int[10];
+            for (char ch : string.toCharArray()) {
+                flag[ch - '0']++;
+            }
+            for (char ch : str.toCharArray()) {
+                flag[ch - '0']--;
+            }
+            boolean ans = true;
+            for (int f : flag) {
+                if (f != 0) {
+                    ans = false;
+                }
+            }
+            if (ans) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+```
 
 ## [1109. 航班预订统计](https://leetcode-cn.com/problems/corporate-flight-bookings/)
 

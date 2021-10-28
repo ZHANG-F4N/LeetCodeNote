@@ -2,7 +2,7 @@
 
 [TOC]
 
-## [剑指 Offer II 004. 只出现一次的数字 ](https://leetcode-cn.com/problems/WGki4K/)
+## [剑指 Offer II 4. 只出现一次的数字 ](https://leetcode-cn.com/problems/WGki4K/)
 
 给你一个整数数组 `nums` ，除某个元素仅出现 **一次** 外，其余每个元素都恰出现 **三次 。**请你找出并返回那个只出现了一次的元素。
 
@@ -42,7 +42,7 @@ class Solution {
 }
 ```
 
-## [剑指 Offer 14- II. 剪绳子 II](https://leetcode-cn.com/problems/jian-sheng-zi-ii-lcof/)
+## [剑指 Offer II 14. 剪绳子 II](https://leetcode-cn.com/problems/jian-sheng-zi-ii-lcof/)
 
 给你一根长度为 n 的绳子，请把绳子剪成整数长度的 m 段（m、n都是整数，n>1并且m>1），每段绳子的长度记为 k[0],k[1]...k[m - 1] 。请问 k[0]*k[1]*...*k[m - 1] 可能的最大乘积是多少？例如，当绳子的长度是8时，我们把它剪成长度分别为2、3、3的三段，此时得到的最大乘积是18。
 
@@ -123,11 +123,640 @@ class Solution {
 }
 ```
 
+## [剑指 Offer II 15. 字符串中的所有变位词](https://leetcode-cn.com/problems/VabMRr/)
+
+给定两个字符串 s 和 p，找到 s 中所有 p 的 变位词 的子串，返回这些子串的起始索引。不考虑答案输出的顺序。
+
+变位词 指字母相同，但排列不同的字符串。
+
+```java
+输入: s = "abab", p = "ab"
+输出: [0,1,2]
+解释:
+起始索引等于 0 的子串是 "ab", 它是 "ab" 的变位词。
+起始索引等于 1 的子串是 "ba", 它是 "ab" 的变位词。
+起始索引等于 2 的子串是 "ab", 它是 "ab" 的变位词。
+```
+
+---
+
+解题思路:
+
+- 滑动窗口来统计两个字符串中字符出现的次数，进行对比，当`都为 0 且长度相等`时就是变位词。
+
+```java
+class Solution {
+    public List<Integer> findAnagrams(String s, String p) {
+        int N = s.length();
+        int M = p.length();
+        ArrayList<Integer> list = new ArrayList<>();
+        if (M > N) {
+            return list;
+        }
+        int[] pCnt = new int[26];
+        int[] sCnt = new int[26];
+        for (char ch : p.toCharArray()) {
+            pCnt[ch - 'a']++;
+        }
+        int left = 0;
+        for (int i = 0; i < N; i++) {
+            int x = s.charAt(i) - 'a';
+            sCnt[x]++;
+            while (sCnt[x] > pCnt[x]) {
+                int l = s.charAt(left) - 'a';
+                sCnt[l]--;
+                left++;
+            }
+            if(i - left + 1 == M){
+                list.add(left);
+            }
+        }
+        return list;
+    }
+}
+```
 
 
 
 
 
+## [剑指 Offer II 30. 插入、删除和随机访问都是 O(1) 的容器](https://leetcode-cn.com/problems/FortPu/)
+
+设计一个支持在平均 时间复杂度 O(1) 下，执行以下操作的数据结构：
+
+insert(val)：当元素 val 不存在时返回 true ，并向集合中插入该项，否则返回 false 。
+remove(val)：当元素 val 存在时返回 true ，并从集合中移除该项，否则返回 false 。
+getRandom：随机返回现有集合中的一项。每个元素应该有 相同的概率 被返回。
+
+```java
+示例 :
+输入: inputs = ["RandomizedSet", "insert", "remove", "insert", "getRandom", "remove", "insert", "getRandom"]
+[[], [1], [2], [2], [], [1], [2], []]
+输出: [null, true, false, true, 2, true, false, 2]
+解释:
+RandomizedSet randomSet = new RandomizedSet();  // 初始化一个空的集合
+randomSet.insert(1); // 向集合中插入 1 ， 返回 true 表示 1 被成功地插入
+randomSet.remove(2); // 返回 false，表示集合中不存在 2 
+randomSet.insert(2); // 向集合中插入 2 返回 true ，集合现在包含 [1,2] 
+randomSet.getRandom(); // getRandom 应随机返回 1 或 2 
+randomSet.remove(1); // 从集合中移除 1 返回 true 。集合现在包含 [2] 
+randomSet.insert(2); // 2 已在集合中，所以返回 false 
+randomSet.getRandom(); // 由于 2 是集合中唯一的数字，getRandom 总是返回 2
+```
+
+---
+
+解题思路:
+
+- 本来数组是最合适的，随机按值访问采用hashMap保存<值,小标>下标，但是有删除操作，所以使用变长数组`ArrayList`。删除时用最后一个值替换，然后尾删。
+
+```java
+class RandomizedSet {
+    ArrayList<Integer> list;
+    HashMap<Integer, Integer> hashMap;
+    public RandomizedSet() {
+        this.hashMap = new HashMap<>();
+        this.list = new ArrayList<>();
+    }
+    public boolean insert(int val) {
+        if (hashMap.containsKey(val)) {
+            return false;
+        }
+        int idx = list.size();
+        list.add(idx, val);
+        hashMap.put(val, idx);
+        return true;
+    }
+    public boolean remove(int val) {
+        if (hashMap.containsKey(val)) {
+            int idx = hashMap.get(val);
+            list.set(idx, list.get(list.size() - 1));
+            hashMap.replace(list.get(list.size()-1),idx);
+            list.remove(list.size() - 1);
+            hashMap.remove(val);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public int getRandom() {
+        Random rand = new Random();
+        int random = rand.nextInt(hashMap.size());
+        return list.get(random);
+    }
+}
+```
+
+
+
+## [剑指 Offer II 37. 小行星碰撞](https://leetcode-cn.com/problems/XagZNi/)
+
+给定一个整数数组 asteroids，表示在同一行的小行星。
+
+对于数组中的每一个元素，其绝对值表示小行星的大小，正负表示小行星的移动方向（正表示向右移动，负表示向左移动）。每一颗小行星以相同的速度移动。
+
+找出碰撞后剩下的所有小行星。碰撞规则：两个行星相互碰撞，较小的行星会爆炸。如果两颗行星大小相同，则两颗行星都会爆炸。两颗移动方向相同的行星，永远不会发生碰撞。
+
+```java
+输入：asteroids = [-2,-1,1,2]
+输出：[-2,-1,1,2]
+解释：-2 和 -1 向左移动，而 1 和 2 向右移动。 由于移动方向相同的行星不会发生碰撞，所以最终没有行星发生碰撞。
+```
+
+```
+输入：asteroids = [5,10,-5]
+输出：[5,10]
+解释：10 和 -5 碰撞后只剩下 10 。 5 和 10 永远不会发生碰撞。
+```
+
+---
+
+解题思路:
+
+- 栈。由于碰撞是单向的，所以使用栈可以很好的模拟。
+
+```java
+class Solution {
+    public int[] asteroidCollision(int[] asteroids) {
+        Stack<Integer> stack = new Stack<>();
+        for (int i = 0; i < asteroids.length; i++) {
+            if (stack.empty()) {
+                stack.push(asteroids[i]);
+                continue;
+            }
+            int top = stack.peek();
+            if ((top ^ asteroids[i]) >= 0 || (top < 0 && asteroids[i] > 0)) {
+                stack.push(asteroids[i]);
+                continue;
+            }
+            boolean collision = false;
+            while (!stack.empty() && (top > 0 && asteroids[i] < 0)) {
+                if (Math.abs(top) > Math.abs(asteroids[i])) {
+                    collision = true;
+                    break;
+                } else if (Math.abs(top) < Math.abs(asteroids[i])) {
+                    stack.pop();
+                    collision = false;
+                    if (stack.empty()) {
+                        break;
+                    }
+                    top = stack.peek();
+                    continue;
+                } else {
+                    collision = true;
+                    stack.pop();
+                    break;
+                }
+            }
+            if (!collision) {
+                stack.push(asteroids[i]);
+            }
+        }
+        Iterator<Integer> it = stack.iterator();
+        int[] ans = new int[stack.size()];
+        int i = 0;
+        while (it.hasNext()) {
+            ans[i++] = it.next();
+        }
+        return ans;
+    }
+}
+```
+
+
+
+## [剑指 Offer II 39. 直方图最大矩形面积](https://leetcode-cn.com/problems/0ynMMM/)
+
+给定非负整数数组 heights ，数组中的数字用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+
+求在该柱状图中，能够勾勒出来的矩形的最大面积。
+
+![img](asset/%E5%89%91%E6%8C%87%20Offer.assets/histogram.jpg)
+
+```
+输入：heights = [2,1,5,6,2,3]
+输出：10
+解释：最大的矩形为图中红色区域，面积为 10
+```
+
+---
+
+解题思路:
+
+- 单调栈。
+
+  首先，要想找到第 i 位置最大面积是什么？
+
+  是以i 为中心，向左找第一个小于 heights[i] 的位置 left_i；向右找第一个小于于 heights[i] 的位置 right_i，即最大面积为 heights[i] * (right_i - left_i -1)，如下图所示：
+
+
+  所以，我们的问题就变成如何找 right_i 和 left_i ? 
+
+  最简单的思路就是，就是暴力法，直接分别在 i 左右移动。
+
+
+![1559826097853.png](asset/%E5%89%91%E6%8C%87%20Offer.assets/441ac778821dc26689b31466bced9f61ec241f092bf7e4f0f8699ef4fa3be1b2-1559826097853.png)
+
+```java
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+        int ans = 0;
+        Deque<Integer> stack = new ArrayDeque<>();
+        int[] new_heights = new int[heights.length + 2];
+        for (int i = 1; i < heights.length + 1; i++) new_heights[i] = heights[i - 1];
+        for (int i = 0; i < new_heights.length; i++) {
+            while (!stack.isEmpty() && new_heights[stack.peek()] > new_heights[i]) {
+                int cur = stack.pop();
+                ans = Math.max(ans, (i - stack.peek()-1) * new_heights[cur]);
+            }
+            stack.push(i);
+        }
+        return ans;
+    }
+}
+```
+
+## [剑指 Offer II 40. 矩阵中最大的矩形](https://leetcode-cn.com/problems/PLYXKQ/)
+
+给定一个由 `0` 和 `1` 组成的矩阵 `matrix` ，找出只包含 `1` 的最大矩形，并返回其面积。
+
+**注意：**此题 `matrix` 输入格式为一维 `01` 字符串数组。
+
+```
+输入：matrix = ["10100","10111","11111","10010"]
+输出：6
+解释：最大矩形如上图所示。
+```
+
+<img src="asset/%E5%89%91%E6%8C%87%20Offer.assets/maximal.jpg" alt="img" style="zoom:50%;" />
+
+---
+
+解题思路：
+
+- 单调栈。
+
+```java
+class Solution {
+    public int maximalRectangle(String[] matrix) {
+        int N = matrix.length;
+        if (N == 0) {
+            return 0;
+        }
+        int M = matrix[0].length();
+        int[][] preSum = new int[N][M + 2];
+        for (int j = 1; j <= M; j++) {
+            for (int i = 0; i < N; i++) {
+                if (i == 0) {
+                    preSum[i][j] = matrix[i].charAt(j - 1) - '0';
+                } else if (matrix[i].charAt(j - 1) != '0') {
+                    preSum[i][j] = preSum[i - 1][j] + matrix[i].charAt(j - 1) - '0';
+                }
+            }
+        }
+        //单调栈
+        Deque<Integer> deque = new ArrayDeque<>();
+        int ans = 0;
+        for (int j = 0; j < N; j++) {
+            int[] temp = preSum[j];
+            for (int i = 0; i < M + 2; i++) {
+                while (!deque.isEmpty() && temp[deque.peek()] > temp[i]) {
+                    int cur = deque.pop();
+                    int area = (i - deque.peek() - 1) * (temp[cur]);
+                    ans = area > ans ? area : ans;
+                }
+                deque.push(i);
+            }
+        }
+        return ans;
+    }
+}
+```
+
+
+
+## [剑指 Offer II 47. 二叉树剪枝](https://leetcode-cn.com/problems/pOCWxh/)
+
+给定一个二叉树 根节点 root ，树的每个节点的值要么是 0，要么是 1。请剪除该二叉树中所有节点的值为 0 的子树。
+
+节点 node 的子树为 node 本身，以及所有 node 的后代。
+
+```java
+输入: [1,null,0,0,1]
+输出: [1,null,0,null,1] 
+解释: 
+只有红色节点满足条件“所有不包含 1 的子树”。
+图为返回的答案。
+```
+
+<img src="asset/%E5%89%91%E6%8C%87%20Offer.assets/1028_2.png" alt="img" style="zoom: 50%;" />
+
+---
+
+解题思路:
+
+- 递归删除。
+
+```java
+class Solution {
+    public TreeNode pruneTree(TreeNode root) {
+        if (root == null) {
+            return null;
+        }
+        if (root.left == null && root.right == null && root.val == 0) {
+            return null;
+        }
+        root.left = pruneTree(root.left);
+        root.right = pruneTree(root.right);
+        if (root.left == null && root.right == null && root.val == 0) {
+            return null;
+        }
+        return root;
+    }
+}
+```
+
+## [剑指 Offer II 48. 序列化与反序列化二叉树](https://leetcode-cn.com/problems/h54YBf/)
+
+序列化是将一个数据结构或者对象转换为连续的比特位的操作，进而可以将转换后的数据存储在一个文件或者内存中，同时也可以通过网络传输到另一个计算机环境，采取相反方式重构得到原数据。
+
+请设计一个算法来实现二叉树的序列化与反序列化。这里不限定你的序列 / 反序列化算法执行逻辑，只需要保证一个二叉树可以被序列化为一个字符串并且将这个字符串反序列化为原始的树结构。
+
+<img src="asset/%E5%89%91%E6%8C%87%20Offer.assets/serdeser.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [1,2,3,null,null,4,5]
+输出：[1,2,3,null,null,4,5]
+```
+
+---
+
+解题思路:
+
+- 层次遍历来保存和反序列化。
+
+```java
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if (root == null) {
+            return "";
+        }
+        Deque<TreeNode> deque = new ArrayDeque<TreeNode>();
+        StringBuilder ans = new StringBuilder();
+        deque.offer(root);
+        ans.append(root.val);
+        ans.append(',');
+        while (!deque.isEmpty()) {
+            TreeNode temp = deque.poll();
+            if (temp.left == null) {
+                ans.append("null");
+            } else {
+                ans.append(temp.left.val);
+                deque.offer(temp.left);
+            }
+            ans.append(',');
+            if (temp.right == null) {
+                ans.append("null");
+            } else {
+                ans.append(temp.right.val);
+                deque.offer(temp.right);
+            }
+            ans.append(',');
+        }
+        return ans.toString();
+    }
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if (data == "") {
+            return null;
+        }
+        String[] leaf = data.split(",");
+        Deque<TreeNode> deque = new ArrayDeque<>();
+        TreeNode root = new TreeNode(Integer.parseInt(leaf[0]));
+        deque.offer(root);
+        int index = 1;
+        while (!deque.isEmpty()) {
+            TreeNode temp = deque.poll();
+            if (leaf[index].equals("null") ) {
+                temp.left = null;
+            } else {
+                temp.left = new TreeNode(Integer.parseInt(leaf[index]));
+                deque.offer(temp.left);
+            }
+            index++;
+            if (leaf[index].equals("null")) {
+                temp.right = null;
+            } else {
+                temp.right = new TreeNode(Integer.parseInt(leaf[index]));
+                deque.offer(temp.right);
+            }
+            index++;
+        }
+        return root;
+    }
+}
+```
+
+## [剑指 Offer II 49. 从根节点到叶节点的路径数字之和](https://leetcode-cn.com/problems/3Etpl5/)
+
+给定一个二叉树的根节点 root ，树中每个节点都存放有一个 0 到 9 之间的数字。
+
+每条从根节点到叶节点的路径都代表一个数字：
+
+例如，从根节点到叶节点的路径 1 -> 2 -> 3 表示数字 123 。
+计算从根节点到叶节点生成的 所有数字之和 。
+
+叶节点 是指没有子节点的节点。
+
+```java
+输入：root = [4,9,0,5,1]
+输出：1026
+解释：
+从根到叶子节点路径 4->9->5 代表数字 495
+从根到叶子节点路径 4->9->1 代表数字 491
+从根到叶子节点路径 4->0 代表数字 40
+因此，数字总和 = 495 + 491 + 40 = 1026
+```
+
+<img src="asset/%E5%89%91%E6%8C%87%20Offer.assets/num2tree.jpg" alt="img" style="zoom:50%;" />
+
+---
+
+解题思路:
+
+- DFS，到叶节点相加即可。
+
+```java
+class Solution {
+    private static int ans;
+    public int sumNumbers(TreeNode root) {
+        ans = 0;
+        DFS(root, 0);
+        return ans;
+    }
+    public  void DFS(TreeNode root, int num) {
+        if (root == null) {
+            return;
+        }
+        if (root.left == null && root.right == null) {
+            ans += num * 10 + root.val;
+            return;
+        }
+        DFS(root.left, num*10+root.val);
+        DFS(root.right, num*10+root.val);
+    }
+}
+```
+
+## [剑指 Offer II 50. 向下的路径节点之和](https://leetcode-cn.com/problems/6eUYwP/)
+
+给定一个二叉树的根节点 root ，和一个整数 targetSum ，求该二叉树里节点值之和等于 targetSum 的 路径 的数目。
+
+路径 不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+
+```java
+输入：root = [10,5,-3,3,2,null,11,3,-2,null,1], targetSum = 8
+输出：3
+解释：和等于 8 的路径有 3 条，如图所示。
+```
+
+<img src="asset/%E5%89%91%E6%8C%87%20Offer.assets/pathsum3-1-tree.jpg" alt="img" style="zoom:50%;" />
+
+---
+
+解题思路:
+
+- 前缀和。
+
+  ​	统计以每个节点为「路径结尾」的合法数量的话，配合原本就是「从上往下」进行的数的遍历（最完整的路径必然是从原始根节点到当前节点的唯一路径），相当于只需要在完整路径中找到有多少个节点到当前节点的路径总和为 targetSum。
+
+  ​	于是这个树上问题彻底转换一维问题：求解从原始起点（根节点）到当前节点 b 的路径中，有多少节点 a 满足 sum[a...b]=targetSum，由于从原始起点（根节点）到当前节点的路径唯一，因此这其实是一个「一维前缀和」问题。
+
+  ​	我们可以在进行树的遍历时，记录下从原始根节点 rootroot 到当前节点 curcur 路径中，从 rootroot 到任意中间节点 xx 的路径总和，配合哈希表，快速找到满足以 curcur 为「路径结尾」的、使得路径总和为 targetSumtargetSum 的目标「路径起点」有多少个。
+
+
+```java
+class Solution {
+    static Map<Integer, Integer> hashMap;
+    static int ans, tar;
+    public int pathSum(TreeNode root, int targetSum) {
+        hashMap = new HashMap<>();
+        ans = 0;
+        if (root == null) {
+            return 0;
+        }
+        tar = targetSum;
+        hashMap.put(0, 1);
+        DFS(root, root.val);
+        return ans;
+    }
+    //DFS 从 root 节点出发的和为Sum的路径个数
+    public  void DFS(TreeNode root, int sum) {
+        if (hashMap.containsKey(sum - tar)) {
+            ans += hashMap.get(sum - tar);
+        }
+        hashMap.put(sum, hashMap.getOrDefault(sum, 0) + 1);
+
+        if (root.left != null) DFS(root.left, sum + root.left.val);
+        if (root.right != null) DFS(root.right, sum + root.right.val);
+
+        hashMap.put(sum, hashMap.getOrDefault(sum, 0) - 1);
+    }
+}
+```
+
+## [剑指 Offer II 53. 二叉搜索树中的中序后继](https://leetcode-cn.com/problems/P5rCT8/)
+
+给定一棵二叉搜索树和其中的一个节点 p ，找到该节点在树中的中序后继。如果节点没有中序后继，请返回 null 。
+
+节点 p 的后继是值比 p.val 大的节点中键值最小的节点，即按中序遍历的顺序节点 p 的下一个节点。
+
+```java
+输入：root = [5,3,6,2,4,null,null,1], p = 6
+输出：null
+解释：因为给出的节点没有中序后继，所以答案就返回 null 了。
+```
+
+![img](asset/%E5%89%91%E6%8C%87%20Offer.assets/285_example_2.PNG)
+
+---
+
+解题思路:
+
+- 标记法。 二叉搜索树的中序后继的特点是：中序遍历时，当找到节点P后，下一个==第一次==访问的节点就是中序后继节点。
+
+```java
+class Solution {
+    static TreeNode ans;
+    static boolean isP;
+
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        isP = false;
+        ans = null;
+        //TreeNode pre = null;
+        inOrder(root, p);
+        return ans;   
+    }
+    public void inOrder(TreeNode root, TreeNode p) {
+        if (root == null) {
+            return;
+        }
+        inOrder(root.left, p);
+        if (isP) {
+            ans = root;
+            isP = false;
+        }
+        if (p == root) {
+            isP = true;
+        }
+        inOrder(root.right, p);
+    }
+}
+```
+
+## [剑指 Offer II 54. 所有大于等于节点的值之和](https://leetcode-cn.com/problems/w6cpku/)
+
+给定一个二叉搜索树，请将它的每个节点的值替换成树中大于或者等于该节点值的所有节点值之和。
+
+提醒一下，二叉搜索树满足下列约束条件：
+
+节点的左子树仅包含键 小于 节点键的节点。
+节点的右子树仅包含键 大于 节点键的节点。
+左右子树也必须是二叉搜索树。
+
+输入：root = [4,1,6,0,2,5,7,null,null,null,3,null,null,null,8]
+输出：[30,36,21,36,35,26,15,null,null,null,33,null,null,null,8]
+
+<img src="asset/%E5%89%91%E6%8C%87%20Offer.assets/tree.png" alt="img" style="zoom:50%;" />
+
+---
+
+解题思路:
+
+- 右-中-左遍历。
+
+```java
+class Solution {
+    static int ans;
+    public TreeNode convertBST(TreeNode root) {
+        ans = 0;
+        reverseOrder(root);
+        return root;
+    }
+    public static void reverseOrder(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        reverseOrder(root.right);
+        ans += root.val;
+        root.val = ans;
+
+        reverseOrder(root.left);
+    }
+}
+```
 
 ## [剑指 Offer II 55. 平衡二叉树](https://leetcode-cn.com/problems/ping-heng-er-cha-shu-lcof/)
 
