@@ -322,9 +322,61 @@ class Solution {
 }
 ```
 
+## [260. 只出现一次的数字 III](https://leetcode-cn.com/problems/single-number-iii/)
 
+给定一个整数数组 nums，其中恰好有两个元素只出现一次，其余所有元素均出现两次。 找出只出现一次的那两个元素。你可以按 任意顺序 返回答案。
 
+进阶：你的算法应该具有线性时间复杂度。你能否仅使用常数空间复杂度来实现？
 
+```java
+输入：nums = [1,2,1,3,2,5]
+输出：[3,5]
+解释：[5, 3] 也是有效的答案。
+```
+
+---
+
+解题思路：
+
+- 哈希表。
+
+- 位运算，由于有两个出现了一次的数，如果我们对所有数进行异或运算，假设最后得到结果XOR。
+
+  XOR肯定是两个出现一次的数异或的结果，对XOR进行lowbit运算(X&(-X))，此时得到这一位的位置，肯定是两个数一个为0，一个为1的位。
+
+  那么可以依次将这组数分为两组，一组这位为1，一组这位为0，分别得到两个出现一次的数。
+
+  注意溢出操作。
+
+```java
+class Solution {
+    public int[] singleNumber(int[] nums) {
+        int XOR = 0;
+        for (int num : nums) {
+            XOR ^= num;
+        }
+        int lowBit = XOR & (-XOR);
+
+        // 一组lowbit位为1
+        // 另外一组为0
+
+        // 移32位移除
+        // 防止溢出
+        int temp = (XOR == Integer.MIN_VALUE ? XOR : XOR & (-XOR));
+        //int temp = 1 << (lowBit - 1);
+        int num1 = 0;
+        int num2 = 0;
+        for (int num : nums) {
+            if ((num & temp) == 0) {
+                num1 ^= num;
+            } else {
+                num2 ^= num;
+            }
+        }
+        return new int[]{num1, num2};
+    }
+}
+```
 
 
 
