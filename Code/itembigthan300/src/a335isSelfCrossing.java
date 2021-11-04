@@ -6,6 +6,6 @@ public class a335isSelfCrossing {
 
     // 三种不相交的情况
     public static boolean isSelfCrossing(int[] distance) {
-
+        return false;
     }
 }

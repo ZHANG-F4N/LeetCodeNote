@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class LeetCode1031a2 {
+public class contest265a2 {
     public static void main(String[] args) {
         int[] node = {5, 3, 1, 2, 5, 1, 2};
         ListNode head = new ListNode().build(node);

@@ -944,6 +944,677 @@ class BSTIterator {
 }
 ```
 
+## [剑指 Offer II 060. 出现频率最高的 k 个数字](https://leetcode-cn.com/problems/g5c51o/)
+
+给定一个整数数组 nums 和一个整数 k ，请返回其中出现频率前 k 高的元素。可以按 任意顺序 返回答案。
+
+```java
+示例 1:
+输入: nums = [1,1,1,2,2,3], k = 2
+输出: [1,2]
+```
+
+---
+
+解题思路:
+
+- ==HashMap==统计,然后==PriorityQueue==排序。
+
+```java
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        HashMap<Integer, Integer> hashMap = new HashMap<>();
+        for (int num : nums) {
+            hashMap.put(num, hashMap.getOrDefault(num, 0) + 1);
+        }
+        PriorityQueue<Integer[]> queue = new PriorityQueue<>((o1, o2) -> o1[1] - o2[1]);
+        int idx = 0;
+        for (Map.Entry<Integer, Integer> en : hashMap.entrySet()) {
+            if (idx < k) {
+                queue.offer(new Integer[]{en.getKey(), en.getValue()});
+            } else {
+                if (en.getValue() >= queue.peek()[1]) {
+                    queue.poll();
+                    queue.offer(new Integer[]{en.getKey(), en.getValue()});
+                }
+            }
+            idx++;
+        }
+        int[] ans = new int[k];
+        idx = 0;
+        Iterator<Integer[]> it = queue.iterator();
+        while (it.hasNext()) {
+            ans[idx++] = it.next()[0];
+        }
+        return ans;
+    }
+}
+```
+
+## [剑指 Offer II 063. 替换单词](https://leetcode-cn.com/problems/UhWRSj/)
+
+在英语中，有一个叫做 词根(root) 的概念，它可以跟着其他一些词组成另一个较长的单词——我们称这个词为 继承词(successor)。例如，词根an，跟随着单词 other(其他)，可以形成新的单词 another(另一个)。
+
+现在，给定一个由许多词根组成的词典和一个句子，需要将句子中的所有继承词用词根替换掉。如果继承词有许多可以形成它的词根，则用最短的词根替换它。
+
+需要输出替换之后的句子。
+
+```java
+输入：dictionary = ["cat","bat","rat"], sentence = "the cattle was rattled by the battery"
+输出："the cat was rat by the bat"
+```
+
+---
+
+解题思路:
+
+- 前缀树。题目本质是找前缀。
+
+```java
+class Solution {
+    public String replaceWords(List<String> dictionary, String sentence) {
+        trie root = new trie();
+        Iterator<String> it = dictionary.iterator();
+        while (it.hasNext()) {
+            root.insert(it.next());
+        }
+        String[] arr = sentence.trim().split("\\s+");
+        StringBuilder ans = new StringBuilder();
+        for (int i = 0; i < arr.length; i++) {
+            ans.append(root.preSearch(arr[i])+" ");
+        }
+        return ans.toString().trim();
+    }
+    static class trie {
+        trie[] child;
+        String isWord;
+        public trie() {
+            child = new trie[26];
+            isWord = "";
+        }
+        public void insert(String word) {
+            char[] chars = word.toCharArray();
+            trie temp = this;
+            for (int i = 0; i < chars.length; i++) {
+                char ch = chars[i];
+                if (temp.child[ch - 'a'] == null) {
+                    temp.child[ch - 'a'] = new trie();
+                }
+                temp = temp.child[ch - 'a'];
+            }
+            temp.isWord = word;
+        }
+        public String preSearch(String word) {
+            char[] chars = word.toCharArray();
+            trie temp = this;
+            for (int i = 0; i < chars.length; i++) {
+                char ch = chars[i];
+                if (temp.child[ch - 'a'] == null) {
+                    return word;
+                }
+                temp = temp.child[ch - 'a'];
+                if (!temp.isWord.equals("")) {
+                    return temp.isWord;
+                }
+            }
+            return word;
+        }
+    }
+}
+```
+
+## [剑指 Offer II 064. 神奇的字典](https://leetcode-cn.com/problems/US1pGT/)
+
+设计一个使用单词列表进行初始化的数据结构，单词列表中的单词 互不相同 。 如果给出一个单词，请判定能否只将这个单词中一个字母换成另一个字母，使得所形成的新单词存在于已构建的神奇字典中。
+
+实现 MagicDictionary 类：
+
+MagicDictionary() 初始化对象
+void buildDict(String[] dictionary) 使用字符串数组 dictionary 设定该数据结构，dictionary 中的字符串互不相同
+bool search(String searchWord) 给定一个字符串 searchWord ，判定能否只将字符串中 一个 字母换成另一个字母，使得所形成的新字符串能够与字典中的任一字符串匹配。如果可以，返回 true ；否则，返回 false 。
+
+```java
+示例：
+输入
+inputs = ["MagicDictionary", "buildDict", "search", "search", "search", "search"]
+inputs = [[], [["hello", "leetcode"]], ["hello"], ["hhllo"], ["hell"], ["leetcoded"]]
+输出
+[null, null, false, true, false, false]
+
+解释
+MagicDictionary magicDictionary = new MagicDictionary();
+magicDictionary.buildDict(["hello", "leetcode"]);
+magicDictionary.search("hello"); // 返回 False
+magicDictionary.search("hhllo"); // 将第二个 'h' 替换为 'e' 可以匹配 "hello" ，所以返回 True
+magicDictionary.search("hell"); // 返回 False
+magicDictionary.search("leetcoded"); // 返回 False
+```
+
+---
+
+解题思路:
+
+- 前缀树 + DFS。
+- 或者直接统计两个字符串不相同字符数，等于 1 就返回真。
+
+```java
+class MagicDictionary {
+    MagicDictionary[] child;
+    String word;
+    public MagicDictionary() {
+        child = new MagicDictionary[26];
+        word = null;
+    }
+    public void buildDict(String[] dictionary) {
+        for (String word : dictionary) {
+            MagicDictionary temp = this;
+            for (char ch : word.toCharArray()) {
+                if (temp.child[ch - 'a'] == null) {
+                    temp.child[ch - 'a'] = new MagicDictionary();
+                }
+                temp = temp.child[ch - 'a'];
+            }
+            temp.word = word;
+        }
+    }
+    static boolean ans;
+    public boolean search(String searchWord) {
+        ans = false;
+        char[] arr = searchWord.toCharArray();
+        DFS(this, arr, 0, false);
+        return ans;
+    }
+    public void DFS(MagicDictionary root, char[] arr, int idx, boolean change) {
+        if (root == null) {
+            return;
+        }
+        if (arr.length == idx) {
+            if (root.word != null && change) {
+                ans = ans || true;
+            }else {
+                ans = ans || false;
+            }
+            return;
+        }
+        int index = arr[idx] - 'a';
+        if (change && root.child[index] == null) {
+            ans = ans || false;
+            return;
+        }
+        if (change && root.child[index] != null) {
+            DFS(root.child[index], arr, idx + 1, true);
+        }
+
+        if (!change) {
+            for (int i = 0; i < 26; i++) {
+                if (root.child[i] != null && i != index) {
+                    DFS(root.child[i], arr, idx + 1, true);
+                }
+            }
+            DFS(root.child[index], arr, idx + 1, false);
+        }
+    }
+}
+```
+
+
+
+## [剑指 Offer II 065. 最短的单词编码](https://leetcode-cn.com/problems/iSwD2y/)
+
+单词数组 words 的 有效编码 由任意助记字符串 s 和下标数组 indices 组成，且满足：
+
+words.length == indices.length
+助记字符串 s 以 '#' 字符结尾
+对于每个下标 indices[i] ，s 的一个从 indices[i] 开始、到下一个 '#' 字符结束（但不包括 '#'）的 子字符串 恰好与 words[i] 相等
+给定一个单词数组 words ，返回成功对 words 进行编码的最小助记字符串 s 的长度 。
+
+```java
+输入：words = ["time", "me", "bell"]
+输出：10
+解释：一组有效编码为 s = "time#bell#" 和 indices = [0, 2, 5] 。
+words[0] = "time" ，s 开始于 indices[0] = 0 到下一个 '#' 结束的子字符串，如加粗部分所示 "time#bell#"
+words[1] = "me" ，s 开始于 indices[1] = 2 到下一个 '#' 结束的子字符串，如加粗部分所示 "time#bell#"
+words[2] = "bell" ，s 开始于 indices[2] = 5 到下一个 '#' 结束的子字符串，如加粗部分所示 "time#bell#"
+```
+
+---
+
+解题思路:
+
+- 前缀树。 此题的本质是找后缀重合的单词。所以从后往前建立"后缀树"，然后搜索，可以优化为在建树的过程中计算。
+
+```java
+class Solution {
+    public int minimumLengthEncoding(String[] words) {
+        Trie root = new Trie();
+        for (String word : words) {
+            root.insert(word);
+        }
+        len  = 0;
+        dfs(root, 0);
+        return len;
+    }
+    public static int len;
+    public static void dfs(Trie root, int deep) {
+        boolean flag = false;
+        for (int i = 0; i < 26; i++) {
+            if (root.child[i] != null) {
+                flag = true;
+                dfs(root.child[i], deep + 1);
+            }
+        }
+        if (!flag) {
+            len += deep;
+            if (root.word != null){
+                len += 1;
+            }
+        }
+    }
+    static class Trie {
+        Trie[] child;
+        String word;
+        //后缀
+        public Trie() {
+            child = new Trie[26];
+            word = null;
+        }
+        public void insert(String word) {
+            Trie temp = this;
+            char[] chars = word.toCharArray();
+            for (int i = chars.length - 1; i >= 0; i--) {
+                int idx = chars[i] - 'a';
+                if (temp.child[idx] == null) {
+                    temp.child[idx] = new Trie();
+                }
+                temp = temp.child[idx];
+            }
+            temp.word = word;
+        }
+    }
+}
+```
+
+## [剑指 Offer II 066. 单词之和](https://leetcode-cn.com/problems/z1R5dt/)
+
+实现一个 MapSum 类，支持两个方法，insert 和 sum：
+
+MapSum() 初始化 MapSum 对象
+void insert(String key, int val) 插入 key-val 键值对，字符串表示键 key ，整数表示值 val 。如果键 key 已经存在，那么原来的键值对将被替代成新的键值对。
+int sum(string prefix) 返回所有以该前缀 prefix 开头的键 key 的值的总和。
+
+```java
+示例：
+输入：
+inputs = ["MapSum", "insert", "sum", "insert", "sum"]
+inputs = [[], ["apple", 3], ["ap"], ["app", 2], ["ap"]]
+输出：
+[null, null, 3, null, 5]
+解释：
+MapSum mapSum = new MapSum();
+mapSum.insert("apple", 3);  
+mapSum.sum("ap");           // return 3 (apple = 3)
+mapSum.insert("app", 2);    
+mapSum.sum("ap");           // return 5 (apple + app = 3 + 2 = 5)
+```
+
+---
+
+解题思路:
+
+- 前缀树。把节点存储的单词换为值即可，然后遍历。
+
+```java
+class MapSum {
+    MapSum[] child;
+    int val;
+    static int ans = 0;
+    public MapSum() {
+        val = -1;
+        child = new MapSum[26];
+    }
+    public void insert(String key, int val) {
+        MapSum temp = this;
+        for (char ch : key.toCharArray()) {
+            if (temp.child[ch - 'a'] == null) {
+                temp.child[ch - 'a'] = new MapSum();
+            }
+            temp = temp.child[ch - 'a'];
+        }
+        temp.val = val;
+    }
+    public int sum(String prefix) {
+        MapSum temp = this;
+        for (char ch : prefix.toCharArray()) {
+            int idx = ch - 'a';
+            if (temp.child[idx] == null) {
+                return 0;
+            }
+            temp = temp.child[idx];
+        }
+        ans = 0;
+        DFS(temp);
+        return ans;
+    }
+    public static void DFS(MapSum root) {
+        if (root == null) return;
+        if (root.val != -1) ans += root.val;
+        for (int i = 0; i < 26; i++) {
+            if (root.child[i] != null) {
+                DFS(root.child[i]);
+            }
+        }
+    }
+}
+```
+
+
+
+## [剑指 Offer II 067. 最大的异或](https://leetcode-cn.com/problems/ms70jA/)
+
+给定一个整数数组 nums ，返回 nums[i] XOR nums[j] 的最大运算结果，其中 0 ≤ i ≤ j < n 。
+
+```java
+示例 1：
+输入：nums = [3,10,5,25,2,8]
+输出：28
+解释：最大运算结果是 5 XOR 25 = 28.
+```
+
+---
+
+解题思路:
+
+- 异或。
+
+- 前缀树:
+
+  搜索的方法
+  异或值最大，我们就要尽量让每个异或位都和 num 对应的二进制位不同。
+
+  如果 num 当前位为 0，就到 next[1] 去搜索；
+  如果 num 当前位为 1，就到 next[0] 去搜索;
+  如果与 num 当前位相反的那一位为空，那就只能到相同的那一位去搜索了。
+
+```java
+class Solution {
+    public int findMaximumXOR(int[] nums) {
+        Trie trie = new Trie();
+        int max = -1;
+        for (int i = 0; i < nums.length; i++) {
+            trie.build(nums[i]);
+            int val = trie.search(nums[i]);
+            max = max > val ? max : val;
+        }
+        return max;
+    }
+    static class Trie {
+        Trie[] child;
+
+        public Trie() {
+            child = new Trie[2];
+        }
+
+        public void build(Integer num) {
+            Trie temp = this;
+            for (int i = 30; i >= 0; i--) {
+                int flag = (num & (1 << i)) == 0 ? 0 : 1;
+                if (temp.child[flag] == null) {
+                    temp.child[flag] = new Trie();
+                }
+                temp = temp.child[flag];
+            }
+        }
+
+        public int search(Integer val) {
+            Trie temp = this;
+            int ans = 0;
+            for (int i = 30; i >= 0; i--) {
+                int flag = (val & (1 << i)) == 0 ? 0 : 1;
+                if (flag == 1) {
+                    if (temp.child[0] != null) {
+                        temp = temp.child[0];
+                        ans = ans | (1 << i);
+                    } else {
+                        temp = temp.child[1];
+                    }
+                } else {
+                    if (temp.child[1] != null) {
+                        temp = temp.child[1];
+                        ans = ans | (1 << i);
+                    } else {
+                        temp = temp.child[0];
+                    }
+                }
+            }
+            return ans;
+        }
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+## [剑指 Offer II 070. 排序数组中只出现一次的数字](https://leetcode-cn.com/problems/skFtm2/)
+
+给定一个只包含整数的有序数组 `nums` ，每个元素都会出现两次，唯有一个数只会出现一次，请找出这个唯一的数字。
+
+```java
+输入: nums = [1,1,2,3,3,4,4,8,8]
+输出: 2
+```
+
+---
+
+解题思路：
+
+- 二分查找，区分 区间长度的奇偶 来进行二分。
+
+```java
+public static int singleNonDuplicate(int[] nums) {
+        int l = 0;
+        int r = nums.length - 1;
+        while (l < r) {
+            int mid = (l + r) >> 1;
+            if ((mid == 0 && nums[mid] != nums[mid + 1]) || (mid == nums.length - 1 && nums[mid] != nums[mid - 1])) {
+                return nums[mid];
+            }
+            if (nums[mid] != nums[mid - 1] && nums[mid] != nums[mid + 1]) {
+                return nums[mid];
+            }
+            if (mid - 1 >= 0 && nums[mid] == nums[mid - 1]) {
+                if ((mid - l) % 2 == 0) {
+                    r = mid - 2;
+                } else {
+                    l = mid + 1;
+                }
+            }
+            if (mid + 1 < nums.length && nums[mid] == nums[mid + 1]) {
+                if ((r - mid) % 2 == 0) {
+                    l = mid + 2;
+                } else {
+                    r = mid - 1;
+                }
+            }
+        }
+        return nums[l];
+    }
+```
+
+## [剑指 Offer II 071. 按权重生成随机数](https://leetcode-cn.com/problems/cuyjEf/)
+
+给定一个正整数数组 w ，其中 w[i] 代表下标 i 的权重（下标从 0 开始），请写一个函数 pickIndex ，它可以随机地获取下标 i，选取下标 i 的概率与 w[i] 成正比。
+
+例如，对于 w = [1, 3]，挑选下标 0 的概率为 1 / (1 + 3) = 0.25 （即，25%），而选取下标 1 的概率为 3 / (1 + 3) = 0.75（即，75%）。
+
+也就是说，选取下标 i 的概率为 w[i] / sum(w) 。
+
+```java
+输入：
+inputs = ["Solution","pickIndex","pickIndex","pickIndex","pickIndex","pickIndex"]
+inputs = [[[1,3]],[],[],[],[],[]]
+输出：
+[null,1,1,1,1,0]
+解释：
+Solution solution = new Solution([1, 3]);
+solution.pickIndex(); // 返回 1，返回下标 1，返回该下标概率为 3/4 。
+solution.pickIndex(); // 返回 1
+solution.pickIndex(); // 返回 1
+solution.pickIndex(); // 返回 1
+solution.pickIndex(); // 返回 0，返回下标 0，返回该下标概率为 1/4 。
+
+由于这是一个随机问题，允许多个答案，因此下列输出都可以被认为是正确的:
+[null,1,1,1,1,0]
+[null,1,1,1,1,1]
+[null,1,1,1,0,0]
+[null,1,1,1,0,1]
+[null,1,0,1,0,0]
+......
+诸若此类。
+```
+
+---
+
+解题思路:
+
+- 前缀和 + 二分查找。
+
+  把==权重和==total求出来，在1~total上求随机数，然后和每个权重的区间(通过前缀和求)进行映射，求得下标随机数。
+
+       w   3   1   4   2  total = 10 (0-3] 代表下标0  (3-4]代表1 (4-8] 代表2 ...
+      pre  3   4   8   10 代表具体随机的值。
+       i   [1   2   3]   [4]   [5   6   7   8]   [9   10] 
+
+```java
+class Solution {
+        int[] preSum;
+        int total;
+        //  w   3   1   4   2
+        // pre  3   4   (8   10] 代表具体随机的值。
+        //  i   [1   2   3]   [4]   [5   6   7   8]   [9   10]
+        public Solution(int[] w) {
+            preSum = new int[w.length];
+            total = Arrays.stream(w).sum();
+            for (int i = 0; i < w.length; i++) {
+                preSum[i] = i == 0 ? w[0] : w[i] + preSum[i - 1];
+            }
+
+        }
+        public int pickIndex() {
+            int seed = (int) (Math.random() * total) + 1;
+            int idx = Arrays.binarySearch(preSum, seed);
+            if (idx < 0) {
+                idx = -idx -1;
+            }
+            return idx;
+        }
+    }
+```
+
+
+
+## [剑指 Offer II 073. 狒狒吃香蕉](https://leetcode-cn.com/problems/nZZqjQ/)
+
+狒狒喜欢吃香蕉。这里有 N 堆香蕉，第 i 堆中有 piles[i] 根香蕉。警卫已经离开了，将在 H 小时后回来。
+
+狒狒可以决定她吃香蕉的速度 K （单位：根/小时）。每个小时，她将会选择一堆香蕉，从中吃掉 K 根。如果这堆香蕉少于 K 根，她将吃掉这堆的所有香蕉，然后这一小时内不会再吃更多的香蕉，下一个小时才会开始吃另一堆的香蕉。  
+
+狒狒喜欢慢慢吃，但仍然想在警卫回来前吃掉所有的香蕉。
+
+返回她可以在 H 小时内吃掉所有香蕉的最小速度 K（K 为整数）。
+
+```
+输入: piles = [3,6,7,11], H = 8
+输出: 4
+```
+
+---
+
+解题思路:
+
+- 二分查找最小速度。
+
+  - ```java
+    以此可以缩短判断时间。
+    time += (pile-1)/K + 1;
+    //time += pile % K == 0 ? pile / K : pile / K + 1;
+    ```
+
+  - 最大值范围确定可以直接赋值，省去了搜索最大值过程。
+
+```java
+class Solution {
+    public int minEatingSpeed(int[] piles, int h) {
+        int left =1,right = 1000000000;
+        while(left<right){
+            int mid = left + (right - left)/2;
+            if(isFinished(piles,h,mid)){
+                right = mid;
+            }else{
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+    private boolean isFinished(int[] piles,int h,int speed){
+        int time = 0;
+        for(int pile:piles){
+            time += (pile-1)/speed + 1;
+        }
+        return time<=h;
+    }
+}
+```
+
+## [剑指 Offer II 074. 合并区间](https://leetcode-cn.com/problems/SsGoHC/)
+
+以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。请你合并所有重叠的区间，并返回一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间。
+
+```java
+示例 1：
+输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
+输出：[[1,6],[8,10],[15,18]]
+解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+```
+
+---
+
+解题思路:
+
+- 按开始时间排序。
+
+  可以合并的肯定是连续的。
+
+```java
+class Solution {
+    public int[][] merge(int[][] intervals) {
+        if (intervals.length == 0) {
+            return new int[0][2];
+        }
+        Arrays.sort(intervals,(o1, o2) -> o1[0]-o2[0]);
+        List<int[]> merged = new ArrayList<int[]>();
+        for (int i = 0; i < intervals.length; ++i) {
+            int L = intervals[i][0], R = intervals[i][1];
+            if (merged.size() == 0 || merged.get(merged.size() - 1)[1] < L) {
+                merged.add(new int[]{L, R});
+            } else {
+                merged.get(merged.size() - 1)[1] = Math.max(merged.get(merged.size() - 1)[1], R);
+            }
+        }
+        return merged.toArray(new int[merged.size()][]);
+    }
+}
+```
+
+
+
+
+
 ## [剑指 Offer 06. 从尾到头打印链表](https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/)
 
 输入一个链表的头节点，从尾到头反过来返回每个节点的值（用数组返回）。

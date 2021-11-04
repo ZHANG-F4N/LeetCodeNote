@@ -1,6 +1,6 @@
 import java.util.Stack;
 
-public class a394 {
+public class a394decodeString {
     public static void main(String[] args) {
         System.out.println(decodeString("3[ab2[cd]ef]"));
         System.out.println(decodeString("2[abc]3[cd]ef)"));

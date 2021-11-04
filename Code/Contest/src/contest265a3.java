@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class LeetCode1031a3 {
+public class contest265a3 {
     public static void main(String[] args) {
 //        System.out.println(minimumOperations(new int[]{3, 5, 7}, 0, -4));
         System.out.println(minimumOperations(new int[]{1, 3}, 6, 4));
