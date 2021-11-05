@@ -1311,6 +1311,43 @@ class Solution {
 }
 ```
 
+## [1218. 最长定差子序列](https://leetcode-cn.com/problems/longest-arithmetic-subsequence-of-given-difference/)
+
+给你一个整数数组 arr 和一个整数 difference，请你找出并返回 arr 中最长等差子序列的长度，该子序列中相邻元素之间的差等于 difference 。
+
+子序列 是指在不改变其余元素顺序的情况下，通过删除一些元素或不删除任何元素而从 arr 派生出来的序列。
+
+```java
+输入：arr = [1,5,7,8,5,3,4,2,1], difference = -2
+输出：4
+解释：最长的等差子序列是 [7,5,3,1]。
+```
+
+---
+
+解题思路:
+
+- 动态规划。 dp[i]表示以arr[i]结尾的子序列长度。 再用个HashMap保存 arr[i] - differ 的长度,这样计算当前dp[i] = 1 + dp[arr[i]-differ]。
+
+```java
+class Solution {
+    public int longestSubsequence(int[] arr, int difference) {
+        int max = 1;
+        HashMap<Integer, Integer> hashMap = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            int beg = arr[i];
+            int pre = beg - difference;
+            int len = hashMap.getOrDefault(pre, 0) + 1;
+            hashMap.put(beg, len);
+            max = len > max ? len : max;
+        }
+        return max;
+    }
+}
+```
+
+
+
 ## [1277. 统计全为 1 的正方形子矩阵](https://leetcode-cn.com/problems/count-square-submatrices-with-all-ones/)
 
 给你一个 `m * n` 的矩阵，矩阵中的元素不是 `0` 就是 `1`，请你统计并返回其中完全由 `1` 组成的 **正方形** 子矩阵的个数。
