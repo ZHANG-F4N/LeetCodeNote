@@ -13,7 +13,7 @@ public class contest266a1 {
         char[] arr = word.toCharArray();
         HashMap<Character, Integer> hashMap = new HashMap<>();
         HashSet<Character> set = new HashSet<>();
-        set.add('a');
+//        set.add('a');
         set.add('e');
         set.add('i');
         set.add('o');

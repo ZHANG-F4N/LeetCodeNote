@@ -1611,7 +1611,68 @@ class Solution {
 }
 ```
 
+## [剑指 Offer II 116. 省份数量](https://leetcode-cn.com/problems/bLyHh0/)
 
+有 n 个城市，其中一些彼此相连，另一些没有相连。如果城市 a 与城市 b 直接相连，且城市 b 与城市 c 直接相连，那么城市 a 与城市 c 间接相连。
+
+省份 是一组直接或间接相连的城市，组内不含其他没有相连的城市。
+
+给你一个 n x n 的矩阵 isConnected ，其中 isConnected\[i][j] = 1 表示第 i 个城市和第 j 个城市直接相连，而 isConnected\[i][j] = 0 表示二者不直接相连。
+
+返回矩阵中 省份 的数量。
+
+![img](asset/%E5%89%91%E6%8C%87%20Offer.assets/graph1.jpg)
+
+```
+输入：isConnected = [[1,1,0],[1,1,0],[0,0,1]]
+输出：2
+```
+
+---
+
+解题思路:
+
+- DFS
+
+- BFS
+
+- 并查集。
+
+  每找到两个联通的节点，将其祖先统一。 即就是 isConnected\[i][j] = 1 时，Union(i,j)
+
+```java
+class Solution {
+    public int findCircleNum(int[][] isConnected) {
+        int N = isConnected.length;
+        int[] original = new int[N];
+        for (int i = 0; i < N; i++) {
+            original[i] = i;
+        }
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < i; j++) {
+                if (isConnected[i][j] == 1) {
+                    // 连接节点 i j
+                    int left = i;
+                    int right = j;
+                    // 找左节点的 祖先
+                    while (original[left] != left) left = original[left];
+                    // 找右节点的 祖先
+                    while (original[right] != right) right = original[right];
+                    // 找到后将其中一个的祖先赋给另外一个, 这样就可以统一祖先了
+                    original[left] = right;
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < N; i++) {
+            if (original[i] == i) {
+                ans++;
+            }
+        }
+        return ans;
+    }
+}
+```
 
 
 

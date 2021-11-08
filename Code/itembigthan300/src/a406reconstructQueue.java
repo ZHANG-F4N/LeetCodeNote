@@ -21,12 +21,10 @@ public class a406reconstructQueue {
         for (int i = 0; i < N; i++) {
 
             int[] cur = people[i];
-            
-
-
 
 
         }
+        return ans;
 
 
     }

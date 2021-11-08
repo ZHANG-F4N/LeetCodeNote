@@ -6,24 +6,16 @@
 
 ## 20210911-2-心算挑战
 
-「力扣挑战赛」心算项目的挑战比赛中，要求选手从 `N` 张卡牌中选出 `cnt` 张卡牌，若这 `cnt` 张卡牌数字总和为偶数，则选手成绩「有效」且得分为 `cnt` 张卡牌数字总和。
-给定数组 `cards` 和 `cnt`，其中 `cards[i]` 表示第 `i` 张卡牌上的数字。 请帮参赛选手计算最大的有效得分。若不存在获取有效得分的卡牌方案，则返回 0。
+「力扣挑战赛」心算项目的挑战比赛中，要求选手从 `N` 张卡牌中选出 `cnt` 张卡牌，若这 `cnt` 张卡牌数字总和为偶数，则选手成绩「有效」且得分为 `cnt` 张卡牌数字总和。给定数组 `cards` 和 `cnt`，其中 `cards[i]` 表示第 `i` 张卡牌上的数字。 请帮参赛选手计算最大的有效得分。若不存在获取有效得分的卡牌方案，则返回 0。
 
-**示例 1：**
-
-> 输入：`cards = [1,2,8,9], cnt = 3`
->
-> 输出：`18`
->
-> 解释：选择数字为 1、8、9 的这三张卡牌，此时可获得最大的有效得分 1+8+9=18。
-
-**示例 2：**
-
-> 输入：`cards = [3,3,1], cnt = 1`
->
-> 输出：`0`
->
-> 解释：不存在获取有效得分的卡牌方案。
+```java
+输入：cards = [1,2,8,9], cnt = 3
+输出：18
+解释：选择数字为 1、8、9 的这三张卡牌，此时可获得最大的有效得分 1+8+9=18。.
+输入：cards = [3,3,1], cnt = 1
+输出：0
+解释：不存在获取有效得分的卡牌方案。
+```
 
 **提示：**
 
@@ -57,7 +49,6 @@ class Solution {
                 maxOdd = i;
             }
         }
-        
         int temp1 = 0;
         int temp2 = 0;
         if (maxEven != Integer.MAX_VALUE && oddIndex != Integer.MAX_VALUE) {
@@ -70,6 +61,74 @@ class Solution {
         ans = Math.max(0,ans);
        
         return ans;
+    }
+}
+```
+
+
+
+## 2021-11-7-266-3 [分配给商店的最多商品的最小值](https://leetcode-cn.com/problems/minimized-maximum-of-products-distributed-to-any-store/)
+
+给你一个整数 n ，表示有 n 间零售商店。总共有 m 种产品，每种产品的数目用一个下标从 0 开始的整数数组 quantities 表示，其中 quantities[i] 表示第 i 种商品的数目。
+
+你需要将 所有商品 分配到零售商店，并遵守这些规则：
+
+一间商店 至多 只能有 一种商品 ，但一间商店拥有的商品数目可以为 任意 件。
+分配后，每间商店都会被分配一定数目的商品（可能为 0 件）。用 x 表示所有商店中分配商品数目的最大值，你希望 x 越小越好。也就是说，你想 最小化 分配给任意商店商品数目的 最大值 。
+请你返回最小的可能的 x 。
+
+```java
+输入：n = 6, quantities = [11,6]
+输出：3
+解释： 一种最优方案为：
+- 11 件种类为 0 的商品被分配到前 4 间商店，分配数目分别为：2，3，3，3 。
+- 6 件种类为 1 的商品被分配到另外 2 间商店，分配数目分别为：3，3 。
+分配给所有商店的最大商品数目为 max(2, 3, 3, 3, 3, 3) = 3 。
+```
+
+---
+
+解题思路:
+
+- 二分查找，对每个商店能接受的最大值进行二分，不断逼近能接受的最大值的最小值。
+
+  注意 除 0 case. 
+
+```java
+class Solution {
+    public int minimizedMaximum(int n, int[] quantities) {
+        int left = 0;
+        int right = 0;
+        for (int i = 0; i < quantities.length; i++) {
+            right = right > quantities[i] ? right : quantities[i];
+        }
+        while (left <= right) {
+            int mid = left + ((right - left) >> 1);
+            if (judge(n, quantities, mid)) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+    // 最多分配 x 满足条件返回 true 不满足条件返回 false
+    public  boolean judge(int n, int[] quantities, int x) {
+        if (x == 0) {
+            return Arrays.stream(quantities).sum() == 0;
+        }
+        int need = 0;
+        for (int i = 0; i < quantities.length; i++) {
+            if (quantities[i] <= x) {
+                need++;
+            } else {
+                need += ((quantities[i]-1) / x)+1;
+            }
+            if (need > n) {
+                return false;
+            }
+        }
+        return need <= n;
     }
 }
 ```
