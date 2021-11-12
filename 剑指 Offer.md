@@ -1611,6 +1611,269 @@ class Solution {
 }
 ```
 
+## [剑指 Offer II 079. 所有子集](https://leetcode-cn.com/problems/TVdhkn/)
+
+给定一个整数数组 `nums` ，数组中的元素 **互不相同** 。返回该数组所有可能的子集（幂集）。
+
+解集 **不能** 包含重复的子集。你可以按 **任意顺序** 返回解集。
+
+
+
+---
+
+解题思路:
+
+- 两种回溯方法。
+  - ==第一种，递归实现。== 每个元素的两种情况往下遍历。
+  - ==第二种，for循环实现。==每个元素及其后面的元素一起遍历。
+
+```java
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+        traceback(ans, new ArrayList<>(), nums, 0);
+        return ans;
+    }
+    public  void traceback(List<List<Integer>> ans, List<Integer> list, int[] nums,
+                                 int idx) {
+        if (idx >= nums.length) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        list.add(nums[idx]);
+        traceback(ans, list, nums, idx + 1);
+        list.remove(list.size() - 1);
+        traceback(ans, list, nums, idx + 1);
+    }
+    public  void traceback2(List<List<Integer>> ans, List<Integer> list, int[] nums,
+                                 int idx) {
+        ans.add(new ArrayList<>(list));
+        for (int i = idx; i < nums.length; i++) {
+            list.add(nums[i]);
+            traceback(ans, list, nums, i + 1);
+            list.remove(list.size() - 1);
+        }
+    }
+}
+```
+
+## [剑指 Offer II 080. 含有 k 个元素的组合](https://leetcode-cn.com/problems/uUsW3B/)
+
+给定两个整数 `n` 和 `k`，返回 `1 ... n` 中所有可能的 `k` 个数的组合。
+
+```java
+输入: n = 4, k = 2
+输出:
+[[2,4],[3,4],[2,3],[1,2],[1,3],[1,4],]
+```
+
+---
+
+解题思路：
+
+- 回溯方法。
+
+```java
+class Solution {
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> ans = new ArrayList<>();
+        traceback(ans, new ArrayList<>(), 1, n, k);
+        return ans;
+    }
+    public void traceback(List<List<Integer>> ans, List<Integer> list, int idx, int n,
+                                 int k) {
+        if (n - idx + 1 < k)return;
+        if (k == 0) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = idx; i <= n; i++) {
+            list.add(i);
+            traceback(ans, list, i + 1, n, k - 1);
+            list.remove(list.size() - 1);
+        }
+    }
+    public void traceback2(List<List<Integer>> ans, List<Integer> list, int idx, int n,
+                                  int k) {
+        if (n - idx + 1 < k)return;
+        if (k == 0) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        list.add(idx);
+        traceback(ans, list, idx + 1, n, k - 1);
+        list.remove(list.size() - 1);
+        traceback(ans, list, idx + 1, n, k );
+    }
+}
+```
+
+## [剑指 Offer II 081. 允许重复选择元素的组合](https://leetcode-cn.com/problems/Ygoe9J/)
+
+给定一个无重复元素的正整数数组 candidates 和一个正整数 target ，找出 candidates 中所有可以使数字和为目标数 target 的唯一组合。
+
+candidates 中的数字可以无限制重复被选取。如果至少一个所选数字数量不同，则两种组合是唯一的。 
+
+对于给定的输入，保证和为 target 的唯一组合数少于 150 个。
+
+```
+输入: candidates = [2,3,6,7], target = 7
+输出: [[7],[2,2,3]]
+```
+
+---
+
+解题思路:
+
+- 回溯法
+
+```java
+class Solution {
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> ans = new ArrayList<>();
+        traceback(ans, new ArrayList<>(), candidates, 0, target);
+        return ans;
+    }
+    public  void traceback(List<List<Integer>> ans, List<Integer> list, int[] candidates,
+                                 int idx, int target) {
+        if (target < 0 || idx >= candidates.length) {
+            return;
+        }
+        if (target == 0) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = idx; i < candidates.length; i++) {
+            list.add(candidates[i]);
+            traceback(ans, list, candidates, i, target - candidates[i]);
+            list.remove(list.size() - 1);
+        }
+    }
+    public  void traceback(List<List<Integer>> ans, List<Integer> list, int[] candidates,
+                                 int idx, int target) {
+        if (target < 0 || idx >= candidates.length) {
+            return;
+        }
+        if (target == 0) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        list.add(candidates[idx]);
+        // 加上当前这个数
+        traceback(ans, list, candidates, idx, target - candidates[idx]);
+        list.remove(list.size() - 1);
+        if (idx + 1 >= candidates.length) {
+            return;
+        }
+        // 不加当前这个数
+        traceback(ans, list, candidates, idx + 1, target);
+    }
+}
+```
+
+
+
+
+
+## [剑指 Offer II 082. 含有重复元素集合的组合](https://leetcode-cn.com/problems/4sjJUc/)
+
+给定一个可能有重复数字的整数数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+
+candidates 中的每个数字在每个组合中只能使用一次，解集不能包含重复的组合。 
+
+```java
+输入: candidates = [10,1,2,7,6,1,5], target = 8,
+输出: [[1,1,6],[1,2,5],[1,7],[2,6]]
+```
+
+---
+
+解题思路:
+
+- 回溯法。去重用排序的方法。遇到相同的数就不再进行访问，但是要拿当前的这个数。
+
+```java
+class Solution {
+    static HashSet<List<Integer>> ans;
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> ans = new ArrayList<>();
+        // 为了避免重复答案
+        Arrays.sort(candidates);
+        List<Integer> list = new ArrayList<>();
+        traceback(candidates, ans, list, 0, 0, target);
+        return ans;
+    }
+    public  void traceback(int[] candidates, List<List<Integer>> ans,
+                                 List<Integer> list, int idx, int sum,
+                                 int target) {
+        if (sum == target) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = idx; i < candidates.length; i++) {
+            if (sum + candidates[i] > target) {
+                break;
+            }
+            if (i > idx && candidates[i] == candidates[i-1]){
+                // 因为前面那个同样的数已经经历过dfs，再拿同样的数dfs就会得到重复的答案
+                continue;
+            }
+            list.add(candidates[i]);
+            traceback(candidates, ans, list, i+1, sum + candidates[i], target);
+            list.remove(list.size() - 1);
+        }
+    }
+}
+```
+
+
+
+## [剑指 Offer II 083. 没有重复元素集合的全排列](https://leetcode-cn.com/problems/VvJkup/)
+
+给定一个不含重复数字的整数数组 `nums` ，返回其 **所有可能的全排列** 。可以 **按任意顺序** 返回答案。
+
+```
+输入：nums = [1,2,3]
+输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+```
+
+---
+
+解题思路:
+
+- 回溯。
+
+```java
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+        traceback(ans, new ArrayList<>(), nums);
+        return ans;
+    }
+    public void traceback(List<List<Integer>> ans, List<Integer> list, int[] nums) {
+        if (list.size() == nums.length) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i]== -100)continue;
+            int temp = nums[i];
+            nums[i] = -100;
+            list.add(temp);
+            traceback(ans, list, nums);
+            list.remove(list.size() - 1);
+            nums[i] = temp;
+        }
+    }
+}
+```
+
+
+
+
+
+
+
 ## [剑指 Offer II 116. 省份数量](https://leetcode-cn.com/problems/bLyHh0/)
 
 有 n 个城市，其中一些彼此相连，另一些没有相连。如果城市 a 与城市 b 直接相连，且城市 b 与城市 c 直接相连，那么城市 a 与城市 c 间接相连。
