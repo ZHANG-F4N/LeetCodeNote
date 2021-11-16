@@ -1937,6 +1937,99 @@ class Solution {
 }
 ```
 
+## [剑指 Offer II 090. 环形房屋偷盗](https://leetcode-cn.com/problems/PzWKhm/)
+
+一个专业的小偷，计划偷窃一个环形街道上沿街的房屋，每间房内都藏有一定的现金。这个地方所有的房屋都 围成一圈 ，这意味着第一个房屋和最后一个房屋是紧挨着的。同时，相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警 。
+
+给定一个代表每个房屋存放金额的非负整数数组 nums ，请计算 在不触动警报装置的情况下 ，今晚能够偷窃到的最高金额。
+
+```java
+输入：nums = [1,2,3,1]
+输出：4
+解释：你可以先偷窃 1 号房屋（金额 = 1），然后偷窃 3 号房屋（金额 = 3）。
+     偷窃到的最高金额 = 1 + 3 = 4 。
+```
+
+---
+
+解题思路:
+
+- 动态规划 + 分类讨论。
+
+  前后相接，只需要讨论第一个位置是否被抢，进行两次动态规划即可。
+
+  抢 1 , 则不抢最后一个。不抢 1 , 则考虑抢最后一个。
+
+```java
+class Solution {
+    public int rob(int[] nums) {
+        int n = nums.length;
+        if (n == 1) return nums[0];
+        if (n == 2) return Math.max(nums[0], nums[1]);
+        int[] dp = new int[n];
+        // rob 0
+        dp[0] = nums[0];
+        dp[1] = Math.max(nums[0], nums[1]);
+        for (int j = 2; j < n - 1; j++) {
+            dp[j] = Math.max(nums[j] + dp[j - 2], dp[j - 1]);
+        }
+        int ans = dp[n - 2];
+        // rob 1
+        dp[0] = 0;
+        dp[1] = nums[1];
+        for (int j = 2; j < n; j++) {
+            dp[j] = Math.max(nums[j] + dp[j - 2], dp[j - 1]);
+        }
+        return Math.max(ans, dp[n - 1]);
+    }
+}
+```
+
+## [剑指 Offer II 092. 翻转字符](https://leetcode-cn.com/problems/cyJERH/)
+
+如果一个由 '0' 和 '1' 组成的字符串，是以一些 '0'（可能没有 '0'）后面跟着一些 '1'（也可能没有 '1'）的形式组成的，那么该字符串是 单调递增 的。
+
+我们给出一个由字符 '0' 和 '1' 组成的字符串 s，我们可以将任何 '0' 翻转为 '1' 或者将 '1' 翻转为 '0'。
+
+返回使 s 单调递增 的最小翻转次数。
+
+```
+输入：s = "010110"
+输出：2
+解释：我们翻转得到 011111，或者是 000111。
+```
+
+---
+
+解题思路：
+
+- 动态规划。答案字符串左侧肯定都是 0 ，右侧都是 1 。所以枚举每一个分割点，统计一次左侧 1 出现的次数，右侧 0 出现的次数，加在一起便是需要反转的字符个数。
+
+```java
+class Solution {
+    public int minFlipsMonoIncr(String s) {
+        int n = s.length();
+        int[] pre = new int[n];
+        int[] dp = new int[n];
+        int num = 0;
+        for (int i = 0; i < n; i++) {
+            num += s.charAt(i) - '0';
+            pre[i] = num;
+        }
+        dp[0] = n - pre[n - 1];
+        dp[n - 1] = pre[n - 1];
+        int min = Math.min(dp[0], dp[n - 1]);
+        for (int i = 1; i < n - 1; i++) {
+            dp[i] = pre[i - 1] + (n - 1 - i - pre[n - 1] + pre[i]);
+            min = Math.min(min, dp[i]);
+        }
+        return min;
+    }
+}
+```
+
+
+
 
 
 ## [剑指 Offer 06. 从尾到头打印链表](https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/)
