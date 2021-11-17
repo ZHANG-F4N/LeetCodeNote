@@ -2050,8 +2050,19 @@ class Solution {
 
 - 动态规划。
 
-  ```
-    dp[i][j]：表示以A[i],A[j]结尾的斐波那契数列的最大长度
+  ```java
+   /*
+       *      1   2   3   4   5   6   7   8
+       *   1  1   2   2   2   2   2   2   2
+       *   2      1   3   2   2   2   2   2
+       *   3          1   3   4   2   2   2
+       *   4              1   3   3   4   2
+       *   5                  1   3   3   5
+       *   6                      1   3   3
+       *   7                          1   3
+       *   8                              1
+   */
+   dp[i][j]：表示以A[i],A[j]结尾的斐波那契数列的最大长度
                 dp[i][j]=Len(......,A[i],A[j])
                 A[k]+A[i]==A[j]
     dp[i][j] = max (dp[k][i]+1) 其中 A[k]+A[i]==A[j]
@@ -2091,9 +2102,157 @@ class Solution {
 }
 ```
 
+## [剑指 Offer II 095. 最长公共子序列](https://leetcode-cn.com/problems/qJnOS7/)
+
+给定两个字符串 text1 和 text2，返回这两个字符串的最长 公共子序列 的长度。如果不存在 公共子序列 ，返回 0 。
+
+一个字符串的 子序列 是指这样一个新的字符串：它是由原字符串在不改变字符的相对顺序的情况下删除某些字符（也可以不删除任何字符）后组成的新字符串。
+
+例如，"ace" 是 "abcde" 的子序列，但 "aec" 不是 "abcde" 的子序列。
+两个字符串的 公共子序列 是这两个字符串所共同拥有的子序列。
+
+```
+输入：text1 = "abcde", text2 = "ace" 
+输出：3  
+解释：最长公共子序列是 "ace" ，它的长度为 3 。
+```
+
+---
+
+解题思路:
+
+- 动态规划。
+
+- 其中 dp\[i][j] 表示 text1 [0:i]和 text2 [0:j] 的最长公共子序列的长度。
+
+  ```java
+          a   b   c   d   e
+      ij  0   0   0   0   0
+   a   0  1   1   1   1   1
+   c   0  1   1   2   2   2
+   e   0  1   1   2   2   3
+  ```
+
+```java
+class Solution {
+    public int longestCommonSubsequence(String text1, String text2) {
+        int m = text1.length(), n = text2.length();
+        int[][] dp = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            char c1 = text1.charAt(i - 1);
+            for (int j = 1; j <= n; j++) {
+                char c2 = text2.charAt(j - 1);
+                if (c1 == c2) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+}
+```
+
+## [剑指 Offer II 100. 三角形中最小路径之和](https://leetcode-cn.com/problems/IlPe0q/)
+
+给定一个三角形 triangle ，找出自顶向下的最小路径和。
+
+每一步只能移动到下一行中相邻的结点上。相邻的结点 在这里指的是 下标 与 上一层结点下标 相同或者等于 上一层结点下标 + 1 的两个结点。也就是说，如果正位于当前行的下标 i ，那么下一步可以移动到下一行的下标 i 或 i + 1 。
+
+```java
+输入：triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]
+输出：11
+解释：如下面简图所示：
+   2
+  3 4
+ 6 5 7
+4 1 8 3
+自顶向下的最小路径和为 11（即，2 + 3 + 5 + 1 = 11）。
+```
+
+---
+
+解题思路:
+
+- 动态规划。
+
+```java
+class Solution {
+    public int minimumTotal(List<List<Integer>> triangle) {
+        int n = triangle.size();
+        if (n == 1) {
+            return triangle.get(0).get(0);
+        }
+        int[] preDp = new int[n];
+        int[] dp = new int[n];
+        preDp[0] = triangle.get(0).get(0);
+        for (int i = 1; i < n; i++) {
+            dp[0] = preDp[0] + triangle.get(i).get(0);
+            dp[i] = preDp[i - 1] + triangle.get(i).get(i);
+            for (int j = 1; j < i; j++) {
+                dp[j] = Math.min(preDp[j], preDp[j - 1]) + triangle.get(i).get(j);
+            }
+            preDp = Arrays.copyOf(dp, i+1);
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i : dp) {
+            if (i < min) {
+                min = i;
+            }
+        }
+        return min;
+    }
+}
+```
+
+## [剑指 Offer II 101. 分割等和子集](https://leetcode-cn.com/problems/NUPfPr/)
+
+给定一个非空的正整数数组 `nums` ，请判断能否将这些数字分成元素和相等的两部分。
+
+```
+输入：nums = [1,5,11,5]
+输出：true
+解释：nums 可以分割成 [1, 5, 5] 和 [11] 。
+```
+
+---
+
+解题思路:
+
+- NP完全问题。动态规划转为==0-1背包==问题。
+
+  能否从数组中选出若个数字，使它们的和等于 target = sum / 2，那么所有数字之和 sum 必须为偶数，若 sum 不为偶数则等和子集肯定不存在。有 n 个数字，每一步都判断该数字是否加入等和子集，最终需要判断组合的解的个数是否大于 0
 
 
-
+```java
+class Solution {
+    public boolean canPartition(int[] nums) {
+        int sum = Arrays.stream(nums).sum();
+        if (sum % 2 == 1) {
+            return false;
+        }
+        sum /= 2;
+        boolean[][] dp = new boolean[nums.length][sum + 1];
+        for (int i = 0; i <= sum; i++) {
+            dp[0][i] = i == nums[0] ? true : false;
+        }
+        if (dp[0][sum]) {
+            return true;
+        }
+        for (int i = 1; i < nums.length; i++) {
+            for (int j = 0; j <= sum; j++) {
+                dp[i][j] =
+                        dp[i - 1][j] || (j - nums[i] > 0 && dp[i - 1][j - nums[i]]) || j == nums[i];
+            }
+            if (dp[i][sum]) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+```
 
 
 
