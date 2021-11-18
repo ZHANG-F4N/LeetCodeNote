@@ -1174,6 +1174,67 @@ class Solution {
 }
 ```
 
+## [563. 二叉树的坡度](https://leetcode-cn.com/problems/binary-tree-tilt/)
+
+给定一个二叉树，计算 整个树 的坡度 。
+
+一个树的 节点的坡度 定义即为，该节点左子树的节点之和和右子树节点之和的 差的绝对值 。如果没有左子树的话，左子树的节点之和为 0 ；没有右子树的话也是一样。空结点的坡度是 0 。
+
+整个树 的坡度就是其所有节点的坡度之和。
+
+<img src="asset/Daily%20Challenge.assets/tilt2.jpg" alt="img" style="zoom: 50%;" />
+
+```java
+输入：root = [4,2,9,3,5,null,7]
+输出：15
+解释：
+节点 3 的坡度：|0-0| = 0（没有子节点）
+节点 5 的坡度：|0-0| = 0（没有子节点）
+节点 7 的坡度：|0-0| = 0（没有子节点）
+节点 2 的坡度：|3-5| = 2（左子树就是左子节点，所以和是 3 ；右子树就是右子节点，所以和是 5 ）
+节点 9 的坡度：|0-7| = 7（没有左子树，所以和是 0 ；右子树正好是右子节点，所以和是 7 ）
+节点 4 的坡度：|(3+5+2)-(9+7)| = |10-16| = 6（左子树值为 3、5 和 2 ，和是 10 ；右子树值为 9 和 7 ，和是 16 ）
+坡度总和：0 + 0 + 0 + 2 + 7 + 6 = 15
+```
+
+---
+
+解题思路:
+
+- 深度有限遍历即可，使用全局变量计算总结果。
+
+```java
+class Solution {
+    public int ans = 0;
+    public int findTilt(TreeNode root) {
+        ans = 0;
+        sum(root);
+        return ans;
+    }
+    public int sum(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int left = 0;
+        if (root.left != null) {
+            left = root.left.val + sum(root.left);
+        }
+        int right = 0;
+        if (root.right != null) {
+            right = root.right.val + sum(root.right);
+        }
+        int val = left + right;
+        root.val = Math.abs(left - right);
+        ans += root.val;
+        return val;
+    }
+}
+```
+
+
+
+
+
 ## [575. 分糖果](https://leetcode-cn.com/problems/distribute-candies/)
 
 给定一个偶数长度的数组，其中不同的数字代表着不同种类的糖果，每一个数字代表一个糖果。你需要把这些糖果平均分给一个弟弟和一个妹妹。返回妹妹可以获得的最大糖果的种类数。

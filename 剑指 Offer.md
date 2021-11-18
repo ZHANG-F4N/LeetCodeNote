@@ -2254,6 +2254,117 @@ class Solution {
 }
 ```
 
+## [剑指 Offer II 102. 加减的目标值](https://leetcode-cn.com/problems/YaVDxD/)
+
+给定一个正整数数组 nums 和一个整数 target 。
+
+向数组中的每个整数前添加 '+' 或 '-' ，然后串联起所有整数，可以构造一个 表达式 ：
+
+例如，nums = [2, 1] ，可以在 2 之前添加 '+' ，在 1 之前添加 '-' ，然后串联起来得到表达式 "+2-1" 。
+返回可以通过上述方法构造的、运算结果等于 target 的不同 表达式 的数目。
+
+```java
+输入：nums = [1,1,1,1,1], target = 3
+输出：5
+解释：一共有 5 种方法让最终目标和为 3 。
+-1 + 1 + 1 + 1 + 1 = 3
++1 - 1 + 1 + 1 + 1 = 3
++1 + 1 - 1 + 1 + 1 = 3
++1 + 1 + 1 - 1 + 1 = 3
++1 + 1 + 1 + 1 - 1 = 3
+```
+
+---
+
+解题思路:
+
+- 动态规划。
+
+  目标和target可以表达为:  
+
+  ```java
+  负数(-neg) + 正数(pos) = target
+  -neg + (sum-neg) = target
+  sum - target = 2*neg
+  ```
+
+  所以只需要找到用 num[i] 组合成neg即可，转换为背包问题。
+
+```java
+class Solution {
+    public int findTargetSumWays(int[] nums, int target) {
+        int sum = Arrays.stream(nums).sum();
+        target = sum - target;
+        if (target < 0 || target % 2 != 0) {
+            return 0;
+        }
+        target /= 2;
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = target; j >= 0; j--) {
+                if (j - nums[i] >= 0)
+                    dp[j] = dp[j - nums[i]] + dp[j];
+            }
+        }
+        return dp[target];
+    }
+}
+```
+
+
+
+
+
+## [剑指 Offer II 103. 最少的硬币数目](https://leetcode-cn.com/problems/gaM7Ch/)
+
+给定不同面额的硬币 coins 和一个总金额 amount。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
+
+你可以认为每种硬币的数量是无限的。
+
+```java
+输入：coins = [1, 2, 5], amount = 11
+输出：3 
+解释：11 = 5 + 5 + 1
+```
+
+---
+
+解题思路:
+
+- 动态规划。
+
+  dp[j]表示价格为 j 时的最小硬币数，枚举价格。
+
+  ```
+  dp[j] = Math.min(dp[j], dp[j - coins[i]] + 1);
+  amount  0   1   2   3   4   5   6   7   8   9   10  11
+      1   0   1   2   3   4   5   6   7   8   9   10  11
+      2   0   1   1   2   2   3   3   4   4   5   5   6
+      3   0   1   1   1   2   2   2   3   3   3   4   4
+  ```
+
+```java
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+        if (amount == 0) {
+            return 0;
+        }
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, amount + 1);
+        dp[0] = 0;
+        for (int i = 0; i < coins.length; i++) {
+            for (int j = 0; j <= amount; j++) {
+                if (j - coins[i] >= 0) {
+                    dp[j] = Math.min(dp[j], dp[j - coins[i]] + 1);
+                }
+            }
+        }
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+}
+```
+
 
 
 ## [剑指 Offer 06. 从尾到头打印链表](https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/)
