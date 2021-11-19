@@ -65,9 +65,100 @@ class Solution {
 }
 ```
 
+## 250-3 [扣分后的最大得分](https://leetcode-cn.com/problems/maximum-number-of-points-with-cost/)
+
+给你一个 m x n 的整数矩阵 points （下标从 0 开始）。一开始你的得分为 0 ，你想最大化从矩阵中得到的分数。
+
+你的得分方式为：每一行 中选取一个格子，选中坐标为 (r, c) 的格子会给你的总得分 增加 points[r][c] 。
+
+然而，相邻行之间被选中的格子如果隔得太远，你会失去一些得分。对于相邻行 r 和 r + 1 （其中 0 <= r < m - 1），选中坐标为 (r, c1) 和 (r + 1, c2) 的格子，你的总得分 减少 abs(c1 - c2) 。
+
+请你返回你能得到的 最大 得分。
+
+<img src="asset/LeetCode%20Contest.assets/screenshot-2021-07-12-at-13-40-26-diagram-drawio-diagrams-net.png" alt="img" style="zoom:33%;" />
+
+```java
+输入：points = [[1,2,3],[1,5,1],[3,1,1]]
+输出：9
+解释：
+蓝色格子是最优方案选中的格子，坐标分别为 (0, 2)，(1, 1) 和 (2, 0) 。
+你的总得分增加 3 + 5 + 3 = 11 。
+但是你的总得分需要扣除 abs(2 - 1) + abs(1 - 0) = 2 。
+你的最终得分为 11 - 2 = 9 。
+```
+
+---
+
+解题思路:
+
+- 动态规划。
+
+  ```
+  /*
+  * dp[i][j] : 第i行 选择 points[i][j] 的元素时,最大值
+  * dp[i][j] = Max{ dp[i-1][j'] -|j-j'|} + points[i][j]
+  *               其中 j' 是上一行的每个 j
+  * 这时的转移方程的实现复杂度是O(mnn)
+  * 可以对 |j-j'| 进行优化,分 j' < j 和 j' > j
+  * j' < j 时, dp[i][j] = Max{ dp[i-1][j'] - j + j' } + points[i][j]
+  *                     = Max{ dp[i-1][j'] + j' } + points[i][j] - j
+  * j' > j 时, dp[i][j] = Max{ dp[i-1][j'] - j' + j } + points[i][j]
+  *                     = Max{ dp[i-1][j'] - j' } + points[i][j] + j
+  *
+  * */
+  //正向和反向计算一遍 dp[i-1][j']+j' 和 dp[i-1][j']-j'
+  // j'<j 时,记录 0~j' 上 dp[i-1][j'] + j'的最大值
+  //      同时算出 Max{ dp[i-1][j'] + j' } + points[i][j] - j
+  // j'>j 时, 记录 j'~ m-1 上 dp[i-1][j'] - j'的最大值
+  //      同时算出 Max{ dp[i-1][j'] - j' } + points[i][j] + j
+  ```
+
+```java
+class Solution {
+    public long maxPoints(int[][] points) {
+        int m = points[0].length;
+        long[] pre = new long[m];
+        long[] dp = new long[m];
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < m; i++) {
+            pre[i] = points[0][i];
+            max = Math.max(max, points[0][i]);
+        }
+        if (points.length == 1) {
+            return max;
+        }
+        for (int i = 1; i < points.length; i++) {
+            //正向和反向计算一遍 dp[i-1][j']+j' 和 dp[i-1][j']-j'
+            long[] forth = new long[m];
+            long[] back = new long[m];
+            long preMax = Long.MIN_VALUE;
+            for (int j = 0; j < m; j++) {
+                forth[j] = pre[j] + j;
+                preMax = Math.max(preMax, forth[j]);
+                dp[j] = points[i][j] - j + preMax;
+            }
+            preMax = Long.MIN_VALUE;
+            for (int j = m - 1; j >= 0; j--) {
+                back[j] = pre[j] - j;
+                preMax = Math.max(preMax, back[j]);
+                dp[j] = Math.max(dp[j], points[i][j] + j + preMax);
+            }
+            pre = Arrays.copyOf(dp, m);
+        }
+        long ans = 0;
+        for (int i = 0; i < m; i++) {
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
+    }
+}
+```
 
 
-## 2021-11-7-266-3 [分配给商店的最多商品的最小值](https://leetcode-cn.com/problems/minimized-maximum-of-products-distributed-to-any-store/)
+
+
+
+## 266-3 [分配给商店的最多商品的最小值](https://leetcode-cn.com/problems/minimized-maximum-of-products-distributed-to-any-store/)
 
 给你一个整数 n ，表示有 n 间零售商店。总共有 m 种产品，每种产品的数目用一个下标从 0 开始的整数数组 quantities 表示，其中 quantities[i] 表示第 i 种商品的数目。
 

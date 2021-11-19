@@ -1611,6 +1611,269 @@ class Solution {
 }
 ```
 
+## [剑指 Offer II 079. 所有子集](https://leetcode-cn.com/problems/TVdhkn/)
+
+给定一个整数数组 `nums` ，数组中的元素 **互不相同** 。返回该数组所有可能的子集（幂集）。
+
+解集 **不能** 包含重复的子集。你可以按 **任意顺序** 返回解集。
+
+
+
+---
+
+解题思路:
+
+- 两种回溯方法。
+  - ==第一种，递归实现。== 每个元素的两种情况往下遍历。
+  - ==第二种，for循环实现。==每个元素及其后面的元素一起遍历。
+
+```java
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+        traceback(ans, new ArrayList<>(), nums, 0);
+        return ans;
+    }
+    public  void traceback(List<List<Integer>> ans, List<Integer> list, int[] nums,
+                                 int idx) {
+        if (idx >= nums.length) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        list.add(nums[idx]);
+        traceback(ans, list, nums, idx + 1);
+        list.remove(list.size() - 1);
+        traceback(ans, list, nums, idx + 1);
+    }
+    public  void traceback2(List<List<Integer>> ans, List<Integer> list, int[] nums,
+                                 int idx) {
+        ans.add(new ArrayList<>(list));
+        for (int i = idx; i < nums.length; i++) {
+            list.add(nums[i]);
+            traceback(ans, list, nums, i + 1);
+            list.remove(list.size() - 1);
+        }
+    }
+}
+```
+
+## [剑指 Offer II 080. 含有 k 个元素的组合](https://leetcode-cn.com/problems/uUsW3B/)
+
+给定两个整数 `n` 和 `k`，返回 `1 ... n` 中所有可能的 `k` 个数的组合。
+
+```java
+输入: n = 4, k = 2
+输出:
+[[2,4],[3,4],[2,3],[1,2],[1,3],[1,4],]
+```
+
+---
+
+解题思路：
+
+- 回溯方法。
+
+```java
+class Solution {
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> ans = new ArrayList<>();
+        traceback(ans, new ArrayList<>(), 1, n, k);
+        return ans;
+    }
+    public void traceback(List<List<Integer>> ans, List<Integer> list, int idx, int n,
+                                 int k) {
+        if (n - idx + 1 < k)return;
+        if (k == 0) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = idx; i <= n; i++) {
+            list.add(i);
+            traceback(ans, list, i + 1, n, k - 1);
+            list.remove(list.size() - 1);
+        }
+    }
+    public void traceback2(List<List<Integer>> ans, List<Integer> list, int idx, int n,
+                                  int k) {
+        if (n - idx + 1 < k)return;
+        if (k == 0) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        list.add(idx);
+        traceback(ans, list, idx + 1, n, k - 1);
+        list.remove(list.size() - 1);
+        traceback(ans, list, idx + 1, n, k );
+    }
+}
+```
+
+## [剑指 Offer II 081. 允许重复选择元素的组合](https://leetcode-cn.com/problems/Ygoe9J/)
+
+给定一个无重复元素的正整数数组 candidates 和一个正整数 target ，找出 candidates 中所有可以使数字和为目标数 target 的唯一组合。
+
+candidates 中的数字可以无限制重复被选取。如果至少一个所选数字数量不同，则两种组合是唯一的。 
+
+对于给定的输入，保证和为 target 的唯一组合数少于 150 个。
+
+```
+输入: candidates = [2,3,6,7], target = 7
+输出: [[7],[2,2,3]]
+```
+
+---
+
+解题思路:
+
+- 回溯法
+
+```java
+class Solution {
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> ans = new ArrayList<>();
+        traceback(ans, new ArrayList<>(), candidates, 0, target);
+        return ans;
+    }
+    public  void traceback(List<List<Integer>> ans, List<Integer> list, int[] candidates,
+                                 int idx, int target) {
+        if (target < 0 || idx >= candidates.length) {
+            return;
+        }
+        if (target == 0) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = idx; i < candidates.length; i++) {
+            list.add(candidates[i]);
+            traceback(ans, list, candidates, i, target - candidates[i]);
+            list.remove(list.size() - 1);
+        }
+    }
+    public  void traceback(List<List<Integer>> ans, List<Integer> list, int[] candidates,
+                                 int idx, int target) {
+        if (target < 0 || idx >= candidates.length) {
+            return;
+        }
+        if (target == 0) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        list.add(candidates[idx]);
+        // 加上当前这个数
+        traceback(ans, list, candidates, idx, target - candidates[idx]);
+        list.remove(list.size() - 1);
+        if (idx + 1 >= candidates.length) {
+            return;
+        }
+        // 不加当前这个数
+        traceback(ans, list, candidates, idx + 1, target);
+    }
+}
+```
+
+
+
+
+
+## [剑指 Offer II 082. 含有重复元素集合的组合](https://leetcode-cn.com/problems/4sjJUc/)
+
+给定一个可能有重复数字的整数数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+
+candidates 中的每个数字在每个组合中只能使用一次，解集不能包含重复的组合。 
+
+```java
+输入: candidates = [10,1,2,7,6,1,5], target = 8,
+输出: [[1,1,6],[1,2,5],[1,7],[2,6]]
+```
+
+---
+
+解题思路:
+
+- 回溯法。去重用排序的方法。遇到相同的数就不再进行访问，但是要拿当前的这个数。
+
+```java
+class Solution {
+    static HashSet<List<Integer>> ans;
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> ans = new ArrayList<>();
+        // 为了避免重复答案
+        Arrays.sort(candidates);
+        List<Integer> list = new ArrayList<>();
+        traceback(candidates, ans, list, 0, 0, target);
+        return ans;
+    }
+    public  void traceback(int[] candidates, List<List<Integer>> ans,
+                                 List<Integer> list, int idx, int sum,
+                                 int target) {
+        if (sum == target) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = idx; i < candidates.length; i++) {
+            if (sum + candidates[i] > target) {
+                break;
+            }
+            if (i > idx && candidates[i] == candidates[i-1]){
+                // 因为前面那个同样的数已经经历过dfs，再拿同样的数dfs就会得到重复的答案
+                continue;
+            }
+            list.add(candidates[i]);
+            traceback(candidates, ans, list, i+1, sum + candidates[i], target);
+            list.remove(list.size() - 1);
+        }
+    }
+}
+```
+
+
+
+## [剑指 Offer II 083. 没有重复元素集合的全排列](https://leetcode-cn.com/problems/VvJkup/)
+
+给定一个不含重复数字的整数数组 `nums` ，返回其 **所有可能的全排列** 。可以 **按任意顺序** 返回答案。
+
+```
+输入：nums = [1,2,3]
+输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+```
+
+---
+
+解题思路:
+
+- 回溯。
+
+```java
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+        traceback(ans, new ArrayList<>(), nums);
+        return ans;
+    }
+    public void traceback(List<List<Integer>> ans, List<Integer> list, int[] nums) {
+        if (list.size() == nums.length) {
+            ans.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i]== -100)continue;
+            int temp = nums[i];
+            nums[i] = -100;
+            list.add(temp);
+            traceback(ans, list, nums);
+            list.remove(list.size() - 1);
+            nums[i] = temp;
+        }
+    }
+}
+```
+
+
+
+
+
+
+
 ## [剑指 Offer II 116. 省份数量](https://leetcode-cn.com/problems/bLyHh0/)
 
 有 n 个城市，其中一些彼此相连，另一些没有相连。如果城市 a 与城市 b 直接相连，且城市 b 与城市 c 直接相连，那么城市 a 与城市 c 间接相连。
@@ -1674,7 +1937,536 @@ class Solution {
 }
 ```
 
+## [剑指 Offer II 090. 环形房屋偷盗](https://leetcode-cn.com/problems/PzWKhm/)
 
+一个专业的小偷，计划偷窃一个环形街道上沿街的房屋，每间房内都藏有一定的现金。这个地方所有的房屋都 围成一圈 ，这意味着第一个房屋和最后一个房屋是紧挨着的。同时，相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警 。
+
+给定一个代表每个房屋存放金额的非负整数数组 nums ，请计算 在不触动警报装置的情况下 ，今晚能够偷窃到的最高金额。
+
+```java
+输入：nums = [1,2,3,1]
+输出：4
+解释：你可以先偷窃 1 号房屋（金额 = 1），然后偷窃 3 号房屋（金额 = 3）。
+     偷窃到的最高金额 = 1 + 3 = 4 。
+```
+
+---
+
+解题思路:
+
+- 动态规划 + 分类讨论。
+
+  前后相接，只需要讨论第一个位置是否被抢，进行两次动态规划即可。
+
+  抢 1 , 则不抢最后一个。不抢 1 , 则考虑抢最后一个。
+
+```java
+class Solution {
+    public int rob(int[] nums) {
+        int n = nums.length;
+        if (n == 1) return nums[0];
+        if (n == 2) return Math.max(nums[0], nums[1]);
+        int[] dp = new int[n];
+        // rob 0
+        dp[0] = nums[0];
+        dp[1] = Math.max(nums[0], nums[1]);
+        for (int j = 2; j < n - 1; j++) {
+            dp[j] = Math.max(nums[j] + dp[j - 2], dp[j - 1]);
+        }
+        int ans = dp[n - 2];
+        // rob 1
+        dp[0] = 0;
+        dp[1] = nums[1];
+        for (int j = 2; j < n; j++) {
+            dp[j] = Math.max(nums[j] + dp[j - 2], dp[j - 1]);
+        }
+        return Math.max(ans, dp[n - 1]);
+    }
+}
+```
+
+## [剑指 Offer II 092. 翻转字符](https://leetcode-cn.com/problems/cyJERH/)
+
+如果一个由 '0' 和 '1' 组成的字符串，是以一些 '0'（可能没有 '0'）后面跟着一些 '1'（也可能没有 '1'）的形式组成的，那么该字符串是 单调递增 的。
+
+我们给出一个由字符 '0' 和 '1' 组成的字符串 s，我们可以将任何 '0' 翻转为 '1' 或者将 '1' 翻转为 '0'。
+
+返回使 s 单调递增 的最小翻转次数。
+
+```
+输入：s = "010110"
+输出：2
+解释：我们翻转得到 011111，或者是 000111。
+```
+
+---
+
+解题思路：
+
+- 动态规划。答案字符串左侧肯定都是 0 ，右侧都是 1 。所以枚举每一个分割点，统计一次左侧 1 出现的次数，右侧 0 出现的次数，加在一起便是需要反转的字符个数。
+
+```java
+class Solution {
+    public int minFlipsMonoIncr(String s) {
+        int n = s.length();
+        int[] pre = new int[n];
+        int[] dp = new int[n];
+        int num = 0;
+        for (int i = 0; i < n; i++) {
+            num += s.charAt(i) - '0';
+            pre[i] = num;
+        }
+        dp[0] = n - pre[n - 1];
+        dp[n - 1] = pre[n - 1];
+        int min = Math.min(dp[0], dp[n - 1]);
+        for (int i = 1; i < n - 1; i++) {
+            dp[i] = pre[i - 1] + (n - 1 - i - pre[n - 1] + pre[i]);
+            min = Math.min(min, dp[i]);
+        }
+        return min;
+    }
+}
+```
+
+## [剑指 Offer II 093. 最长斐波那契数列](https://leetcode-cn.com/problems/Q91FMA/)
+
+如果序列 X_1, X_2, ..., X_n 满足下列条件，就说它是 斐波那契式 的：
+
+- n >= 3
+- 对于所有 i + 2 <= n，都有 $X_i + X_{i+1} = X_{i+2}$
+  给定一个严格递增的正整数数组形成序列 arr ，找到 arr 中最长的斐波那契式的子序列的长度。如果一个不存在，返回  0 。
+
+（回想一下，子序列是从原序列  arr 中派生出来的，它从 arr 中删掉任意数量的元素（也可以不删），而不改变其余元素的顺序。例如， [3, 5, 8] 是 [3, 4, 5, 6, 7, 8] 的一个子序列）
+
+```java
+输入: arr = [1,3,7,11,12,14,18]
+输出: 3
+解释: 最长的斐波那契式子序列有 [1,11,12]、[3,11,14] 以及 [7,11,18] 。
+```
+
+---
+
+解题思路:
+
+- 动态规划。
+
+  ```java
+   /*
+       *      1   2   3   4   5   6   7   8
+       *   1  1   2   2   2   2   2   2   2
+       *   2      1   3   2   2   2   2   2
+       *   3          1   3   4   2   2   2
+       *   4              1   3   3   4   2
+       *   5                  1   3   3   5
+       *   6                      1   3   3
+       *   7                          1   3
+       *   8                              1
+   */
+   dp[i][j]：表示以A[i],A[j]结尾的斐波那契数列的最大长度
+                dp[i][j]=Len(......,A[i],A[j])
+                A[k]+A[i]==A[j]
+    dp[i][j] = max (dp[k][i]+1) 其中 A[k]+A[i]==A[j]
+  ```
+
+```java
+class Solution {
+    public int lenLongestFibSubseq(int[] arr) {
+        int n = arr.length;
+        if (n == 0 || n == 1 || n == 2) {
+            return 0;
+        }
+        int[][] dp = new int[n][n];
+        HashMap<Integer, Integer> hashMap = new HashMap<>();
+        for (int i = 0; i < arr.length; i++) {
+            hashMap.put(arr[i], i);
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                dp[i][j] = 2;
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                // i 开始 j 结束 A[j] - A[i] = A[k]
+                if (hashMap.containsKey(arr[j] - arr[i])) {
+                    int idx = hashMap.get(arr[j] - arr[i]);
+                    dp[i][j] = Math.max(dp[i][j], dp[idx][i]+1);
+                    ans = Math.max(dp[i][j], ans);
+                }
+            }
+        }
+        return ans >= 3 ? ans : 0;
+    }
+}
+```
+
+## [剑指 Offer II 095. 最长公共子序列](https://leetcode-cn.com/problems/qJnOS7/)
+
+给定两个字符串 text1 和 text2，返回这两个字符串的最长 公共子序列 的长度。如果不存在 公共子序列 ，返回 0 。
+
+一个字符串的 子序列 是指这样一个新的字符串：它是由原字符串在不改变字符的相对顺序的情况下删除某些字符（也可以不删除任何字符）后组成的新字符串。
+
+例如，"ace" 是 "abcde" 的子序列，但 "aec" 不是 "abcde" 的子序列。
+两个字符串的 公共子序列 是这两个字符串所共同拥有的子序列。
+
+```
+输入：text1 = "abcde", text2 = "ace" 
+输出：3  
+解释：最长公共子序列是 "ace" ，它的长度为 3 。
+```
+
+---
+
+解题思路:
+
+- 动态规划。
+
+- 其中 dp\[i][j] 表示 text1 [0:i]和 text2 [0:j] 的最长公共子序列的长度。
+
+  ```java
+          a   b   c   d   e
+      ij  0   0   0   0   0
+   a   0  1   1   1   1   1
+   c   0  1   1   2   2   2
+   e   0  1   1   2   2   3
+  ```
+
+```java
+class Solution {
+    public int longestCommonSubsequence(String text1, String text2) {
+        int m = text1.length(), n = text2.length();
+        int[][] dp = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            char c1 = text1.charAt(i - 1);
+            for (int j = 1; j <= n; j++) {
+                char c2 = text2.charAt(j - 1);
+                if (c1 == c2) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+}
+```
+
+## [剑指 Offer II 100. 三角形中最小路径之和](https://leetcode-cn.com/problems/IlPe0q/)
+
+给定一个三角形 triangle ，找出自顶向下的最小路径和。
+
+每一步只能移动到下一行中相邻的结点上。相邻的结点 在这里指的是 下标 与 上一层结点下标 相同或者等于 上一层结点下标 + 1 的两个结点。也就是说，如果正位于当前行的下标 i ，那么下一步可以移动到下一行的下标 i 或 i + 1 。
+
+```java
+输入：triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]
+输出：11
+解释：如下面简图所示：
+   2
+  3 4
+ 6 5 7
+4 1 8 3
+自顶向下的最小路径和为 11（即，2 + 3 + 5 + 1 = 11）。
+```
+
+---
+
+解题思路:
+
+- 动态规划。
+
+```java
+class Solution {
+    public int minimumTotal(List<List<Integer>> triangle) {
+        int n = triangle.size();
+        if (n == 1) {
+            return triangle.get(0).get(0);
+        }
+        int[] preDp = new int[n];
+        int[] dp = new int[n];
+        preDp[0] = triangle.get(0).get(0);
+        for (int i = 1; i < n; i++) {
+            dp[0] = preDp[0] + triangle.get(i).get(0);
+            dp[i] = preDp[i - 1] + triangle.get(i).get(i);
+            for (int j = 1; j < i; j++) {
+                dp[j] = Math.min(preDp[j], preDp[j - 1]) + triangle.get(i).get(j);
+            }
+            preDp = Arrays.copyOf(dp, i+1);
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i : dp) {
+            if (i < min) {
+                min = i;
+            }
+        }
+        return min;
+    }
+}
+```
+
+## [剑指 Offer II 101. 分割等和子集](https://leetcode-cn.com/problems/NUPfPr/)
+
+给定一个非空的正整数数组 `nums` ，请判断能否将这些数字分成元素和相等的两部分。
+
+```
+输入：nums = [1,5,11,5]
+输出：true
+解释：nums 可以分割成 [1, 5, 5] 和 [11] 。
+```
+
+---
+
+解题思路:
+
+- NP完全问题。动态规划转为==0-1背包==问题。
+
+  能否从数组中选出若个数字，使它们的和等于 target = sum / 2，那么所有数字之和 sum 必须为偶数，若 sum 不为偶数则等和子集肯定不存在。有 n 个数字，每一步都判断该数字是否加入等和子集，最终需要判断组合的解的个数是否大于 0
+
+
+```java
+class Solution {
+    public boolean canPartition(int[] nums) {
+        int sum = Arrays.stream(nums).sum();
+        if (sum % 2 == 1) {
+            return false;
+        }
+        sum /= 2;
+        boolean[][] dp = new boolean[nums.length][sum + 1];
+        for (int i = 0; i <= sum; i++) {
+            dp[0][i] = i == nums[0] ? true : false;
+        }
+        if (dp[0][sum]) {
+            return true;
+        }
+        for (int i = 1; i < nums.length; i++) {
+            for (int j = 0; j <= sum; j++) {
+                dp[i][j] =
+                        dp[i - 1][j] || (j - nums[i] > 0 && dp[i - 1][j - nums[i]]) || j == nums[i];
+            }
+            if (dp[i][sum]) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+```
+
+## [剑指 Offer II 102. 加减的目标值](https://leetcode-cn.com/problems/YaVDxD/)
+
+给定一个正整数数组 nums 和一个整数 target 。
+
+向数组中的每个整数前添加 '+' 或 '-' ，然后串联起所有整数，可以构造一个 表达式 ：
+
+例如，nums = [2, 1] ，可以在 2 之前添加 '+' ，在 1 之前添加 '-' ，然后串联起来得到表达式 "+2-1" 。
+返回可以通过上述方法构造的、运算结果等于 target 的不同 表达式 的数目。
+
+```java
+输入：nums = [1,1,1,1,1], target = 3
+输出：5
+解释：一共有 5 种方法让最终目标和为 3 。
+-1 + 1 + 1 + 1 + 1 = 3
++1 - 1 + 1 + 1 + 1 = 3
++1 + 1 - 1 + 1 + 1 = 3
++1 + 1 + 1 - 1 + 1 = 3
++1 + 1 + 1 + 1 - 1 = 3
+```
+
+---
+
+解题思路:
+
+- 动态规划。
+
+  目标和target可以表达为:  
+
+  ```java
+  负数(-neg) + 正数(pos) = target
+  -neg + (sum-neg) = target
+  sum - target = 2*neg
+  ```
+
+  所以只需要找到用 num[i] 组合成neg即可，转换为背包问题。
+
+```java
+class Solution {
+    public int findTargetSumWays(int[] nums, int target) {
+        int sum = Arrays.stream(nums).sum();
+        target = sum - target;
+        if (target < 0 || target % 2 != 0) {
+            return 0;
+        }
+        target /= 2;
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = target; j >= 0; j--) {
+                if (j - nums[i] >= 0)
+                    dp[j] = dp[j - nums[i]] + dp[j];
+            }
+        }
+        return dp[target];
+    }
+}
+```
+
+
+
+
+
+## [剑指 Offer II 103. 最少的硬币数目](https://leetcode-cn.com/problems/gaM7Ch/)
+
+给定不同面额的硬币 coins 和一个总金额 amount。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
+
+你可以认为每种硬币的数量是无限的。
+
+```java
+输入：coins = [1, 2, 5], amount = 11
+输出：3 
+解释：11 = 5 + 5 + 1
+```
+
+---
+
+解题思路:
+
+- 动态规划。
+
+  dp[j]表示价格为 j 时的最小硬币数，枚举价格。
+
+  ```
+  dp[j] = Math.min(dp[j], dp[j - coins[i]] + 1);
+  amount  0   1   2   3   4   5   6   7   8   9   10  11
+      1   0   1   2   3   4   5   6   7   8   9   10  11
+      2   0   1   1   2   2   3   3   4   4   5   5   6
+      3   0   1   1   1   2   2   2   3   3   3   4   4
+  ```
+
+```java
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+        if (amount == 0) {
+            return 0;
+        }
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, amount + 1);
+        dp[0] = 0;
+        for (int i = 0; i < coins.length; i++) {
+            for (int j = 0; j <= amount; j++) {
+                if (j - coins[i] >= 0) {
+                    dp[j] = Math.min(dp[j], dp[j - coins[i]] + 1);
+                }
+            }
+        }
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+}
+```
+
+## [剑指 Offer II 105. 岛屿的最大面积](https://leetcode-cn.com/problems/ZL6zAn/)
+
+给定一个由 0 和 1 组成的非空二维数组 grid ，用来表示海洋岛屿地图。
+
+一个 岛屿 是由一些相邻的 1 (代表土地) 构成的组合，这里的「相邻」要求两个 1 必须在水平或者竖直方向上相邻。你可以假设 grid 的四个边缘都被 0（代表水）包围着。
+
+找到给定的二维数组中最大的岛屿面积。如果没有岛屿，则返回面积为 0 。
+
+```java
+输入: grid = [[0,0,1,0,0,0,0,1,0,0,0,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,1,1,0,1,0,0,0,0,0,0,0,0],[0,1,0,0,1,1,0,0,1,0,1,0,0],[0,1,0,0,1,1,0,0,1,1,1,0,0],[0,0,0,0,0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,0,0,0,0,0,0,1,1,0,0,0,0]]
+输出: 6
+解释: 对于上面这个给定矩阵应返回 6。注意答案不应该是 11 ，因为岛屿只能包含水平或垂直的四个方向的 1 。
+```
+
+---
+
+解题思路:
+
+- DFS。求得是最大岛屿面积，每次DFS要算出岛屿面积。
+
+```java
+class Solution {
+    public int maxAreaOfIsland(int[][] grid) {
+        int ans = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 1) {
+                    ans = Math.max(ans, DFS(grid, i, j));
+                }
+            }
+        }
+        return ans;
+    }
+    public int DFS(int[][] grid, int i, int j) {
+        if (i >= grid.length || j >= grid[0].length || i < 0 || j < 0) {
+            return 0;
+        }
+        grid[i][j] = 0;
+        int num = 1;
+        if (i + 1 < grid.length && grid[i + 1][j] == 1) num += DFS(grid, i + 1, j);
+        if (i - 1 >= 0 && grid[i - 1][j] == 1) num += DFS(grid, i - 1, j);
+        if (j + 1 < grid[0].length && grid[i][j + 1] == 1) num += DFS(grid, i, j + 1);
+        if (j - 1 >= 0 && grid[i][j - 1] == 1) num += DFS(grid, i, j - 1);
+        return num;
+    }
+}
+```
+
+## [剑指 Offer II 106. 二分图](https://leetcode-cn.com/problems/vEAB3K/)
+
+存在一个 无向图 ，图中有 n 个节点。其中每个节点都有一个介于 0 到 n - 1 之间的唯一编号。
+
+给定一个二维数组 graph ，表示图，其中 graph[u] 是一个节点数组，由节点 u 的邻接节点组成。形式上，对于 graph[u] 中的每个 v ，都存在一条位于节点 u 和节点 v 之间的无向边。该无向图同时具有以下属性：
+
+不存在自环（graph[u] 不包含 u）。
+不存在平行边（graph[u] 不包含重复值）。
+如果 v 在 graph[u] 内，那么 u 也应该在 graph[v] 内（该图是无向图）
+这个图可能不是连通图，也就是说两个节点 u 和 v 之间可能不存在一条连通彼此的路径。
+二分图 定义：如果能将一个图的节点集合分割成两个独立的子集 A 和 B ，并使图中的每一条边的两个节点一个来自 A 集合，一个来自 B 集合，就将这个图称为 二分图 。
+
+如果图是二分图，返回 true ；否则，返回 false 。
+
+<img src="asset/%E5%89%91%E6%8C%87%20Offer.assets/bi1.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：graph = [[1,3],[0,2],[1,3],[0,2]]
+输出：true
+解释：可以将节点分成两组: {0, 2} 和 {1, 3} 。
+```
+
+---
+
+解题思路:
+
+- 染色法+DFS。相邻的染上不同颜色，如果要染得颜色不一致，返回false。
+
+```java
+class Solution {
+    public  boolean ans;
+    public boolean isBipartite(int[][] graph) {
+        ans = true;
+        int[] color = new int[graph.length];
+        for (int i = 0; i < graph.length && ans; i++) {
+            if (color[i] == 0) DFS(graph, color, i, 1);
+        }
+        return ans;
+    }
+    // 第i个节点为初始节点.
+    public  void DFS(int[][] graph, int[] color, int i, int rORg) {
+        if (color[i] != 0) {// 节点已经染过色
+            // 和需要染得颜色不一样
+            if (color[i] != rORg) ans = false;
+            return;
+        }
+        color[i] = rORg;
+        for (int i1 : graph[i]) {
+            // 给与 i 相邻的节点都染上相反的颜色
+            DFS(graph, color, i1, -rORg);
+        }
+    }
+}
+```
 
 ## [剑指 Offer 06. 从尾到头打印链表](https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/)
 

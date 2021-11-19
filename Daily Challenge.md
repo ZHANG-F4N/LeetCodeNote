@@ -607,6 +607,42 @@ class NumArray {
  */
 ```
 
+## [319. 灯泡开关](https://leetcode-cn.com/problems/bulb-switcher/)
+
+初始时有 n 个灯泡处于关闭状态。第一轮，你将会打开所有灯泡。接下来的第二轮，你将会每两个灯泡关闭一个。
+
+第三轮，你每三个灯泡就切换一个灯泡的开关（即，打开变关闭，关闭变打开）。第 i 轮，你每 i 个灯泡就切换一个灯泡的开关。直到第 n 轮，你只需要切换最后一个灯泡的开关。
+
+找出并返回 n 轮后有多少个亮着的灯泡。
+
+```java
+输入：n = 3
+输出：1 
+解释：
+初始时, 灯泡状态 [关闭, 关闭, 关闭].
+第一轮后, 灯泡状态 [开启, 开启, 开启].
+第二轮后, 灯泡状态 [开启, 关闭, 开启].
+第三轮后, 灯泡状态 [开启, 关闭, 关闭]. 
+
+你应该返回 1，因为只有一个灯泡还亮着。
+```
+
+---
+
+解题思路:
+
+- 数学规律:对于第 k 个灯泡，它被切换的次数恰好就是 k 的约数个数。如果 k 有偶数个约数，那么最终第 k 个灯泡的状态为暗；如果 k 有奇数个约数，那么最终第 k 个灯泡的状态为亮。对于 k 而言，如果它有约数 x，那么一定有约数 $\dfrac{k}{x} $ 。因此只要当 $x^2 \neq k$ 时，约数都是「成对」出现的。这就说明，只有当 k 是「完全平方数」时，它才会有奇数个约数，否则一定有偶数个约数。
+
+```java
+class Solution {
+    public int bulbSwitch(int n) {
+        return (int) Math.sqrt(n + 0.5);
+    }
+}
+```
+
+
+
 ## [352. 将数据流变为多个不相交区间](https://leetcode-cn.com/problems/data-stream-as-disjoint-intervals/)
 
  给你一个由非负整数 a1, a2, ..., an 组成的数据流输入，请你将到目前为止看到的数字总结为不相交的区间列表。
@@ -717,6 +753,51 @@ class SummaryRanges {
  * obj.addNum(val);
  * int[][] param_2 = obj.getIntervals();
  */
+```
+
+## [397. 整数替换](https://leetcode-cn.com/problems/integer-replacement/)
+
+给定一个正整数 n ，你可以做如下操作：
+
+如果 n 是偶数，则用 n / 2替换 n 。
+如果 n 是奇数，则可以用 n + 1或n - 1替换 n 。
+n 变为 1 所需的最小替换次数是多少？
+
+```
+输入：n = 7
+输出：4
+解释：7 -> 8 -> 4 -> 2 -> 1
+或 7 -> 6 -> 3 -> 2 -> 1
+```
+
+---
+
+解题思路:
+
+- 二进制。
+  - 偶数时只能进行 /2 操作。
+  - 奇数时，如果尾部存在连续的 1 ，那么 +1 可以产生进位，连续生成尾部 0 ，从而加速缩小数字。但需要注意边界 x = 3 时的情况（此时选择 -1 操作）。
+
+```java
+class Solution {
+    public int integerReplacement(int n) {
+        int ans = 0;
+        //于 x 为奇数所能执行的两种操作，+1 能够消除连续一段的 1，
+        // 只要次低位为 1（存在连续段），应当优先使用 +1 操作，
+        // 但需要注意边界 x = 3 时的情况（此时选择 -1 操作）。
+        //
+        long _n = n;
+        while (_n != 1) {
+            if ((_n & 1) == 0)  _n >>= 1;
+            else {
+                if (_n != 3 && ((_n >> 1) & 1) == 1) _n++;
+                else _n--;
+            }
+            ans++;
+        }
+        return ans;
+    }
+}
 ```
 
 
@@ -1137,6 +1218,67 @@ class Solution {
     }
 }
 ```
+
+## [563. 二叉树的坡度](https://leetcode-cn.com/problems/binary-tree-tilt/)
+
+给定一个二叉树，计算 整个树 的坡度 。
+
+一个树的 节点的坡度 定义即为，该节点左子树的节点之和和右子树节点之和的 差的绝对值 。如果没有左子树的话，左子树的节点之和为 0 ；没有右子树的话也是一样。空结点的坡度是 0 。
+
+整个树 的坡度就是其所有节点的坡度之和。
+
+<img src="asset/Daily%20Challenge.assets/tilt2.jpg" alt="img" style="zoom: 50%;" />
+
+```java
+输入：root = [4,2,9,3,5,null,7]
+输出：15
+解释：
+节点 3 的坡度：|0-0| = 0（没有子节点）
+节点 5 的坡度：|0-0| = 0（没有子节点）
+节点 7 的坡度：|0-0| = 0（没有子节点）
+节点 2 的坡度：|3-5| = 2（左子树就是左子节点，所以和是 3 ；右子树就是右子节点，所以和是 5 ）
+节点 9 的坡度：|0-7| = 7（没有左子树，所以和是 0 ；右子树正好是右子节点，所以和是 7 ）
+节点 4 的坡度：|(3+5+2)-(9+7)| = |10-16| = 6（左子树值为 3、5 和 2 ，和是 10 ；右子树值为 9 和 7 ，和是 16 ）
+坡度总和：0 + 0 + 0 + 2 + 7 + 6 = 15
+```
+
+---
+
+解题思路:
+
+- 深度有限遍历即可，使用全局变量计算总结果。
+
+```java
+class Solution {
+    public int ans = 0;
+    public int findTilt(TreeNode root) {
+        ans = 0;
+        sum(root);
+        return ans;
+    }
+    public int sum(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int left = 0;
+        if (root.left != null) {
+            left = root.left.val + sum(root.left);
+        }
+        int right = 0;
+        if (root.right != null) {
+            right = root.right.val + sum(root.right);
+        }
+        int val = left + right;
+        root.val = Math.abs(left - right);
+        ans += root.val;
+        return val;
+    }
+}
+```
+
+
+
+
 
 ## [575. 分糖果](https://leetcode-cn.com/problems/distribute-candies/)
 
