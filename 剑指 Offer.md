@@ -2365,7 +2365,108 @@ class Solution {
 }
 ```
 
+## [剑指 Offer II 105. 岛屿的最大面积](https://leetcode-cn.com/problems/ZL6zAn/)
 
+给定一个由 0 和 1 组成的非空二维数组 grid ，用来表示海洋岛屿地图。
+
+一个 岛屿 是由一些相邻的 1 (代表土地) 构成的组合，这里的「相邻」要求两个 1 必须在水平或者竖直方向上相邻。你可以假设 grid 的四个边缘都被 0（代表水）包围着。
+
+找到给定的二维数组中最大的岛屿面积。如果没有岛屿，则返回面积为 0 。
+
+```java
+输入: grid = [[0,0,1,0,0,0,0,1,0,0,0,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,1,1,0,1,0,0,0,0,0,0,0,0],[0,1,0,0,1,1,0,0,1,0,1,0,0],[0,1,0,0,1,1,0,0,1,1,1,0,0],[0,0,0,0,0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,1,1,1,0,0,0],[0,0,0,0,0,0,0,1,1,0,0,0,0]]
+输出: 6
+解释: 对于上面这个给定矩阵应返回 6。注意答案不应该是 11 ，因为岛屿只能包含水平或垂直的四个方向的 1 。
+```
+
+---
+
+解题思路:
+
+- DFS。求得是最大岛屿面积，每次DFS要算出岛屿面积。
+
+```java
+class Solution {
+    public int maxAreaOfIsland(int[][] grid) {
+        int ans = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 1) {
+                    ans = Math.max(ans, DFS(grid, i, j));
+                }
+            }
+        }
+        return ans;
+    }
+    public int DFS(int[][] grid, int i, int j) {
+        if (i >= grid.length || j >= grid[0].length || i < 0 || j < 0) {
+            return 0;
+        }
+        grid[i][j] = 0;
+        int num = 1;
+        if (i + 1 < grid.length && grid[i + 1][j] == 1) num += DFS(grid, i + 1, j);
+        if (i - 1 >= 0 && grid[i - 1][j] == 1) num += DFS(grid, i - 1, j);
+        if (j + 1 < grid[0].length && grid[i][j + 1] == 1) num += DFS(grid, i, j + 1);
+        if (j - 1 >= 0 && grid[i][j - 1] == 1) num += DFS(grid, i, j - 1);
+        return num;
+    }
+}
+```
+
+## [剑指 Offer II 106. 二分图](https://leetcode-cn.com/problems/vEAB3K/)
+
+存在一个 无向图 ，图中有 n 个节点。其中每个节点都有一个介于 0 到 n - 1 之间的唯一编号。
+
+给定一个二维数组 graph ，表示图，其中 graph[u] 是一个节点数组，由节点 u 的邻接节点组成。形式上，对于 graph[u] 中的每个 v ，都存在一条位于节点 u 和节点 v 之间的无向边。该无向图同时具有以下属性：
+
+不存在自环（graph[u] 不包含 u）。
+不存在平行边（graph[u] 不包含重复值）。
+如果 v 在 graph[u] 内，那么 u 也应该在 graph[v] 内（该图是无向图）
+这个图可能不是连通图，也就是说两个节点 u 和 v 之间可能不存在一条连通彼此的路径。
+二分图 定义：如果能将一个图的节点集合分割成两个独立的子集 A 和 B ，并使图中的每一条边的两个节点一个来自 A 集合，一个来自 B 集合，就将这个图称为 二分图 。
+
+如果图是二分图，返回 true ；否则，返回 false 。
+
+<img src="asset/%E5%89%91%E6%8C%87%20Offer.assets/bi1.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：graph = [[1,3],[0,2],[1,3],[0,2]]
+输出：true
+解释：可以将节点分成两组: {0, 2} 和 {1, 3} 。
+```
+
+---
+
+解题思路:
+
+- 染色法+DFS。相邻的染上不同颜色，如果要染得颜色不一致，返回false。
+
+```java
+class Solution {
+    public  boolean ans;
+    public boolean isBipartite(int[][] graph) {
+        ans = true;
+        int[] color = new int[graph.length];
+        for (int i = 0; i < graph.length && ans; i++) {
+            if (color[i] == 0) DFS(graph, color, i, 1);
+        }
+        return ans;
+    }
+    // 第i个节点为初始节点.
+    public  void DFS(int[][] graph, int[] color, int i, int rORg) {
+        if (color[i] != 0) {// 节点已经染过色
+            // 和需要染得颜色不一样
+            if (color[i] != rORg) ans = false;
+            return;
+        }
+        color[i] = rORg;
+        for (int i1 : graph[i]) {
+            // 给与 i 相邻的节点都染上相反的颜色
+            DFS(graph, color, i1, -rORg);
+        }
+    }
+}
+```
 
 ## [剑指 Offer 06. 从尾到头打印链表](https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/)
 

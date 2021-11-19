@@ -755,6 +755,51 @@ class SummaryRanges {
  */
 ```
 
+## [397. 整数替换](https://leetcode-cn.com/problems/integer-replacement/)
+
+给定一个正整数 n ，你可以做如下操作：
+
+如果 n 是偶数，则用 n / 2替换 n 。
+如果 n 是奇数，则可以用 n + 1或n - 1替换 n 。
+n 变为 1 所需的最小替换次数是多少？
+
+```
+输入：n = 7
+输出：4
+解释：7 -> 8 -> 4 -> 2 -> 1
+或 7 -> 6 -> 3 -> 2 -> 1
+```
+
+---
+
+解题思路:
+
+- 二进制。
+  - 偶数时只能进行 /2 操作。
+  - 奇数时，如果尾部存在连续的 1 ，那么 +1 可以产生进位，连续生成尾部 0 ，从而加速缩小数字。但需要注意边界 x = 3 时的情况（此时选择 -1 操作）。
+
+```java
+class Solution {
+    public int integerReplacement(int n) {
+        int ans = 0;
+        //于 x 为奇数所能执行的两种操作，+1 能够消除连续一段的 1，
+        // 只要次低位为 1（存在连续段），应当优先使用 +1 操作，
+        // 但需要注意边界 x = 3 时的情况（此时选择 -1 操作）。
+        //
+        long _n = n;
+        while (_n != 1) {
+            if ((_n & 1) == 0)  _n >>= 1;
+            else {
+                if (_n != 3 && ((_n >> 1) & 1) == 1) _n++;
+                else _n--;
+            }
+            ans++;
+        }
+        return ans;
+    }
+}
+```
+
 
 
 ## [430. 扁平化多级双向链表](https://leetcode-cn.com/problems/flatten-a-multilevel-doubly-linked-list/)
