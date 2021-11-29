@@ -4,7 +4,7 @@
 
 [TOC]
 
-## Question 2 链表两数相加
+## 2. 链表两数相加
 
 给出两个 非空 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 逆序 的方式存储的，并且它们的每个节点只能存储 一位 数字。
 
@@ -81,7 +81,7 @@ class Solution:
         return ans
 ```
 
-##  Question 3 无重复字符的最长子串
+##  3. 无重复字符的最长子串
 
 给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
 
@@ -124,7 +124,7 @@ class Solution:
 ```
 
 
-##  Question 5 最长回文子串
+##  5. 最长回文子串
 
 给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。
 
@@ -162,7 +162,7 @@ class Solution:
         return s[left:right+1]
 ```
 
-##  Question 8 字符串转换整数 (atoi)
+##  8. 字符串转换整数 (atoi)
 
 请你来实现一个 atoi 函数，使其能将字符串转换成整数。
 
@@ -228,7 +228,7 @@ class Solution:
 
 
 
-## Question 11 [盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)
+## 11. [盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)
 
 给你 n 个非负整数 a1，a2，...，an，每个数代表坐标中的一个点 (i, ai) 。在坐标内画 n 条垂直线，垂直线 i 的两个端点分别为 (i, ai) 和 (i, 0) 。找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。
 
@@ -276,7 +276,7 @@ class Solution {
 
 
 
-##  Question 15 三数之和
+##  15. 三数之和
 
 给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有满足条件且不重复的三元组。
 注意：答案中不可以包含重复的三元组
@@ -329,7 +329,7 @@ class Solution:
         return ans
 ```
 
-##  Question 16 最接近的三数之和
+##  16. 最接近的三数之和
 
 给定一个包括 n 个整数的数组 nums 和 一个目标值 target。找出 nums 中的三个整数，使得它们的和与 target 最接近。返回这三个数的和。假定每组输入只存在唯一答案。
 
@@ -398,7 +398,7 @@ class Solution:
         return best
 ```
 
-##  Question 17 电话号码的字母组合
+##  17. 电话号码的字母组合
 
 给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。
 给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。phoneMap = {
@@ -449,7 +449,7 @@ class Solution:
 ```
 
 
-##  Question 19 删除链表的倒数第N个节点
+##  19. 删除链表的倒数第N个节点
 
 给定一个链表，删除链表的倒数第 n 个节点，并且返回链表的头结点。
 
@@ -501,7 +501,7 @@ class Solution:
         return ans
 ```
 
-##  Question 21 合并两个有序链表
+##  21. 合并两个有序链表
 
 将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
 
@@ -550,7 +550,7 @@ class Solution:
         return ans.next
 ```
 
-##  Question 24 两两交换链表中的节点
+##  24. 两两交换链表中的节点
 
 给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
@@ -600,7 +600,7 @@ class Solution:
         return ans
 ```
 
-##  Question 28 实现 strStr() KMP
+##  28. 实现 strStr() KMP
 
 给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。如果不存在，则返回  -1。
 
@@ -671,7 +671,76 @@ next    0	0	0	1	2	0	0	0	1	2	3	4	5	3
 }
 ```
 
-## Question 31 下一个排列
+## [30. 串联所有单词的子串](https://leetcode-cn.com/problems/substring-with-concatenation-of-all-words/)
+
+给定一个字符串 s 和一些 `长度相同` 的单词 words 。找出 s 中恰好可以由 words 中所有单词串联形成的子串的起始位置。
+
+注意子串要与 words 中的单词完全匹配，中间不能有其他字符 ，但不需要考虑 words 中单词串联的顺序。
+
+```
+输入：s = "barfoofoobarthefoobarman", words = ["bar","foo","the"]
+输出：[6,9,12]
+```
+
+---
+
+解题思路:
+
+- 使用HashMap加速匹配。
+
+  ​	我们将单词表中的单词，加入HashMap中当做键，让他的出现次数作为值保存。我们的子串长度应该和单词数组中字母加起来的长度是相同的，所以我们在一个长度为 ==wordLen*wordNum== 长度的滑动窗口中进行单词匹配。
+
+  ​	在匹配时，由于单词都是等长的，我们只需要判断滑动窗口中所有的`长wordLen单词块`是否在hashMap中出现即可。即可判断一个子串是否符合条件。
+
+  ​	==这个题就是使用了hashMap来加快了匹配过程。==
+
+```java
+class Solution {
+    public List<Integer> findSubstring(String s, String[] words) {
+        ArrayList<Integer> ans = new ArrayList<>();
+
+        int wordNum = words.length;
+        if (wordNum == 0) {
+            return ans;
+        }
+        int wordLen = words[0].length();
+        HashMap<String, Integer> wordMap = new HashMap<>();
+
+        for (String word : words) {
+            wordMap.put(word, wordMap.getOrDefault(word, 0) + 1);
+        }
+        int win = wordLen * wordNum;
+
+        //遍历字符串s
+        for (int i = 0; i <= s.length() - win; i++) {
+            //若以i开头的子串不存在于哈希表中，也就无需后续比较，直接continue
+            if (!wordMap.containsKey(s.substring(i, i + wordLen))) continue;
+            //若存在：
+            //由于wordMap和i后续还要用到，不能对其进行更改，故定义两个临时变量：哈希表tmp、整型j
+            HashMap<String, Integer> tempHashMap = new HashMap<>(wordMap);
+            int j = i;
+            //对每一个“窗口”进行判断，若该窗口子串存在且其个数大于0，将其个数减1，窗口向后移动一个步长，否则退出循环
+            for (int count = words.length; count > 0; count--) {
+                String a = s.substring(j, j + wordLen);
+                if (!tempHashMap.containsKey(a) || tempHashMap.get(a) == 0) break;
+                else {
+                    j += wordLen;
+                    tempHashMap.put(a, tempHashMap.get(a) - 1);
+                }
+                //若直到进行了 words.length 个窗口的判断子串都存在，匹配成功，将 i 的值放入ans
+                if (j == i + wordLen * words.length) ans.add(i);
+            }
+        }
+        return ans;
+    }
+}
+```
+
+
+
+
+
+## 31. 下一个排列
 
 实现获取下一个排列的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
 
@@ -728,7 +797,7 @@ class Solution:
                 nums[changeIndex1+1:] = sorted(nums[changeIndex1+1:])
                 return
 ```
-## Question 33 搜索旋转排序数组
+## 33. 搜索旋转排序数组
 
 假设按照升序排序的数组在预先未知的某个点上进行了旋转(例如，数组 [0,1,2,4,5,6,7]可能变为 [4,5,6,7,0,1,2])。
 搜索一个给定的目标值，如果数组中存在这个目标值，则返回它的索引，否则返回-1 。
@@ -773,7 +842,7 @@ class Solution:
         return -1 
 ```
 
-## Question 34 在排序数组中查找元素的第一个和最后一个位置
+## 34. 在排序数组中查找元素的第一个和最后一个位置
 
 给定一个按照升序排列的整数数组 nums，和一个目标值 target。找出给定目标值在数组中的开始位置和结束位置。  
 你的算法时间复杂度必须是 O(log n) 级别。
@@ -820,7 +889,7 @@ class Solution:
         return [lindex,rindex]
 ```
 
-## Question 35 搜索插入位置
+## 35. 搜索插入位置
 
 给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。你可以假设数组中无重复元素。  
 
@@ -860,6 +929,78 @@ class Solution:
             mid = (right + left) // 2
         return left #最后的插入位置，向下取整的，所以最后left为mid+1，mid总是最后等于left
 ```
+
+## [44. 通配符匹配](https://leetcode-cn.com/problems/wildcard-matching/)
+
+给定一个字符串 (s) 和一个字符模式 (p) ，实现一个支持 '?' 和 '*' 的通配符匹配。
+
+```java
+'?' 可以匹配任何单个字符。
+'*' 可以匹配任意字符串（包括空字符串）。
+```
+
+两个字符串完全匹配才算匹配成功。
+
+说明:
+
+s 可能为空，且只包含从 a-z 的小写字母。
+p 可能为空，且只包含从 a-z 的小写字母，以及字符 ? 和 *。
+
+```java
+输入:
+s = "adceb"
+p = "*a*b"
+输出: true
+解释: 第一个 '*' 可以匹配空字符串, 第二个 '*' 可以匹配字符串 "dce".
+```
+
+---
+
+解题思路:
+
+- 动态规划。==dp\[i][j] 表示 p[0~i] 与 s[0~j]是否匹配。==
+  - 如果 s~j~ 是小写字母，那么 p~i~必须也为相同的小写字母，状态转移方程为：$\textit{dp}[i][j] = (s_i~与~p_j~相同) \wedge \textit{dp}[i-1][j-1]$
+  - 如果 p~j~是问号，那么对 s~i~没有任何要求，状态转移方程为：$\textit{dp}[i][j] = \textit{dp}[i-1][j-1]$
+  - 如果 p~j~是星号，那么同样对 s~i~没有任何要求，但是星号可以匹配零或任意多个小写字母，因此状态转移方程分为两种情况，即使用或不使用这个星号：$\textit{dp}[i][j] = \textit{dp}[i][j-1] \vee \textit{dp}[i-1][j]$
+
+```java
+class Solution {
+    public boolean isMatch(String s, String p) {
+        // 动态规划
+        char[] arrS = s.toCharArray();
+        char[] arrP = p.toCharArray();
+        int n = arrP.length;
+        int m = arrS.length;
+        boolean[][] dp = new boolean[n + 1][m + 1];
+        dp[0][0] = true;
+        // 第一行
+        for (int i = 1; i <= m; i++) {
+            dp[0][i] = false;
+        }
+        for (int i = 1; i <= n; i++) {
+            if (arrP[i - 1] != '*') {
+                dp[i][0] = false;
+            } else {
+                dp[i][0] = dp[i - 1][0];
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (arrP[i - 1] == '?') {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else if (arrP[i - 1] == '*') {
+                    dp[i][j] = dp[i - 1][j] || dp[i][j - 1];
+                } else {
+                    dp[i][j] = dp[i - 1][j - 1] && (arrP[i - 1] == arrS[j-1]);
+                }
+            }
+        }
+        return dp[n][m];
+    }
+}
+```
+
+
 
 
 
@@ -910,9 +1051,65 @@ class Solution {
 }
 ```
 
+## [43. 字符串相乘](https://leetcode-cn.com/problems/multiply-strings/)
+
+给定两个以字符串形式表示的非负整数 num1 和 num2，返回 num1 和 num2 的乘积，它们的乘积也表示为字符串形式。
+
+```java
+示例 1:
+输入: num1 = "2", num2 = "3"
+输出: "6"
+示例 2:
+输入: num1 = "123", num2 = "456"
+输出: "56088"
+```
+
+---
+
+解题思路:
+
+- 竖式计算。中间结果用字符串保存。慢
+- 竖式计算。中间结果用整型数组保存。快
+
+```java
+class Solution {
+    public String multiply(String num1, String num2) {
+        if (num1.equals("0") || num2.equals("0")) {
+            return "0";
+        }
+        int m = num1.length(), n = num2.length();
+        int[] ansArr = new int[m + n];
+        for (int i = m - 1; i >= 0; i--) {
+            int x = num1.charAt(i) - '0';
+            for (int j = n - 1; j >= 0; j--) {
+                int y = num2.charAt(j) - '0';
+                // 将每位相乘的数用 整数保存起来,不会因为过长而无法计算
+                ansArr[i + j + 1] += x * y;
+            }
+        }
+        for (int i = m + n - 1; i > 0; i--) {
+            // 计算进位
+            ansArr[i - 1] += ansArr[i] / 10;
+            ansArr[i] %= 10;
+        }
+        int index = ansArr[0] == 0 ? 1 : 0;
+        StringBuffer ans = new StringBuffer();
+        while (index < m + n) {
+            ans.append(ansArr[index]);
+            index++;
+        }
+        return ans.toString();
+    }
+}
+```
 
 
-##  Question 48 旋转图像
+
+
+
+
+
+##  48. 旋转图像
 
 给定一个 n × n 的二维矩阵表示一个图像。
 将图像顺时针旋转 90 度。
@@ -959,7 +1156,7 @@ class Solution:
         for i in range(N):
             matrix[i].reverse()
 ```
-##  Question 41 缺失的第一个正数
+##  41. 缺失的第一个正数
 
 给你一个未排序的整数数组，请你找出其中没有出现的最小的正整数。  
 
@@ -1007,7 +1204,7 @@ class Solution:
 ```
 
 
-## Question 50 $x^n$
+## 50. $x^n$
 
 实现 pow(*x*,*n*),即计算*x*的*n*次幂函数（即,$x^n$）。
 

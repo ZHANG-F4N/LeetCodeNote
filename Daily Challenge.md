@@ -755,6 +755,66 @@ class SummaryRanges {
  */
 ```
 
+## [384. 打乱数组](https://leetcode-cn.com/problems/shuffle-an-array/)
+
+给你一个整数数组 nums ，设计算法来打乱一个没有重复元素的数组。
+
+实现 Solution class:
+
+Solution(int[] nums) 使用整数数组 nums 初始化对象
+int[] reset() 重设数组到它的初始状态并返回
+int[] shuffle() 返回数组随机打乱后的结果
+
+```java
+输入
+["Solution", "shuffle", "reset", "shuffle"]
+[[[1, 2, 3]], [], [], []]
+输出
+[null, [3, 1, 2], [1, 2, 3], [1, 3, 2]]
+
+解释
+Solution solution = new Solution([1, 2, 3]);
+solution.shuffle();    // 打乱数组 [1,2,3] 并返回结果。任何 [1,2,3]的排列返回的概率应该相同。例如，返回 [3, 1, 2]
+solution.reset();      // 重设数组到它的初始状态 [1, 2, 3] 。返回 [1, 2, 3]
+solution.shuffle();    // 随机返回数组 [1, 2, 3] 打乱后的结果。例如，返回 [1, 3, 2]
+```
+
+---
+
+解题思路:
+
+- 待乱序的数组长度为 n , 随机生成 0~n 中的数 k, 将第 k 个元素与数组的最后 1 个元素交换，这样我们只需要 O(1) 的时间复杂度即可完成第 k 个元素的操作。此时，被交换后数组的最后 1 个元素即为我们根据随机下标获取的元素。再进行 0~n-1 的下标交换,以此类推。
+
+```java
+class Solution {
+        int[] array;
+        public Solution(int[] nums) {
+            array = Arrays.copyOf(nums, nums.length);
+        }
+        public int[] reset() {
+            int[] ans = Arrays.copyOf(array, array.length);
+            return ans;
+        }
+        public int[] shuffle() {
+            int n = array.length;
+            Random random = new Random();
+            int[] ans = Arrays.copyOf(array, n);
+            for (int i = 0; i < n; i++) {
+                //greater than or equal to {0.0} and less than {1.0}.
+                // 不会等于1,所以会少最后一个位置.
+                //int idx = (int) (Math.random() * (n - i - 1));
+                int idx =random.nextInt(n - i);
+                int temp = ans[n - i - 1];
+                ans[n - i - 1] = ans[idx];
+                ans[idx] = temp;
+            }
+            return ans;
+        }
+    }
+```
+
+
+
 ## [397. 整数替换](https://leetcode-cn.com/problems/integer-replacement/)
 
 给定一个正整数 n ，你可以做如下操作：
@@ -1138,9 +1198,57 @@ class Solution {
 }
 ```
 
+## [519. 随机翻转矩阵](https://leetcode-cn.com/problems/random-flip-matrix/)
 
+给你一个 m x n 的二元矩阵 matrix ，且所有值被初始化为 0 。请你设计一个算法，随机选取一个满足 matrix[i][j] == 0 的下标 (i, j) ，并将它的值变为 1 。所有满足 matrix[i][j] == 0 的下标 (i, j) 被选取的概率应当均等。
 
+尽量最少调用内置的随机函数，并且优化时间和空间复杂度。
 
+```java
+实现 Solution 类：
+Solution(int m, int n) 使用二元矩阵的大小 m 和 n 初始化该对象
+int[] flip() 返回一个满足 matrix[i][j] == 0 的随机下标 [i, j] ，并将其对应格子中的值变为 1
+void reset() 将矩阵中所有的值重置为 0
+```
+
+---
+
+解题思路:
+
+- 二维映射一维，加哈希表记录访问过的点。
+  - 未访问过就直接使用
+  - 访问过就用最后一个点
+
+```java
+class Solution {
+        int m;
+        int n;
+        int cnt;// cnt 为剩余数个数，同时 cnt - 1 为区间右端点位置
+        Map<Integer, Integer> map = new HashMap<>();
+        Random random = new Random(300);
+
+        public Solution(int m, int n) {
+            this.m = m;
+            this.n = n;
+            this.cnt = m * n;
+        }
+
+        public int[] flip() {
+            int x = random.nextInt(cnt--);// 在 0 ~ cnt-1中生成一个随机数
+            // 判断是否这个点访问过
+            // · 未访问过的话直接使用
+            // · 访问就用最后一点，然后把最后一点更新
+            int idx = map.getOrDefault(x, x);
+            map.put(x, map.getOrDefault(cnt, cnt));
+            return new int[]{idx / n, idx % n};
+        }
+
+        public void reset() {
+            map.clear();
+            cnt = m * n;
+        }
+    }
+```
 
 
 
