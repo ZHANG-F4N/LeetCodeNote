@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,8 +16,10 @@ public class a18fourSum {
         }
         Arrays.sort(nums);
 
-        
 
+        List<List<Integer>> ans = new ArrayList<>();
+
+        return ans;
 
 
     }
