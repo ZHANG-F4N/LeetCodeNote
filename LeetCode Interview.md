@@ -194,6 +194,50 @@ class Solution {
 }
 ```
 
+## [面试题 01.05. 一次编辑](https://leetcode-cn.com/problems/one-away-lcci/)
+
+字符串有三种编辑操作:插入一个字符、删除一个字符或者替换一个字符。 给定两个字符串，编写一个函数判定它们是否只需要一次(或者零次)编辑。
+
+```java
+输入: 
+first = "pale"
+second = "ple"
+输出: True
+```
+
+---
+
+解题思路:
+
+- 一次遍历，第一次遇到不相同的地方，将长的字符串往后移一位。
+
+```java
+class Solution {
+    public boolean oneEditAway(String first, String second) {
+        // lStr是长字符串，sStr是短字符串
+        String lStr = first.length() >= second.length() ? first : second,
+                sStr = first.length() < second.length() ? first : second;
+        // diff是字符串中不同的字符数量，sStrIdx是短字符串的index，lStrIdx是长字符串的index
+        int diff = 0, sStrIdx = 0, lStrIdx = 0;
+        // 如果两个字符串长度差>1，即字符串中不同的字符数量>1，则无法通过一次编辑完成，返回false
+        if (lStr.length() - sStr.length() > 1) return false;
+        while (sStrIdx < sStr.length()) {
+            if (sStr.charAt(sStrIdx++) != lStr.charAt(lStrIdx++)) {
+                // 如果字符串长度不同，此时只将长字符串的index向后移动一位
+                if (lStr.length() != sStr.length()) sStrIdx--;
+                // 字符串不同字符数量+1
+                diff++;
+            }
+            // 字符串中不同的字符数量>1，则无法通过一次编辑完成，返回false
+            if (diff > 1) return false;
+        }
+        return true;
+    }
+}
+```
+
+
+
 ## [面试题 01.09. 字符串轮转](https://leetcode-cn.com/problems/string-rotation-lcci/)
 
 字符串轮转。给定两个字符串`s1`和`s2`，请编写代码检查`s2`是否为`s1`旋转而成（比如，`waterbottle`是`erbottlewat`旋转后的字符串）。
