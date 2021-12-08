@@ -1420,6 +1420,77 @@ class Solution {
 }
 ```
 
+## [689. 三个无重叠子数组的最大和](https://leetcode-cn.com/problems/maximum-sum-of-3-non-overlapping-subarrays/)
+
+给你一个整数数组 nums 和一个整数 k ，找出三个长度为 k 、互不重叠、且 3 * k 项的和最大的子数组，并返回这三个子数组。
+
+以下标的数组形式返回结果，数组中的每一项分别指示每个子数组的起始位置（下标从 0 开始）。如果有多个结果，返回字典序最小的一个。
+
+```java
+输入：nums = [1,2,1,2,6,7,5,1], k = 2
+输出：[0,3,5]
+解释：子数组 [1, 2], [2, 6], [7, 5] 对应的起始下标为 [0, 3, 5]。
+也可以取 [2, 1], 但是结果 [1, 3, 5] 在字典序上更大。
+```
+
+---
+
+解题思路:
+
+- 动态规划。
+
+  只需要使用动态规划求解即可：定义 f\[i][j] 为考虑前 i 个数，凑成无重叠子数组数量为 j 个时的最大值。最终答案为 f\[n - 1][3]
+
+  不失一般性的考虑 f\[i][j] 该如何计算（以最优方案是否包含 nums[i] 进行讨论）：
+
+  - 最优方案中包含 num[i]：由于这 j 个无重叠，因此前面的 j - 1 个子数组不能覆盖 [i−k+1,i]。即只能在 \[0, i - k] 中选 j - 1 个子数组。此时有：$f[i][j] = f[i - k][j - 1] + \sum_{idx = i - k + 1}^{i} nums[idx]$其中求解 $\sum_{idx = i - k + 1}^{i} $nums[idx] 部分可以使用「前缀和」优化
+
+  - 最优方案不包含 num[i]：当明确了 nums[i]nums[i] 对最优方案无贡献，此时问题等价于考虑前 i - 1i−1 个数，凑成 jj 个不重叠子数组的最大值。此时有：f\[i][j] = f\[i - 1][j]
+
+  最终 f\[i][j]为上述两种方案中的最大值。通过判断 f\[n - 1][3] 等于 f\[n - 2][3] 还是 $f[n - 1 - k][2] + \sum_{idx = n - k }^{n - 1} nums[idx]$来决定回溯点为何值。
+
+```java
+class Solution {
+    public int[] maxSumOfThreeSubarrays(int[] nums, int k) {
+        long[] pre = new long[nums.length + 1];
+        reverse(nums);
+        for (int i = 0; i < nums.length; i++) {
+            pre[i + 1] += pre[i] + nums[i];
+        }
+        long[][] dp = new long[nums.length + 1][4];
+        for (int i = k; i <= nums.length; i++) {
+            for (int j = 1; j < 4; j++) {
+                dp[i][j] = Math.max(dp[i - 1][j], dp[i - k][j - 1] + (pre[i] - pre[i - k]));
+            }
+        }
+        int[] ans = new int[3];
+        int j = 3;
+        int i = nums.length;
+        while (j > 0) {
+            if (dp[i - 1][j] > dp[i - k][j - 1] + (pre[i] - pre[i - k])) {
+                i--;
+            } else {
+                ans[--j] = nums.length - i;
+                i -= k;
+            }
+        }
+        reverse(ans);
+        return ans;
+    }
+    void reverse(int[] nums) {
+        int n = nums.length;
+        int l = 0, r = n - 1;
+        while (l < r) {
+            int c = nums[l];
+            nums[l++] = nums[r];
+            nums[r--] = c;
+        }
+    }
+}
+```
+
+
+
 
 
 ## [725. 分隔链表](https://leetcode-cn.com/problems/split-linked-list-in-parts/)
@@ -1552,6 +1623,81 @@ class Solution {
     }
 }
 ```
+
+## [1034. 边界着色](https://leetcode-cn.com/problems/coloring-a-border/)
+
+给你一个大小为 m x n 的整数矩阵 grid ，表示一个网格。另给你三个整数 row、col 和 color 。网格中的每个值表示该位置处的网格块的颜色。
+
+当两个网格块的颜色相同，而且在四个方向中任意一个方向上相邻时，它们属于同一 连通分量 。
+
+连通分量的边界 是指连通分量中的所有与不在分量中的网格块相邻（四个方向上）的所有网格块，或者在网格的边界上（第一行/列或最后一行/列）的所有网格块。
+
+请你使用指定颜色 color 为所有包含网格块 grid\[row][col] 的 连通分量的边界 进行着色，并返回最终的网格 grid 。
+
+```
+输入：grid = [[1,1,1],[1,1,1],[1,1,1]], row = 1, col = 1, color = 2
+输出：[[2,2,2],[2,1,2],[2,2,2]]
+```
+
+---
+
+解题思路:
+
+- DFS，找到联通分量，然后判断是否为边界，标记-1，然后再判断是否四周环绕，不是标记-1，是标记-2，这样就可以将整个图划分为三部分，负数为整个联通分量，内部-1表示边界，-2表示四周都环绕的，不改色。
+
+```java
+class Solution {
+    public int[][] colorBorder(int[][] grid, int row, int col, int color) {
+        if (grid[row][col] == color) {
+            return grid;
+        }
+        int temp = grid[row][col];
+        DFS(grid, row, col, grid[row][col], color);
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == -1) {
+                    grid[i][j] = color;
+                }
+                if (grid[i][j] == -2) {
+                    grid[i][j] = temp;
+                }
+            }
+        }
+        return grid;
+    }
+    public void DFS(int[][] grid, int i, int j, int paint, int color) {
+        if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] == -1 || grid[i][j] != paint || grid[i][j] == -2) {
+            return;
+        }
+        // 数组边界
+        if (i - 1 < 0 || i + 1 >= grid.length || j - 1 < 0 || j + 1 >= grid[0].length) {
+            grid[i][j] = -1;
+            // 联通分量边界
+        } else if ((grid[i - 1][j] != paint && grid[i - 1][j] != -1 && grid[i - 1][j] != -2) ||
+                (grid[i + 1][j] != paint && grid[i + 1][j] != -1 && grid[i + 1][j] != -2) ||
+                (grid[i][j - 1] != paint && grid[i][j - 1] != -1 && grid[i][j - 1] != -2) ||
+                (grid[i][j + 1] != paint && grid[i][j + 1] != -1 && grid[i][j + 1] != -2)) {
+            grid[i][j] = -1;
+        } else {
+            // 被访问 且 为内部
+            grid[i][j] = -2;
+        }
+        DFS(grid, i - 1, j, paint, color);
+        DFS(grid, i + 1, j, paint, color);
+        DFS(grid, i, j - 1, paint, color);
+        DFS(grid, i, j + 1, paint, color);
+        
+    }
+}
+```
+
+
+
+
+
+
+
+
 
 ## [1109. 航班预订统计](https://leetcode-cn.com/problems/corporate-flight-bookings/)
 
