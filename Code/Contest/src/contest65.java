@@ -1,25 +1,64 @@
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
-public class contest65a2 {
+public class contest65 {
     public static void main(String[] args) {
-
-        Robot obj = new Robot(8, 2);
-        obj.move(17);
-        obj.move(21);
-        obj.move(22);
-        obj.move(34);
-        obj.move(1);
-        obj.move(46);
-        obj.move(35);
-        int[] param_2 = obj.getPos();
-        String param_3 = obj.getDir();
-        obj.move(2);
-        obj.move(1);
-        obj.move(4);
-        int[] param_4 = obj.getPos();
-        String param_5 = obj.getDir();
+        System.out.println(Arrays.toString(maximumBeauty(new int[][]{{1, 2}, {3, 2}, {2, 4}, {5, 6}, {3, 5}}, new int[]{1, 2, 3, 4, 5, 6})));
     }
 
+    public static int[] maximumBeauty(int[][] items, int[] queries) {
+        HashMap<Integer, Integer> treeMap = new HashMap<>();
+        for (int i = 0; i < items.length; i++) {
+            if (treeMap.containsKey(items[i][0])) {
+                int max = treeMap.get(items[i][0]) > items[i][1] ? treeMap.get(items[i][0]) : items[i][1];
+                treeMap.put(items[i][0], max);
+            } else {
+                treeMap.put(items[i][0], items[i][1]);
+            }
+        }
+        int num = treeMap.size();
+        int[] max = new int[num];
+        int[][] maxVal = new int[num][2];
+        int idx = 0;
+        for (Map.Entry<Integer, Integer> entry : treeMap.entrySet()) {
+            max[idx] = entry.getKey();
+            maxVal[idx][1] = entry.getValue();
+            maxVal[idx][0] = entry.getKey();
+            idx++;
+        }
+        Arrays.sort(maxVal, (o1, o2) -> o1[0] - o2[0]);
+        Arrays.sort(max);
+        int[] ans = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            idx = Arrays.binarySearch(max, queries[i]);
+            if (idx < 0) {
+                idx = -idx -2;
+            }
+            ans[i] = maxVal[idx][1];
+        }
+        return ans;
+    }
+    public static boolean checkAlmostEquivalent(String word1, String word2) {
+        int[] num1 = new int[26];
+        int[] num2 = new int[26];
+
+        for (char c : word1.toCharArray()) {
+            num1[c - 'a']++;
+        }
+        for (char c : word2.toCharArray()) {
+            num2[c - 'a']++;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (Math.abs(num1[i] - num2[i]) > 3) {
+                return false;
+            }
+        }
+        return true;
+
+
+    }
     static class Robot {
         //public int[][] map = new int[201][201];
         //HashMap<Character, Character> hashMap;

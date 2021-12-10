@@ -1,13 +1,39 @@
-import java.util.List;
-
-public class contest267a2 {
+public class contest267 {
     public static void main(String[] args) {
-        int[] node = new int[]{5, 2, 6, 3, 9, 1, 7, 3, 8, 4};
-//        int[] node = new int[]{5, 2, 6};
-        ListNode head = new ListNode().build(node);
-        reverseEvenLengthGroups(head.next);
+
+        System.out.println(decodeCiphertext("iveo    eed   l te   olc", 4));
     }
 
+    public static String decodeCiphertext(String encodedText, int rows) {
+        if (rows == 1) {
+            return encodedText;
+        }
+        int len = encodedText.length();
+        int col = len / rows;
+        char[][] map = new char[rows][col];
+
+
+        int idx = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < col; j++) {
+                map[i][j] = encodedText.charAt(idx++);
+            }
+        }
+
+
+        StringBuilder ans = new StringBuilder();
+
+        for (int j = 0; j < col; j++) {
+            for (int i = 0; i < rows; i++) {
+                if (i + j < col) {
+                    ans.append(map[i][i + j]);
+                }
+            }
+        }
+        return ans.toString().replaceAll("\\s+$", "");
+
+
+    }
     public static ListNode reverseEvenLengthGroups(ListNode head) {
 
         int idx = 0;
@@ -67,5 +93,26 @@ public class contest267a2 {
             idx = tempH;
         }
         return head.next;
+    }
+    public static int timeRequiredToBuy(int[] tickets, int k) {
+        int[] ans = new int[tickets.length];
+        int time = 0;
+
+
+        boolean flag = true;
+        while (flag) {
+            flag = false;
+            for (int i = 0; i < tickets.length; i++) {
+                if (tickets[i] != 0) {
+                    flag = true;
+                    tickets[i]--;
+                    time++;
+                    ans[i] = time;
+                }
+            }
+        }
+        return ans[k];
+
+
     }
 }
