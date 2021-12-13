@@ -755,6 +755,81 @@ class SummaryRanges {
  */
 ```
 
+## [368. 最大整除子集](https://leetcode-cn.com/problems/largest-divisible-subset/)
+
+给你一个由 无重复 正整数组成的集合 nums ，请你找出并返回其中最大的整除子集 answer ，子集中每一元素对 (answer[i], answer[j]) 都应当满足：
+answer[i] % answer[j] == 0 ，或
+answer[j] % answer[i] == 0
+如果存在多个有效解子集，返回其中任何一个均可。
+
+```
+输入：nums = [1,2,3]
+输出：[1,2]
+解释：[1,3] 也会被视为正确答案。
+输入：nums = [1,2,4,8]
+输出：[1,2,4,8]
+```
+
+---
+
+解题思路:
+
+- 动态规划，
+
+- 根据整除关系具有传递性，即如果 a|b，并且 b|c ，那么 a|c，可知：
+
+  - 如果整数 a 是整除子集 $S_1$的最小整数 b 的约数（即 a|b），那么可以将 a 添加到 $S_1$中得到一个更大的整除子集；
+
+  - ==如果整数 c 是整除子集 $S_2$的最大整数 d 的倍数（即d|c），那么可以将 c 添加到 $S_2$中得到一个更大的整除子集。==
+
+  我们需要将输入数组 nums 按照升序排序，以便获得一个子集的最小整数或者最大整数。又根据动态规划的「无后效性」状态设计准则，我们需要将状态定义成「某个元素必须选择」。
+
+  状态定义：dp[i] 表示在输入数组 nums 升序排列的前提下，以 nums[i] 为最大整数的「整除子集」的大小（在这种定义下 nums[i] 必须被选择）。
+
+  状态转移方程：枚举 j=0…i−1 的所有整数 nums[j]，如果 nums[j] 能整除 nums[i]，说明 nums[i] 可以扩充在以 nums[j] 为最大整数的整除子集里成为一个更大的整除子集。
+
+  - 保存路径有个技巧，每次在状态转移时，记录转移的地方，保存在数组中，最后从最大值点往回找，和并查集找祖先节点一致。
+
+  ```java
+  class Solution {
+      public List<Integer> largestDivisibleSubset(int[] nums) {
+          int[] dp = new int[nums.length];
+          int[] path = new int[nums.length];
+          int idx = 0;
+          int max = 1;
+          Arrays.sort(nums);
+          dp[0] = 1;
+          path[0] = 0;
+          for (int i = 1; i < nums.length; i++) {
+              int len = 1;
+              int prev = i;
+              for (int j = i - 1; j >= 0; j--) {
+                  if (nums[i] % nums[j] == 0) {
+                      if (dp[j] + 1 > len) {
+                          prev = j;
+                          len = dp[j] + 1;
+                      }
+                  }
+              }
+              path[i] = prev;
+              dp[i] = len;
+              if (len > max) {
+                  idx = i;
+                  max = len;
+              }
+          }
+          List<Integer> ans = new ArrayList<>();
+          while (ans.size() != max) {
+              ans.add(0, nums[idx]);
+              idx = path[idx];
+          }
+          return ans;
+      }
+  }
+  ```
+
+  
+
 ## [384. 打乱数组](https://leetcode-cn.com/problems/shuffle-an-array/)
 
 给你一个整数数组 nums ，设计算法来打乱一个没有重复元素的数组。
@@ -1562,6 +1637,156 @@ class Solution {
     }
 }
 ```
+
+## [740. 删除并获得点数](https://leetcode-cn.com/problems/delete-and-earn/)
+
+给你一个整数数组 nums ，你可以对它进行一些操作。
+
+每次操作中，选择任意一个 nums[i] ，删除它并获得 nums[i] 的点数。之后，你必须删除 所有 等于 nums[i] - 1 和 nums[i] + 1 的元素。
+
+开始你拥有 0 个点数。返回你能通过这些操作获得的最大点数。
+
+```java
+输入：nums = [2,2,3,3,3,4]
+输出：9
+解释：
+删除 3 获得 3 个点数，接着要删除两个 2 和 4 。
+之后，再次删除 3 获得 3 个点数，再次删除 3 获得 3 个点数。
+总共获得 9 个点数。
+```
+
+---
+
+解题思路:
+
+- 动态规划: 如果值是连续的，则就转换成了 ==打家劫舍== 问题，状态方程定义为 dp[i]表示 nums[0~i] 所能得到的最大点数，状态转移方程就为$dp[i] = Max(nums[i] + dp[i-2],dp[i-1])$.
+  - 那么如何将其变成连续值,只需要观察范围并找到最大值,开一个长度为此最大值的数组val,数组里保存当前值出现了几次,算得分只需要==i*val[i];==
+
+```java
+class Solution {
+    public int deleteAndEarn(int[] nums) {
+        int maxVal = 0;
+        for (int num : nums) {
+            maxVal = Math.max(maxVal, num);
+        }
+        int[] val = new int[maxVal + 1];
+        for (int i = 0; i < nums.length; i++) {
+            val[nums[i]]++;
+        }
+        int[] dp = new int[val.length];
+        int ans = val[1];
+        dp[1] = val[1];
+        for (int i = 2; i < val.length; i++) {
+            dp[i] = Math.max(i * val[i] + dp[i - 2], dp[i - 1]);
+            ans = Math.max(dp[i], ans);
+        }
+        return ans;
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+## [794. 有效的井字游戏](https://leetcode-cn.com/problems/valid-tic-tac-toe-state/)
+
+给你一个字符串数组 board 表示井字游戏的棋盘。当且仅当在井字游戏过程中，棋盘有可能达到 board 所显示的状态时，才返回 true 。
+
+井字游戏的棋盘是一个 3 x 3 数组，由字符 ' '，'X' 和 'O' 组成。字符 ' ' 代表一个空位。
+
+以下是井字游戏的规则：
+
+```
+玩家轮流将字符放入空位（' '）中。
+玩家 1 总是放字符 'X' ，而玩家 2 总是放字符 'O' 。
+'X' 和 'O' 只允许放置在空位中，不允许对已放有字符的位置进行填充。
+当有 3 个相同（且非空）的字符填充任何行、列或对角线时，游戏结束。
+当所有位置非空时，也算为游戏结束。
+如果游戏结束，玩家不允许再放置字符。
+```
+
+<img src="asset/Daily%20Challenge.assets/tictactoe3-grid.jpg" alt="img" style="zoom:33%;" />
+
+```
+输入：board = ["XXX","   ","OOO"]
+输出：false
+```
+
+---
+
+解题思路:
+
+- 找规律，寻找棋盘不合法的情况。
+  - |x| - |o| >1  ，不合法
+  - X 赢时，|x| - |o| != 1， 不合法
+  - O 赢时, |x| - |o| ! = 0,不合法
+
+```java
+class Solution {
+    public boolean validTicTacToe(String[] board) {
+        char[][] map = new char[3][3];
+
+        for (int i = 0; i < 3; i++) {
+            map[i] = board[i].toCharArray();
+        }
+        int numX = 0;
+        int numO = 0;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (map[i][j] == 'X') {
+                    numX++;
+                } else if (map[i][j] == 'O') {
+                    numO++;
+                }
+            }
+        }
+
+        if (numX - numO > 1 || numO - numX >= 1) {
+            return false;
+        }
+        if (judge(map, 'X') && numX - numO != 1) {
+            return false;
+        }
+        if (judge(map, 'O') && numX - numO != 0) {
+            return false;
+        }
+        return true;
+    }
+    public boolean judge(char[][] board, char pin) {
+        for (int i = 0; i < 3; i++) {
+            int colN = 0;
+            int rowN = 0;
+            for (int j = 0; j < 3; j++) {
+                if (board[i][j] == pin) {
+                    colN++;
+                }
+                if (board[j][i] == pin) {
+                    rowN++;
+                }
+            }
+            if (colN == 3 || rowN == 3) {
+                return true;
+            }
+        }
+        if (board[0][0] == board[1][1] && board[1][1] == board[2][2] && board[0][0] == pin) {
+            return true;
+        }
+        if (board[0][2] == board[1][1] && board[1][1] == board[2][0] && board[0][2] == pin) {
+            return true;
+        }
+        return false;
+    }
+}
+```
+
+
 
 ## [869. 重新排序得到 2 的幂](https://leetcode-cn.com/problems/reordered-power-of-2/)
 

@@ -280,6 +280,62 @@ public class Solution {
 }
 ```
 
+## [面试题 03.01. 三合一](https://leetcode-cn.com/problems/three-in-one-lcci/)
+
+三合一。描述如何只用一个数组来实现三个栈。
+
+你应该实现push(stackNum, value)、pop(stackNum)、isEmpty(stackNum)、peek(stackNum)方法。stackNum表示栈下标，value表示压入的值。
+
+构造函数会传入一个stackSize参数，代表每个栈的大小。
+
+```java
+输入：
+["TripleInOne", "push", "push", "pop", "pop", "pop", "isEmpty"]
+[[1], [0, 1], [0, 2], [0], [0], [0], [0]]
+ 输出：
+[null, null, null, 1, -1, -1, true]
+说明：当栈为空时`pop, peek`返回-1，当栈满时`push`不压入元素。
+```
+
+---
+
+解题思路:
+
+- 主要是计算下标，可以用数组简化栈号的匹配。
+
+```java
+class TripleInOne {
+    int[] arr;
+    int[] topIdx;
+    int[] borderIdx;
+    int[] bottomIdx;
+    public TripleInOne(int stackSize) {
+        arr = new int[stackSize * 3 + 2];
+        topIdx = new int[]{0, stackSize + 1, stackSize * 2 + 2};
+        borderIdx = new int[]{stackSize, stackSize * 2 + 1, stackSize * 3 + 2};
+        bottomIdx = new int[]{0, stackSize + 1, stackSize * 2 + 2};
+    }
+    public void push(int stackNum, int value) {
+        if (topIdx[stackNum] == borderIdx[stackNum]) return;
+        arr[topIdx[stackNum]++] = value;
+    }
+    public int pop(int stackNum) {
+        if (topIdx[stackNum] == bottomIdx[stackNum]) return -1;
+        return arr[--topIdx[stackNum]];
+    }
+    public int peek(int stackNum) {
+        if (topIdx[stackNum] == bottomIdx[stackNum]) return -1;
+        return arr[topIdx[stackNum] - 1];
+
+    }
+    public boolean isEmpty(int stackNum) {
+        return topIdx[stackNum] == bottomIdx[stackNum];
+    }
+}
+```
+
+
+
 ## [面试题 03.03. 堆盘子](https://leetcode-cn.com/problems/stack-of-plates-lcci/)
 
 堆盘子。设想有一堆盘子，堆太高可能会倒下来。因此，在现实生活中，盘子堆到一定高度时，我们就会另外堆一堆盘子。请实现数据结构SetOfStacks，模拟这种行为。SetOfStacks应该由多个栈组成，并且在前一个栈填满时新建一个栈。此外，SetOfStacks.push()和SetOfStacks.pop()应该与普通栈的操作方法相同（也就是说，pop()返回的值，应该跟只有一个栈时的情况一样）。 进阶：实现一个popAt(int index)方法，根据指定的子栈，执行pop操作。
@@ -416,6 +472,49 @@ class Solution {
     }
 }
 ```
+
+## [面试题 04.10. 检查子树](https://leetcode-cn.com/problems/check-subtree-lcci/)
+
+检查子树。你有两棵非常大的二叉树：T1，有几万个节点；T2，有几万个节点。设计一个算法，判断 T2 是否为 T1 的子树。
+
+如果 T1 有这么一个节点 n，其子树与 T2 一模一样，则 T2 为 T1 的子树，也就是说，从节点 n 处把树砍断，得到的树与 T2 完全相同。
+
+```
+ 输入：t1 = [1, null, 2, 4], t2 = [3, 2]
+ 输出：false
+```
+
+---
+
+解题思路:
+
+- 递归检查
+  - 如果节点相等,那么检查对应左右子树也要相等.
+  - 如果节点不相等, 那么分别检查T1.left 和 T2、T1.right 和T2 是否相等.
+
+```java
+class Solution {
+    public boolean checkSubTree(TreeNode t1, TreeNode t2) {
+        if (t1 == null && t2 == null) {
+            return true;
+        } else if (t1 == null && t2 != null) {
+            return false;
+        } else if (t2 == null && t1 != null) {
+            return false;
+        } else if (t1.val == t2.val) {
+            return checkSubTree(t1.left, t2.left) && checkSubTree(t1.right, t2.right);
+        } else {
+            return checkSubTree(t1.left, t2) || checkSubTree(t1.right, t2);
+        }
+    }
+}
+```
+
+
+
+
+
+
 
 ## [面试题 05.01. 插入](https://leetcode-cn.com/problems/insert-into-bits-lcci/)
 

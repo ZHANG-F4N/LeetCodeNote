@@ -1,14 +1,32 @@
 import java.util.Arrays;
+import java.util.HashSet;
 
-public class contest250a3 {
+public class contest250 {
     public static void main(String[] args) {
-        System.out.println(maxPoints(new int[][]{{1, 2, 3}, {1, 5, 1}, {3, 1, 1}}));
-        System.out.println(maxPoints(new int[][]{{1, 2, 3}, {1, 5, 1}}));
+        System.out.println(addRungs(new int[]{1, 3, 5, 10}, 2));
+        System.out.println(addRungs(new int[]{3}, 1));
+        System.out.println(addRungs(new int[]{5}, 10));
+
+        System.out.println(addRungs(new int[]{1, 3, 5, 10}, 3));
     }
 
+    public static int addRungs(int[] rungs, int dist) {
+
+        int ans = 0;
+        int dis = rungs[0];
+        if (dis > dist) {
+            ans += (dis - 0.5) / dist;
+        }
+
+        for (int i = 1; i < rungs.length; i++) {
+            dis = rungs[i] - rungs[i - 1];
+            if (dis > dist) {
+                ans += (dis - 0.5) / dist;
+            }
+        }
+        return ans;
+    }
     public static long maxPoints(int[][] points) {
-
-
 
         int m = points[0].length;
         long[] pre = new long[m];
@@ -48,8 +66,26 @@ public class contest250a3 {
             ans = Math.max(ans, dp[i]);
         }
         return ans;
-
-
+    }
+    public static int canBeTypedWords(String text, String brokenLetters) {
+        HashSet<Character> set = new HashSet<>();
+        for (char c : brokenLetters.toCharArray()) {
+            set.add(c);
+        }
+        int ans = 0;
+        for (String s : text.split(" ")) {
+            boolean flag = true;
+            for (char c : s.toCharArray()) {
+                if (set.contains(c)) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                ans++;
+            }
+        }
+        return ans;
     }
 
 }

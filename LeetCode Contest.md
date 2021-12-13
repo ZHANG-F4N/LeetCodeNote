@@ -224,3 +224,72 @@ class Solution {
 }
 ```
 
+## 270-3 从二叉树一个节点到另一个节点每一步的方向
+
+给你一棵 **二叉树** 的根节点 `root` ，这棵二叉树总共有 `n` 个节点。每个节点的值为 `1` 到 `n` 中的一个整数，且互不相同。给你一个整数 `startValue` ，表示起点节点 `s` 的值，和另一个不同的整数 `destValue` ，表示终点节点 `t` 的值。
+
+请找到从节点 `s` 到节点 `t` 的 **最短路径** ，并以字符串的形式返回每一步的方向。每一步用 **大写** 字母 `'L'` ，`'R'` 和 `'U'` 分别表示一种方向：
+
+- `'L'` 表示从一个节点前往它的 **左孩子** 节点。
+- `'R'` 表示从一个节点前往它的 **右孩子** 节点。
+- `'U'` 表示从一个节点前往它的 **父** 节点。
+
+请你返回从 `s` 到 `t` **最短路径** 每一步的方向。
+
+<img src="asset/LeetCode%20Contest.assets/eg1.png" alt="img" style="zoom: 80%;" />
+
+```
+输入：root = [5,1,2,3,null,6,4], startValue = 3, destValue = 6
+输出："UURL"
+解释：最短路径为：3 → 1 → 5 → 2 → 6 。
+```
+
+---
+
+解题思路:
+
+- DFS 分别找到==从根节点出发到两个点的路径==，两条路径中 ==从头开始相同的地方就是公共路径==，需要删除掉，这样可以到达第一个==公共节点==，然后起始节点往回走向公共节点，再从公共节点出发到终点。
+
+```java
+class Solution {
+    public String getDirections(TreeNode root, int startValue, int destValue) {
+        Deque<Character> start = new ArrayDeque<>();
+        Deque<Character> dest = new ArrayDeque<>();
+        DFS(root, startValue, new Stack<>(), start);
+        DFS(root, destValue, new Stack<>(), dest);
+        //到达公共节点
+        while (start.peekLast() == dest.peekLast()) {
+            start.pollLast();
+            dest.pollLast();
+        }
+
+        StringBuilder ans = new StringBuilder();
+        for (int i = 0; i < start.size(); i++) {
+            ans.append('U');
+        }
+        while (!dest.isEmpty()) {
+            ans.append(dest.pollLast());
+        }
+        return ans.toString();
+    }
+    public void DFS(TreeNode root, int dest, Stack<Character> path, Deque<Character> tar) {
+        if (root == null) {
+            return;
+        }
+        if (root.val == dest) {
+            Iterator<Character> it = path.iterator();
+            while (it.hasNext()) {
+                tar.push(it.next());
+            }
+            return;
+        }
+        path.push('L');
+        DFS(root.left, dest, path, tar);
+        path.pop();
+        path.push('R');
+        DFS(root.right, dest, path, tar);
+        path.pop();
+    }
+}
+```
+

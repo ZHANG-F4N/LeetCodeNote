@@ -2,13 +2,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class contest268a3 {
+public class contest268 {
     public static void main(String[] args) {
         RangeFreqQuery obj = new RangeFreqQuery(new int[]{1, 1, 1, 2, 2});
         int param_1 = obj.query(0, 1, 2);
         int param_2 = obj.query(0, 2, 1);
         int param_3 = obj.query(3, 3, 2);
         int param_4 = obj.query(2, 2, 1);
+    }
+    public static int wateringPlants(int[] plants, int capacity) {
+        int ans = 1;
+        int rest = capacity - plants[0];
+        for (int i = 1; i < plants.length; i++) {
+            if (rest < plants[i]) {
+                ans += 2 * i;
+                rest = capacity;
+//                rest -= plants[i];
+//                continue;
+            }
+            ans++;
+            rest -= plants[i];
+        }
+        return ans;
+
     }
 
     /*
