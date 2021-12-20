@@ -742,7 +742,180 @@ class Solution {
 
 
 
+## [面试题 05.07. 配对交换](https://leetcode-cn.com/problems/exchange-lcci/)
 
+配对交换。编写程序，交换某个整数的奇数位和偶数位，尽量使用较少的指令（也就是说，位0与位1交换，位2与位3交换，以此类推）。
 
+```java
+示例1:
+ 输入：num = 2（或者0b10）
+ 输出 1 (或者 0b01)
+```
 
+---
+
+解题思路:
+
+- 位运算，将奇数位和偶数位拆开，奇数位左移1位，偶数位右移一位，再相加即为答案。
+
+```java
+class Solution {
+    public int exchangeBits(int num) {
+        int t = 0b0101_0101_0101_0101_0101_0101_0101_0101;
+        return ((num & t) << 1) + ((num & (t << 1)) >> 1);
+    }
+}
+```
+
+## [面试题 08.02. 迷路的机器人](https://leetcode-cn.com/problems/robot-in-a-grid-lcci/)
+
+设想有个机器人坐在一个网格的左上角，网格 r 行 c 列。机器人只能向下或向右移动，但不能走到一些被禁止的网格（有障碍物）。设计一种算法，寻找机器人从左上角移动到右下角的路径。
+
+网格中的障碍物和空位置分别用 1 和 0 来表示。
+
+返回一条可行的路径，路径由经过的网格的行号和列号组成。左上角为 0 行 0 列。如果没有可行的路径，返回空数组。
+
+```java
+示例 1:
+输入:
+[[0,0,0],
+ [0,1,0],
+ [0,0,0]]
+输出: [[0,0],[0,1],[0,2],[1,2],[2,2]]
+解释: 
+输入中标粗的位置即为输出表示的路径，即
+0行0列（左上角） -> 0行1列 -> 0行2列 -> 1行2列 -> 2行2列（右下角）
+```
+
+---
+
+解题思路:
+
+- DFS。由于 只能向右或向下走，产生了动态规划的最关键的影响**无后效性**。 所以在DFS时可以将访问过的地方置为1后不再重置回0.
+- 动态规划, dp\[i][j]位置的情况只能由 dp\[i-1][j] 和 dp\[i][j-1]转移而来.
+
+```java
+class Solution {
+    public static List<List<Integer>> ans;
+    public List<List<Integer>> pathWithObstacles(int[][] obstacleGrid) {
+        ans = new ArrayList<>();
+        DFS(obstacleGrid, 0, 0, new ArrayList<List<Integer>>());
+        return ans;
+    }
+    public void DFS(int[][] obstacle, int i, int j, List<List<Integer>> tempAns) {
+        if (i < 0 || i >= obstacle.length || j < 0 || j >= obstacle[0].length || obstacle[i][j] == 1)
+            return;
+
+        obstacle[i][j] = 1;
+        tempAns.add(Arrays.asList(new Integer[]{i, j}));
+        if (i == obstacle.length - 1 && j == obstacle[0].length - 1) {
+            Iterator<List<Integer>> it = tempAns.iterator();
+            while (it.hasNext()) {
+                ans.add(it.next());
+            }
+            return;
+        }
+        DFS(obstacle, i + 1, j, tempAns);
+        DFS(obstacle, i, j + 1, tempAns);
+        tempAns.remove(tempAns.size() - 1);
+    }
+}
+```
+
+## [面试题 08.12. 八皇后](https://leetcode-cn.com/problems/eight-queens-lcci/)
+
+设计一种算法，打印 N 皇后在 N × N 棋盘上的各种摆法，其中每个皇后都不同行、不同列，也不在对角线上。这里的“对角线”指的是所有的对角线，不只是平分整个棋盘的那两条对角线。
+
+注意：本题相对原题做了扩展
+
+示例:
+
+```java
+ 输入：4
+ 输出：[[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
+ 解释: 4 皇后问题存在如下两个不同的解法。
+[
+ [".Q..",  // 解法 1
+  "...Q",
+  "Q...",
+  "..Q."],
+ ["..Q.",  // 解法 2
+  "Q...",
+  "...Q",
+  ".Q.."]
+]
+```
+
+---
+
+解题思路:
+
+- 回溯搜索。 
+
+  对行进行枚举，由于每行每列每个对角线只会出现一个皇后，所以我们先枚举行，然后用三个数组标记其他三维是否有空位。
+
+  对角线的标记有如下技巧:
+
+  - 主对角线 dg （左上到右下）:每条对角线，横坐标和列坐标的差值固定。
+  - 副对角线 udg （右上到左下）：每条对角线的和固定。
+
+  所以满足:
+
+  ```java
+  !col[j] && !dg[j - i + n] && !udg[j + i]
+  ```
+
+  就说明这个位置可以放一个皇后。
+
+  然后对所有情况进行回溯即可。
+
+```java
+class Solution {
+    // 枚举行 ,三个数组标记 列 对角线 反对角线
+    public static boolean col[] = new boolean[100];
+    public static boolean dg[] = new boolean[100];
+    public static boolean udg[] = new boolean[100];
+    public static List<List<String>> ans;
+    public List<List<String>> solveNQueens(int n) {
+        ans = new ArrayList<>();
+        ArrayList<Character[]> strings = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            Character[] map = new Character[n];
+            Arrays.fill(map, '.');
+            strings.add(map);
+        }
+        backtrack(0, n, strings);
+        return ans;
+    }
+    public void backtrack(int i, int n, List<Character[]> str) {
+        if (i == n) {
+            List<String> temp = new ArrayList<>();
+            Iterator<Character[]> it = str.iterator();
+            while (it.hasNext()) {
+                Character[] p = it.next();
+                StringBuilder string = new StringBuilder();
+                for (int k = 0; k < n; k++) {
+                    string.append(p[k]);
+                }
+                temp.add(string.toString());
+            }
+            ans.add(temp);
+            return;
+        }
+        for (int j = 0; j < n; j++) {
+            if (!col[j] && !dg[j - i + n] && !udg[j + i]) {
+                col[j] = true;
+                dg[j - i + n] = true;
+                udg[j + i] = true;
+                str.get(i)[j] = 'Q';
+                backtrack(i + 1, n, str);
+                str.get(i)[j] = '.';
+                col[j] = false;
+                dg[j - i + n] = false;
+                udg[j + i] = false;
+            }
+        }
+    }
+}
+```
 

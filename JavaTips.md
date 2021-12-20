@@ -2,6 +2,17 @@
 
 [TOC]
 
+## 集合类型排序
+
+```java
+List<Double> list = new ArrayList<>();
+Collections.sort(list);
+```
+
+
+
+
+
 ## Java常见的容器类
 
 <img src="asset/JavaTips.assets/v2-c229d5cd53d9eff59865fe8b7a7f7091_720w.jpg" alt="img" style="zoom:67%;" />
@@ -67,7 +78,6 @@ Iterator<Integer> iterator = hashSet.iterator();
 while (iterator.hasNext()) {
     int val = iterator.next();
 }
-
 ```
 
 

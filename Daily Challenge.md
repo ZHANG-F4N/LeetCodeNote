@@ -322,6 +322,57 @@ class Solution {
 }
 ```
 
+## [226. 翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
+
+翻转一棵二叉树。
+
+**示例：**
+
+输入：
+
+```
+     4
+   /   \
+  2     7
+ / \   / \
+1   3 6   9
+```
+
+输出：
+
+```
+     4
+   /   \
+  7     2
+ / \   / \
+9   6 3   1
+```
+
+---
+
+解题思路：
+
+- 递归，从底往上翻转。
+
+```java
+class Solution {
+    public TreeNode invertTree(TreeNode root) {
+        reverse(root);
+        return root;
+    }
+    public void reverse(TreeNode root) {
+        if (root == null) return;
+        // 先达到最底部
+        reverse(root.left);
+        reverse(root.right);
+        // 将左右交换
+        TreeNode temp = root.left;
+        root.left = root.right;
+        root.right = temp;
+    }
+}
+```
+
 ## [260. 只出现一次的数字 III](https://leetcode-cn.com/problems/single-number-iii/)
 
 给定一个整数数组 nums，其中恰好有两个元素只出现一次，其余所有元素均出现两次。 找出只出现一次的那两个元素。你可以按 任意顺序 返回答案。
@@ -1495,6 +1546,71 @@ class Solution {
 }
 ```
 
+## [630. 课程表 III](https://leetcode-cn.com/problems/course-schedule-iii/)
+
+这里有 n 门不同的在线课程，按从 1 到 n 编号。给你一个数组 courses ，其中 courses[i] = [durationi, lastDayi] 表示第 i 门课将会 持续 上 durationi 天课，并且必须在不晚于 lastDayi 的时候完成。
+
+你的学期从第 1 天开始。且不能同时修读两门及两门以上的课程。
+
+返回你最多可以修读的课程数目。
+
+```java
+输入：courses = [[100, 200], [200, 1300], [1000, 1250], [2000, 3200]]
+输出：3
+解释：
+这里一共有 4 门课程，但是你最多可以修 3 门：
+首先，修第 1 门课，耗费 100 天，在第 100 天完成，在第 101 天开始下门课。
+第二，修第 3 门课，耗费 1000 天，在第 1100 天完成，在第 1101 天开始下门课程。
+第三，修第 2 门课，耗时 200 天，在第 1300 天完成。
+第 4 门课现在不能修，因为将会在第 3300 天完成它，这已经超出了关闭日期。
+输入：courses = [[3,2],[4,3]]
+输出：0
+```
+
+---
+
+解题思路:
+
+- 贪心+优先级队列。
+
+  - 首先贪心，将courses==按照结束时间增序排列==，处理过程中维护一个总时长 beg(也是下一个课程开始的时间,也是已选课程的总时间)，对于某个课程 courses[i] 而言，根据如果学习该课程，是否满足「最晚完成时间」要求进行分情况讨论：
+
+    - 学习该课程后，满足「最晚完成时间」要求，即 ==sum + courses\[i][0] <= courses\[i][1]==，则进行学习；
+
+    - 学习该课程后，不满足「最晚完成时间」要求，此时==从过往学习的课程中找出「持续时间」最长的课程进行「回退」(删除)操作==（这个持续时长最长的课程有可能是当前课程）。
+
+  - 为什么回退时间最长的课程可以保证总的课程数量最多呢?
+
+    - 1.在课程数量相同的前提下，该做法得到的排列总耗时最少。
+    - 2.在1满足时,该做法能够确保取得最大课程数量。
+
+```java
+class Solution {
+    public int scheduleCourse(int[][] courses) {
+        Arrays.sort(courses, (o1, o2) -> o1[1] - o2[1]);
+        PriorityQueue<int[]> learned = new PriorityQueue<>((o1, o2) -> o2[0] - o1[0]);
+        int beg = 0;
+        for (int[] cours : courses) {
+            learned.offer(cours);
+            beg += cours[0];
+            if (beg  > cours[1]) {
+                // 不满足时间约束，回退，删除选择的课程中时长最长的课程
+                beg -= learned.poll()[0];
+            } 
+        }
+        return learned.size();
+    }
+}
+```
+
+
+
+
+
+
+
+
+
 ## [689. 三个无重叠子数组的最大和](https://leetcode-cn.com/problems/maximum-sum-of-3-non-overlapping-subarrays/)
 
 给你一个整数数组 nums 和一个整数 k ，找出三个长度为 k 、互不重叠、且 3 * k 项的和最大的子数组，并返回这三个子数组。
@@ -2074,6 +2190,88 @@ class Solution {
             }
         }
         return ans;
+    }
+}
+```
+
+## [1610. 可见点的最大数目](https://leetcode-cn.com/problems/maximum-number-of-visible-points/)
+
+给你一个点数组 points 和一个表示角度的整数 angle ，你的位置是 location ，其中 location = [posx, posy] 且 points[i] = [xi, yi] 都表示 X-Y 平面上的整数坐标。
+
+最开始，你面向东方进行观测。你 不能 进行移动改变位置，但可以通过 自转 调整观测角度。换句话说，posx 和 posy 不能改变。你的视野范围的角度用 angle 表示， 这决定了你观测任意方向时可以多宽。设 d 为你逆时针自转旋转的度数，那么你的视野就是角度范围 [d - angle/2, d + angle/2] 所指示的那片区域。
+
+对于每个点，如果由该点、你的位置以及从你的位置直接向东的方向形成的角度 位于你的视野中 ，那么你就可以看到它。
+
+同一个坐标上可以有多个点。你所在的位置也可能存在一些点，但不管你的怎么旋转，总是可以看到这些点。同时，点不会阻碍你看到其他点。
+
+返回你能看到的点的最大数目。
+
+<img src="asset/Daily%20Challenge.assets/89a07e9b-00ab-4967-976a-c723b2aa8656.png" alt="img" style="zoom:67%;" />
+
+```java
+输入：points = [[2,1],[2,2],[3,3]], angle = 90, location = [1,1]
+输出：3
+解释：阴影区域代表你的视野。在你的视野中，所有的点都清晰可见，尽管 [2,2] 和 [3,3]在同一条直线上，你仍然可以看到 [3,3] 。
+```
+
+---
+
+解题思路:
+
+- 难点在于角度和表示和范围寻找。
+
+  - 角的表示，可以用 ==arctan(dy/dx)== 算出角度的弧度值,然后再乘 angle*180\*π转换为角度。
+
+  - 对这个角度进行排序，然后滑动窗口形式的扫描最大窗口即可。
+
+    - 因为收尾相接可能需要循环扫描，可以将数组进行拓展为原来的2倍，然后线性扫描即可得到首尾相接的结果。
+
+    - ```java
+      // 因为360是循环的,自转可以顺时针和逆时针两个方向转
+      // 所以 将角度拓展为两倍, 遍历一次即可
+      // [1   2   3   4]   循环搜索就可以用常规线性搜索
+      // [1   2   3   4   1   2   3   4]
+      ```
+
+```java
+class Solution {
+    public int visiblePoints(List<List<Integer>> points, int angle, List<Integer> location) {
+        int n = points.size();
+        int pox = location.get(0);
+        int poy = location.get(1);
+        int sameCnt = 0;
+        ArrayList<Double> ang = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            int x = points.get(i).get(0);
+            int y = points.get(i).get(1);
+            if (x == pox && y == poy) {
+                sameCnt++;
+                continue;
+            }
+            ang.add(Math.atan2(y - poy, x - pox));
+        }
+        Collections.sort(ang);
+        int m = ang.size();
+        // 因为360是循环的,自转可以顺时针和逆时针两个方向转
+        // 所以 将角度拓展为两倍, 遍历一次即可
+        // [1   2   3   4]   循环搜索就可以用常规线性搜索
+        // [1   2   3   4   1   2   3   4]
+        for (int i = 0; i < m; i++) {
+            ang.add(ang.get(i) + Math.PI * 2);
+        }
+        int ans = 0;
+        int right = 0;
+        // 将角度 π 形式转换为 度
+        // π = 180
+        double toDegree = angle * Math.PI / 180;
+        for (int i = 0; i < m; ++i) {
+            Double curr = ang.get(i) + toDegree;
+            while (right < ang.size() && ang.get(right) <= curr) {
+                right++;
+            }
+            ans = Math.max(ans, right - i);
+        }
+        return ans + sameCnt;
     }
 }
 ```
