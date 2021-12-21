@@ -919,3 +919,42 @@ class Solution {
 }
 ```
 
+## [面试题 16.06. 最小差](https://leetcode-cn.com/problems/smallest-difference-lcci/)
+
+给定两个整数数组`a`和`b`，计算具有最小差绝对值的一对数值（每个数组中取一个值），并返回该对数值的差
+
+```
+输入：{1, 3, 15, 11, 2}, {23, 127, 235, 19, 8}
+输出：3，即数值对(11, 8)
+```
+
+---
+
+解题思路:
+
+- 排序 + 双指针。
+  - 排序后，每次比较两个数组的最小值即可。因为 当前a[i] - b[j] 肯定是小于 a[i] - b[j+1],的因为是有序的,反过来 也同理。
+- 排序 + 二分
+
+```java
+class Solution {
+    public int smallestDifference(int[] a, int[] b) {
+        Arrays.sort(a);
+        Arrays.sort(b);
+        long ans = Integer.MAX_VALUE;
+        int i = 0, j = 0;
+        while (i < a.length && j < b.length) {
+            if (a[i] == b[j]) return 0;
+            if (a[i] < b[j]) {
+                ans = Math.min(ans, (long) b[j] - a[i]);
+                i++;
+            } else if (a[i] > b[j]) {
+                ans = Math.min(ans, (long) a[i] - b[j]);
+                j++;
+            }
+        }
+        return (int)ans;
+    }
+}
+```
+
