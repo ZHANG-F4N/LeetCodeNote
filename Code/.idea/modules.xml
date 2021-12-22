@@ -14,8 +14,9 @@
       <module fileurl="file://$PROJECT_DIR$/item101to150/item101to150.iml" filepath="$PROJECT_DIR$/item101to150/item101to150.iml" />
       <module fileurl="file://$PROJECT_DIR$/item151to200/item151to200.iml" filepath="$PROJECT_DIR$/item151to200/item151to200.iml" />
       <module fileurl="file://$PROJECT_DIR$/item251to300/item251to300.iml" filepath="$PROJECT_DIR$/item251to300/item251to300.iml" />
+      <module fileurl="file://$PROJECT_DIR$/item301to500/item301to500.iml" filepath="$PROJECT_DIR$/item301to500/item301to500.iml" />
       <module fileurl="file://$PROJECT_DIR$/item51to100/item51to100.iml" filepath="$PROJECT_DIR$/item51to100/item51to100.iml" />
-      <module fileurl="file://$PROJECT_DIR$/itembigthan300/itembigthan300.iml" filepath="$PROJECT_DIR$/itembigthan300/itembigthan300.iml" />
+      <module fileurl="file://$PROJECT_DIR$/itembigthan500/itembigthan500.iml" filepath="$PROJECT_DIR$/itembigthan500/itembigthan500.iml" />
     </modules>
   </component>
 </project>

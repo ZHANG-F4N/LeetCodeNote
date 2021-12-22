@@ -822,6 +822,54 @@ class Solution {
 }
 ```
 
+
+
+## [面试题 08.07. 无重复字符串的排列组合](https://leetcode-cn.com/problems/permutation-i-lcci/)
+
+无重复字符串的排列组合。编写一种方法，计算某字符串的所有排列组合，字符串每个字符均不相同。
+
+```java
+示例1:
+ 输入：S = "qwe"
+ 输出：["qwe", "qew", "wqe", "weq", "ewq", "eqw"]
+```
+
+---
+
+解题思路:
+
+- 交换, 每个数和它后面的数进行交换
+
+```java
+class Solution {
+    public String[] permutation(String S) {
+        LinkedList<String> ans = new LinkedList<>();
+        dfs(S.toCharArray(), 0, ans);
+        return ans.toArray(new String[ans.size()]);
+    }
+    public void dfs(char[] temp, int i, LinkedList<String> ans) {
+        if (i == temp.length) {
+            ans.addLast(String.valueOf(temp));
+            return;
+        }
+        for (int j = i; j < temp.length; j++) {
+            swap(temp, i, j);
+            dfs(temp, i+1, ans);
+            swap(temp, i, j);
+        }
+    }
+    public void swap(char[] arr, int i, int j) {
+        char ch = arr[i];
+        arr[i] = arr[j];
+        arr[j] = ch;
+    }
+}
+```
+
+
+
+
+
 ## [面试题 08.12. 八皇后](https://leetcode-cn.com/problems/eight-queens-lcci/)
 
 设计一种算法，打印 N 皇后在 N × N 棋盘上的各种摆法，其中每个皇后都不同行、不同列，也不在对角线上。这里的“对角线”指的是所有的对角线，不只是平分整个棋盘的那两条对角线。
@@ -1036,6 +1084,76 @@ class Solution {
         temp = t[1];
         t[1] = t[3];
         t[3] = temp;
+    }
+}
+```
+
+## [面试题 10.03. 搜索旋转数组](https://leetcode-cn.com/problems/search-rotate-array-lcci/)
+
+搜索旋转数组。给定一个排序后的数组，包含n个整数，但这个数组已被旋转过很多次了，次数不详。请编写代码找出数组中的某个元素，假设数组元素原先是按升序排列的。若有多个相同元素，返回索引值最小的一个。不存在返回-1.
+
+```java
+输入: arr = [15, 16, 19, 20, 25, 1, 3, 4, 5, 7, 10, 14], target = 5
+输出: 8（元素5在该数组中的索引）
+```
+
+---
+
+解题思路:
+
+- 二分查找。
+  - 【注意】: 一个数组如果只从一个点旋转,不管转多少次,都可以分为有序的两部分所以进行二分,二分的两段,肯定有一段是有序的.
+  - 分两种情况:
+    - 左边有序 arr[l] <= arr[mid]
+      - arr[mid] > target && target >= arr[l] 则 r = mid - 1; 否则 l = mid + 1;
+    - 右边有序
+      - arr[mid] < target && target <= arr[r] 则 l = mid + 1; 否则 r = mid - 1;
+  - 注意 预处理 有一个值超过一半,即会造成 arr[l] == arr[mid] == arr[r]
+  - 【终止条件两个】:
+    - 最终找到 arr[mid] == target
+    - 最终未找到 l > r || (l == r && arr[mid] != target)
+
+```java
+class Solution {
+    public int search(int[] arr, int target) {
+        int l = 0;
+        int r = arr.length - 1;
+        if (r == -1) return -1;
+        int idx = -1;
+        // 预处理 有一个值超过一半,即会造成 arr[l] == arr[mid] == arr[r]
+        while (r != 0 && arr[l] == arr[r]) r--;
+        while (l <= r) {
+            int mid = l + ((r - l) >> 1);
+            if (arr[mid] == target) {
+                idx = mid;
+                break;
+            }
+            if (l == r && arr[mid] != target) {
+                idx = -1;
+                break;
+            }
+            // 左边有序
+            if (arr[l] <= arr[mid]) {
+                if (arr[mid] > target && target >= arr[l]) {
+                    r = mid - 1;
+                } else {
+                    l = mid + 1;
+                }
+                // 右边有序
+            } else {
+                if (arr[mid] < target && target <= arr[r]) {
+                    l = mid + 1;
+                } else {
+                    r = mid - 1;
+                }
+            }
+        }
+        //往前找个最小
+        if (idx == -1) return -1;
+        while (idx != 0 && arr[idx - 1] == target) {
+            idx--;
+        }
+        return idx;
     }
 }
 ```
