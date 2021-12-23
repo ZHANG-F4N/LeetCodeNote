@@ -967,7 +967,77 @@ class Solution {
 }
 ```
 
-<<<<<<< HEAD
+## [面试题 10.03. 搜索旋转数组](https://leetcode-cn.com/problems/search-rotate-array-lcci/)
+
+搜索旋转数组。给定一个排序后的数组，包含n个整数，但这个数组已被旋转过很多次了，次数不详。请编写代码找出数组中的某个元素，假设数组元素原先是按升序排列的。若有多个相同元素，返回索引值最小的一个。不存在返回-1.
+
+```java
+输入: arr = [15, 16, 19, 20, 25, 1, 3, 4, 5, 7, 10, 14], target = 5
+输出: 8（元素5在该数组中的索引）
+```
+
+---
+
+解题思路:
+
+- 二分查找。
+  - 【注意】: 一个数组如果只从一个点旋转,不管转多少次,都可以分为有序的两部分所以进行二分,二分的两段,肯定有一段是有序的.
+  - 分两种情况:
+    - 左边有序 arr[l] <= arr[mid]
+      - arr[mid] > target && target >= arr[l] 则 r = mid - 1; 否则 l = mid + 1;
+    - 右边有序
+      - arr[mid] < target && target <= arr[r] 则 l = mid + 1; 否则 r = mid - 1;
+  - 注意 预处理 有一个值超过一半,即会造成 arr[l] == arr[mid] == arr[r]
+  - 【终止条件两个】:
+    - 最终找到 arr[mid] == target
+    - 最终未找到 l > r || (l == r && arr[mid] != target)
+
+```java
+class Solution {
+    public int search(int[] arr, int target) {
+        int l = 0;
+        int r = arr.length - 1;
+        if (r == -1) return -1;
+        int idx = -1;
+        // 预处理 有一个值超过一半,即会造成 arr[l] == arr[mid] == arr[r]
+        while (r != 0 && arr[l] == arr[r]) r--;
+        while (l <= r) {
+            int mid = l + ((r - l) >> 1);
+            if (arr[mid] == target) {
+                idx = mid;
+                break;
+            }
+            if (l == r && arr[mid] != target) {
+                idx = -1;
+                break;
+            }
+            // 左边有序
+            if (arr[l] <= arr[mid]) {
+                if (arr[mid] > target && target >= arr[l]) {
+                    r = mid - 1;
+                } else {
+                    l = mid + 1;
+                }
+                // 右边有序
+            } else {
+                if (arr[mid] < target && target <= arr[r]) {
+                    l = mid + 1;
+                } else {
+                    r = mid - 1;
+                }
+            }
+        }
+        //往前找个最小
+        if (idx == -1) return -1;
+        while (idx != 0 && arr[idx - 1] == target) {
+            idx--;
+        }
+        return idx;
+    }
+}
+```
+
+
 ## [面试题 16.06. 最小差](https://leetcode-cn.com/problems/smallest-difference-lcci/)
 
 给定两个整数数组`a`和`b`，计算具有最小差绝对值的一对数值（每个数组中取一个值），并返回该对数值的差
@@ -1088,72 +1158,47 @@ class Solution {
 }
 ```
 
-## [面试题 10.03. 搜索旋转数组](https://leetcode-cn.com/problems/search-rotate-array-lcci/)
+## [面试题 17.12. BiNode](https://leetcode-cn.com/problems/binode-lcci/)
 
-搜索旋转数组。给定一个排序后的数组，包含n个整数，但这个数组已被旋转过很多次了，次数不详。请编写代码找出数组中的某个元素，假设数组元素原先是按升序排列的。若有多个相同元素，返回索引值最小的一个。不存在返回-1.
+二叉树数据结构TreeNode可用来表示单向链表（其中left置空，right为下一个链表节点）。实现一个方法，把二叉搜索树转换为单向链表，要求依然符合二叉搜索树的性质，转换操作应是原址的，也就是在原始的二叉搜索树上直接修改。
 
-```java
-输入: arr = [15, 16, 19, 20, 25, 1, 3, 4, 5, 7, 10, 14], target = 5
-输出: 8（元素5在该数组中的索引）
+返回转换后的单向链表的头节点。
+
+注意：本题相对原题稍作改动
+
+```
+输入： [4,2,5,1,3,null,6,0]
+输出： [0,null,1,null,2,null,3,null,4,null,5,null,6]
 ```
 
 ---
 
 解题思路:
 
-- 二分查找。
-  - 【注意】: 一个数组如果只从一个点旋转,不管转多少次,都可以分为有序的两部分所以进行二分,二分的两段,肯定有一段是有序的.
-  - 分两种情况:
-    - 左边有序 arr[l] <= arr[mid]
-      - arr[mid] > target && target >= arr[l] 则 r = mid - 1; 否则 l = mid + 1;
-    - 右边有序
-      - arr[mid] < target && target <= arr[r] 则 l = mid + 1; 否则 r = mid - 1;
-  - 注意 预处理 有一个值超过一半,即会造成 arr[l] == arr[mid] == arr[r]
-  - 【终止条件两个】:
-    - 最终找到 arr[mid] == target
-    - 最终未找到 l > r || (l == r && arr[mid] != target)
+- 中序遍历。
+  - 难点是记录前节点和后节点。
+  - 如图 节点4 的后继,需要访问到 节点5 时才能确定。
+
+<img src="asset/LeetCode%20Interview.assets/image-20211222151944671.png" alt="image-20211222151944671" style="zoom: 33%;" />
 
 ```java
 class Solution {
-    public int search(int[] arr, int target) {
-        int l = 0;
-        int r = arr.length - 1;
-        if (r == -1) return -1;
-        int idx = -1;
-        // 预处理 有一个值超过一半,即会造成 arr[l] == arr[mid] == arr[r]
-        while (r != 0 && arr[l] == arr[r]) r--;
-        while (l <= r) {
-            int mid = l + ((r - l) >> 1);
-            if (arr[mid] == target) {
-                idx = mid;
-                break;
-            }
-            if (l == r && arr[mid] != target) {
-                idx = -1;
-                break;
-            }
-            // 左边有序
-            if (arr[l] <= arr[mid]) {
-                if (arr[mid] > target && target >= arr[l]) {
-                    r = mid - 1;
-                } else {
-                    l = mid + 1;
-                }
-                // 右边有序
-            } else {
-                if (arr[mid] < target && target <= arr[r]) {
-                    l = mid + 1;
-                } else {
-                    r = mid - 1;
-                }
-            }
-        }
-        //往前找个最小
-        if (idx == -1) return -1;
-        while (idx != 0 && arr[idx - 1] == target) {
-            idx--;
-        }
-        return idx;
+    public static TreeNode head;
+    public static TreeNode pre;
+    public TreeNode convertBiNode(TreeNode root) {
+        head = null;
+        pre = null;
+        inOrder(root);
+        return head;
+    }
+    public void inOrder(TreeNode root) {
+        if (root == null) return;
+        inOrder(root.left);
+        root.left = null;
+        if (pre == null) head = root; 
+        else pre.right = root;
+        pre = root;
+        inOrder(root.right);
     }
 }
 ```
