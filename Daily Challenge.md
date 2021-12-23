@@ -2032,9 +2032,73 @@ class Solution {
 }
 ```
 
+## [1044. 最长重复子串](https://leetcode-cn.com/problems/longest-duplicate-substring/)
 
+给你一个字符串 s ，考虑其所有 重复子串 ：即，s 的连续子串，在 s 中出现 2 次或更多次。这些出现之间可能存在重叠。
 
+返回 任意一个 可能具有最长长度的重复子串。如果 s 不含重复子串，那么答案为 "" 。
 
+```java
+示例 1：
+输入：s = "banana"
+输出："ana"
+```
+
+---
+
+解题思路:
+
+- 二分+字符串Hash
+
+  - 题目要求得「能取得最大长度的任一方案」，首先以「最大长度」为分割点的数轴具有「二段性」：
+
+    - 小于等于最大长度方案均存在（考虑在最大长度方案上做删减）；
+    - 大于最大长度的方案不存在。
+
+    二分范围为[0,n]，关键在于如何 check 函数，即实现「检查某个长度 lenlen 作为最大长度，是否存在合法方案」。
+
+  - 查重方法采用 字符串hash
+
+```java
+class Solution {
+    public static long[] h = new long[3 * 10000 + 10];
+    public static long[] p = new long[3 * 10000 + 10];
+    public String longestDupSubstring(String s) {
+        // 哈希数组
+        int P = 131313;
+        // 次方数组
+        p[0] = 1;
+        for (int i = 1; i <= s.length(); i++) {
+            // 哈希函数 自然溢出
+            h[i] = h[i - 1] * P + s.charAt(i - 1);
+            // 记录前缀，用以还原字符串
+            p[i] = p[i - 1] * P;
+        }
+
+        int l = 0, r = s.length();
+        String ans = "";
+        while (l <= r) {
+            int mid = l + ((r - l) >> 1);
+            String t = check(s, mid);
+            if (t.equals("")) r = mid - 1;
+            else l = mid+1;
+            ans = t.length() > ans.length() ? t : ans;
+        }
+        return ans;
+    }
+    public String check(String str, int len) {
+        int n = str.length();
+        HashSet<Long> set = new HashSet<>();
+        for (int i = 1; i + len - 1 <= n; i++) {
+            int j = i + len - 1;
+            long hash = h[j] - h[i - 1] * p[len];
+            if (set.contains(hash)) return str.substring(i-1, j);
+            set.add(hash);
+        }
+        return "";
+    }
+}
+```
 
 
 
