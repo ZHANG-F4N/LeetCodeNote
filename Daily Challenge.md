@@ -2321,6 +2321,68 @@ class Solution {
 }
 ```
 
+## [1405. 最长快乐字符串](https://leetcode-cn.com/problems/longest-happy-string/)
+
+如果字符串中不含有任何 'aaa'，'bbb' 或 'ccc' 这样的字符串作为子串，那么该字符串就是一个「快乐字符串」。
+
+给你三个整数 a，b ，c，请你返回 任意一个 满足下列全部条件的字符串 s：
+
+s 是一个尽可能长的快乐字符串。
+s 中 最多 有a 个字母 'a'、b 个字母 'b'、c 个字母 'c' 。
+s 中只含有 'a'、'b' 、'c' 三种字母。
+如果不存在这样的字符串 s ，请返回一个空字符串 ""。
+
+```
+输入：a = 7, b = 1, c = 0
+输出："aabaa"
+解释：这是该测试用例的唯一正确答案。
+输入：a = 1, b = 1, c = 7
+输出："ccaccbcc"
+解释："ccbccacc" 也是一种正确答案。
+```
+
+---
+
+解题思路：
+
+- 贪心算法 + 优先队列
+
+  每次添加剩余数量最多的字符，如果添加当前字符会和3个连续，那么添加第二多的字符（这个字符肯定和前面的字符不一样），这样就满足条件了。
+
+```java
+class Solution {
+    public String longestDiverseString(int a, int b, int c) {
+        StringBuilder ans = new StringBuilder("");
+        PriorityQueue<int[]> q = new PriorityQueue<>((o1, o2) -> o2[1] - o1[1]);
+        if (a > 0) q.add(new int[]{'a', a});
+        if (b > 0) q.add(new int[]{'b', b});
+        if (c > 0) q.add(new int[]{'c', c});
+        while (!q.isEmpty()) {
+            // 一次添加一个字符
+            int[] top = q.poll();
+            int n = ans.length();
+            if (n >= 2 && (ans.charAt(n - 1) == ans.charAt(n - 2)) && (ans.charAt(n - 1) == (char) top[0])) {
+                if (q.isEmpty()) break;
+                int[] cur = q.poll();
+                ans.append((char) cur[0]);
+                cur[1]--;
+                if (cur[1] != 0) q.add(cur);
+                q.add(top);
+            } else {
+                ans.append((char) top[0]);
+                top[1]--;
+                if (top[1] != 0) q.add(top);
+            }
+        }
+        return ans.toString();
+    }
+}
+```
+
+
+
+
+
 ## [1610. 可见点的最大数目](https://leetcode-cn.com/problems/maximum-number-of-visible-points/)
 
 给你一个点数组 points 和一个表示角度的整数 angle ，你的位置是 location ，其中 location = [posx, posy] 且 points[i] = [xi, yi] 都表示 X-Y 平面上的整数坐标。
@@ -2518,4 +2580,54 @@ class Solution {
 ```
 
 
+
+## [2171. 拿出最少数目的魔法豆](https://leetcode-cn.com/problems/removing-minimum-number-of-magic-beans/)
+
+给你一个 正 整数数组 beans ，其中每个整数表示一个袋子里装的魔法豆的数目。
+
+请你从每个袋子中 拿出 一些豆子（也可以 不拿出），使得剩下的 非空 袋子中（即 至少 还有 一颗 魔法豆的袋子）魔法豆的数目 相等 。一旦魔法豆从袋子中取出，你不能将它放到任何其他的袋子中。
+
+请你返回你需要拿出魔法豆的 最少数目。
+
+```java
+输入：beans = [4,1,6,5]
+输出：4
+解释：
+- 我们从有 1 个魔法豆的袋子中拿出 1 颗魔法豆。
+  剩下袋子中魔法豆的数目为：[4,0,6,5]
+- 然后我们从有 6 个魔法豆的袋子中拿出 2 个魔法豆。
+  剩下袋子中魔法豆的数目为：[4,0,4,5]
+- 然后我们从有 5 个魔法豆的袋子中拿出 1 个魔法豆。
+  剩下袋子中魔法豆的数目为：[4,0,4,4]
+总共拿出了 1 + 2 + 1 = 4 个魔法豆，剩下非空袋子中魔法豆的数目相等。
+没有比取出 4 个魔法豆更少的方案。
+```
+
+---
+
+解题思路：
+
+- 先排序，我们会发现当k是beans数组里本来就有的数字时，拿走的魔法豆会更小，而当k=beans[i]的时候，下标小于i的所有袋子，全部拿走，下标大于i的袋子，拿走到只有bean[i]个豆子。所以剩下的豆子如图所示：
+
+<img src="asset/Daily%20Challenge.assets/1644729173-kRSgig-f3c41be66e163ba713b10ad185bed53.jpg" alt="f3c41be66e163ba713b10ad185bed53.jpg" style="zoom: 33%;" />
+
+```java
+class Solution {
+    public long minimumRemoval(int[] beans) {
+        long ans = Long.MAX_VALUE;
+        long total = 0;
+        int n = beans.length;
+        for (int i = 0; i < n; i++) {
+            total += beans[i];
+        }
+        Arrays.sort(beans);
+        for (int i = 0; i < n; i++) {
+            long temp = 0;
+            temp = total - (long)(n - i) * (long)beans[i];
+            ans = Math.min(ans,temp);
+        }
+        return ans;
+    }
+}
+```
 
