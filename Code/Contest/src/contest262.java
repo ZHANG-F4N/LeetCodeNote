@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class LeetCode1010a1 {
+public class contest262 {
     public static void main(String[] args) {
         int[] nums1 = {1,1,3,2};
         int[] nums2 = {2, 3};
