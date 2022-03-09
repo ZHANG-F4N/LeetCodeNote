@@ -1902,6 +1902,86 @@ class Solution {
 }
 ```
 
+## [798. 得分最高的最小轮调](https://leetcode-cn.com/problems/smallest-rotation-with-highest-score/)
+
+给你一个数组 nums，我们可以将它按一个非负整数 k 进行轮调，这样可以使数组变为 [nums[k], nums[k + 1], ... nums[nums.length - 1], nums[0], nums[1], ..., nums[k-1]] 的形式。此后，任何值小于或等于其索引的项都可以记作一分。
+
+例如，数组为 nums = [2,4,1,3,0]，我们按 k = 2 进行轮调后，它将变成 [1,3,0,2,4]。这将记为 3 分，因为 1 > 0 [不计分]、3 > 1 [不计分]、0 <= 2 [计 1 分]、2 <= 3 [计 1 分]，4 <= 4 [计 1 分]。
+在所有可能的轮调中，返回我们所能得到的最高分数对应的轮调下标 k 。如果有多个答案，返回满足条件的最小的下标 k 。
+
+```java
+输入：nums = [2,3,1,4,0]
+输出：3
+解释：
+下面列出了每个 k 的得分：
+k = 0,  nums = [2,3,1,4,0],    score 2
+k = 1,  nums = [3,1,4,0,2],    score 3
+k = 2,  nums = [1,4,0,2,3],    score 3
+k = 3,  nums = [4,0,2,3,1],    score 4
+k = 4,  nums = [0,2,3,1,4],    score 3
+所以我们应当选择 k = 3，得分最高。
+1 <= nums.length <= 105
+0 <= nums[i] < nums.length
+```
+
+---
+
+解题思路:
+
+- 预处理 + 差分 + 前缀和。
+
+  由于 0 <= nums[i] < nums.length ,k的取值范围为[0,n-1],第i个元素轮转后的下标为 (i-k+n)%n
+
+  解题的关键是求 `每个元素` 可以加一分时`k的取值范围`。
+
+  假设元素 x 的初始下标为 i。
+  当 i < x 时应将 points 的下标范围 [i+1,i−x+n] 内的所有元素加 1，
+  当 i ≥ x 时应将 points 的下标范围 [0,i+1] 和 [i−x,n−1] 内的所有元素加 1。
+
+  使用差分统计每个k的得分，然后前缀和求最大的分对应的k。
+
+```java
+class Solution {
+    public int bestRotation(int[] nums) {
+        // 0 <= nums[i] < nums.length
+        int n = nums.length;
+        // 下标为 i 的元素 进行 k 论调后的下标为 (i - k + n) % n
+        //  points[k] 表示轮调下标为 k 时的得分
+        // 用差分数组保存
+        int[] points = new int[n];
+        // 对于数组 nums 中的每个元素，得到该元素记 1 分的轮调下标范围，
+        // 然后将数组 points 的该下标范围内的所有元素加 1。
+
+        //假设元素 x 的初始下标为 i。
+        // 当 i < x 时应将 points 的下标范围 [i+1,i−x+n] 内的所有元素加 1，
+        // 当 i ≥ x 时应将 points 的下标范围 [0,i+1] 和 [i−x,n−1] 内的所有元素加 1。
+        for (int i = 0; i < n; i++) {
+            int low = (i + 1) % n;
+            // +1 配合差分
+            int high = (i - nums[i] + n + 1) % n;
+            points[low]++;
+            points[high]--;
+            // 差分首项
+            if (low >= high) {
+                points[0]++;
+            }
+        }
+        // 算最高分
+        int ans = 0;
+        int max = 0;
+        int pre = 0;
+        for (int i = 0; i < n; i++) {
+            if (points[i] + pre > max) {
+                max = points[i] + pre;
+                ans = i;
+            }
+            pre = points[i] + pre;
+        }
+        return ans;
+    }
+}
+```
+
 
 
 ## [869. 重新排序得到 2 的幂](https://leetcode-cn.com/problems/reordered-power-of-2/)
@@ -2573,6 +2653,65 @@ class Solution {
                 ans[dx][dy] = ans[x][y] + 1;
                 queue.offer(new int[]{dx,dy});
             }
+        }
+        return ans;
+    }
+}
+```
+
+## [2055. 蜡烛之间的盘子](https://leetcode-cn.com/problems/plates-between-candles/)
+
+给你一个长桌子，桌子上盘子和蜡烛排成一列。给你一个下标从 0 开始的字符串 s ，它只包含字符 '*' 和 '|' ，其中 '*' 表示一个 盘子 ，'|' 表示一支 蜡烛 。
+
+同时给你一个下标从 0 开始的二维整数数组 queries ，其中 queries[i] = [lefti, righti] 表示 子字符串 s[lefti...righti] （包含左右端点的字符）。对于每个查询，你需要找到 子字符串中 在 两支蜡烛之间 的盘子的 数目 。如果一个盘子在 子字符串中 左边和右边 都 至少有一支蜡烛，那么这个盘子满足在 两支蜡烛之间 。
+
+比方说，s = "||**||**|*" ，查询 [3, 8] ，表示的是子字符串 "*||**|" 。子字符串中在两支蜡烛之间的盘子数目为 2 ，子字符串中右边两个盘子在它们左边和右边 都 至少有一支蜡烛。
+请你返回一个整数数组 answer ，其中 answer[i] 是第 i 个查询的答案。
+
+```java
+输入：s = "**|**|***|", queries = [[2,5],[5,9]]
+输出：[2,3]
+解释：
+
+- queries[0] 有两个盘子在蜡烛之间。
+- queries[1] 有三个盘子在蜡烛之间。
+```
+
+![ex-1](asset/Daily%20Challenge.assets/ex-1.png)
+
+---
+
+解题思路:
+
+- 前缀和。
+  1. 使用前缀和的方式统计数组中盘子的数量。
+  2. 然后用两个数组分别标记离i点最近的左右蜡烛的位置。
+  3. 最后只需要通过蜡烛的标记数组确定边界的蜡烛位置，然后通过前缀和计算盘子总数。
+
+```java
+class Solution {
+    public int[] platesBetweenCandles(String s, int[][] queries) {
+        int n = s.length();
+        int[] plates = new int[n + 1];
+        // lc 记录左侧最近的盘子
+        // rc 记录右侧最近的盘子
+        int[] lc = new int[n];
+        int[] rc = new int[n];
+        char[] chars = s.toCharArray();
+        int l = -1, r = -1;
+        for (int i = 0, j = n - 1; i < chars.length; i++, j--) {
+            plates[i + 1] = plates[i] + (chars[i] == '*' ? 1 : 0);
+            if (chars[i] == '|') l = i;
+            if (chars[j] == '|') r = j;
+            lc[i] = l;
+            rc[j] = r;
+        }
+        int[] ans = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            l = rc[queries[i][0]];
+            r = lc[queries[i][1]];
+
+            ans[i] = (l < r && l != -1 && r != -1) ? plates[r] - plates[l] : 0;
         }
         return ans;
     }
