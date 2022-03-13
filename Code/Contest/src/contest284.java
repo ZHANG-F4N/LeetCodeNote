@@ -67,12 +67,12 @@ public class contest284 {
 
 //            if (nums[i] > max) max = nums[i];
         }
-        if (k > n) return maxArr[n];
-        if (k == n) return Math.max(max, nums[n - 1]);
-        max = -1;
-        for (int i = 0; i < k; i++) {
-
-        }
+//        if (k > n) return maxArr[n];
+//        if (k == n) return Math.max(max, nums[n - 1]);
+//        max = -1;
+//        for (int i = 0; i < k; i++) {
+//
+//        }
 
 
         return 0;
