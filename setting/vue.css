@@ -1,11 +1,10 @@
 @import 'vue/fonts.css';
-
 :root {
     --side-bar-bg-color: #fff;
     --control-text-color: #777;
-    --font-sans-serif: 'Consolas','黑体','Ubuntu','Source Sans Pro', sans-serif !important;
-    --font-body:'Consolas','宋体','Ubuntu','Source Sans Pro', sans-serif !important;
-    --font-monospace: 'Consolas','Ubuntu','Fira Code', 'Roboto Mono', monospace !important;
+    --font-sans-serif: 'Consolas', '黑体', 'Ubuntu', 'Source Sans Pro', sans-serif !important;
+    --font-body: 'JetBrains Mono Light', 'Consolas', '宋体', 'Ubuntu', 'Source Sans Pro', sans-serif !important;
+    --font-monospace: 'Consolas', 'Ubuntu', 'Fira Code', 'Roboto Mono', monospace !important;
 }
 
 html {
@@ -37,21 +36,21 @@ body {
     padding-left: 0.5rem;
 }
 
-#write > ul:first-child,
-#write > ol:first-child {
+#write>ul:first-child,
+#write>ol:first-child {
     margin-top: 30px;
 }
 
-body > *:first-child {
+body>*:first-child {
     margin-top: 0 !important;
 }
 
-body > *:last-child {
+body>*:last-child {
     margin-bottom: 0 !important;
 }
 
 a {
-    color: #42b983;
+    color: #cc7340;
     font-weight: 600;
     padding: 0 2px;
     text-decoration: none;
@@ -158,8 +157,8 @@ table {
     margin: 0.8em 0;
 }
 
-li > ol,
-li > ul {
+li>ol,
+li>ul {
     margin: 0 0;
 }
 
@@ -173,25 +172,25 @@ hr {
     box-sizing: content-box;
 }
 
-body > h2:first-child {
+body>h2:first-child {
     margin-top: 0;
     padding-top: 0;
 }
 
-body > h1:first-child {
+body>h1:first-child {
     margin-top: 0;
     padding-top: 0;
 }
 
-body > h1:first-child + h2 {
+body>h1:first-child+h2 {
     margin-top: 0;
     padding-top: 0;
 }
 
-body > h3:first-child,
-body > h4:first-child,
-body > h5:first-child,
-body > h6:first-child {
+body>h3:first-child,
+body>h4:first-child,
+body>h5:first-child,
+body>h6:first-child {
     margin-top: 0;
     padding-top: 0;
 }
@@ -235,7 +234,7 @@ ol:last-child {
 }
 
 blockquote {
-    border-left: 4px solid #42b983;
+    border-left: 4px solid #7cf8c0;
     padding: 10px 15px;
     color: #777;
     background-color: rgba(66, 185, 131, .1);
@@ -316,10 +315,11 @@ table tr td:last-child {
     padding-left: 12px;
 }
 
-#write code, tt {
+#write code,
+tt {
     padding: 2px 4px;
     border-radius: 2px;
-    font-family:  var(--font-monospace);
+    font-family: var(--font-monospace);
     font-size: 1.05rem;
     color: #e96900;
     background-color: #f8f8f8;
@@ -334,14 +334,21 @@ tt {
     color: #e96900;
 }
 
+
 /* heighlight. */
+
 #write mark {
-    background-color: #92f3c2;
+    background-color: #6bdae9;
     border-radius: 2px;
     padding: 2px 4px;
     margin: 0 2px;
     color: #222;
     font-weight: 500;
+}
+
+u {
+    text-decoration-line: underline;
+    text-decoration-color: #ff6146;
 }
 
 #write del {
@@ -357,7 +364,7 @@ tt {
     color: #22a2c9;
 }
 
-.md-task-list-item > input {
+.md-task-list-item>input {
     margin-left: -1.3em;
 }
 
@@ -365,12 +372,10 @@ tt {
     html {
         font-size: 13px;
     }
-
     table,
     pre {
         page-break-inside: avoid;
     }
-
     pre {
         word-wrap: break-word;
     }
@@ -395,31 +400,31 @@ tt {
     margin-top: 0 !important;
 }
 
-.mathjax-block > .code-tooltip {
+.mathjax-block>.code-tooltip {
     bottom: .375rem;
 }
 
-#write > h3.md-focus:before {
+#write>h3.md-focus:before {
     left: -1.5625rem;
     top: .375rem;
 }
 
-#write > h4.md-focus:before {
+#write>h4.md-focus:before {
     left: -1.5625rem;
     top: .285714286rem;
 }
 
-#write > h5.md-focus:before {
+#write>h5.md-focus:before {
     left: -1.5625rem;
     top: .285714286rem;
 }
 
-#write > h6.md-focus:before {
+#write>h6.md-focus:before {
     left: -1.5625rem;
     top: .285714286rem;
 }
 
-.md-image > .md-meta {
+.md-image>.md-meta {
     border-radius: 3px;
     font-family: var(--font-monospace);
     padding: 2px 0 0 4px;
@@ -455,6 +460,7 @@ tt {
 #md-notification:before {
     top: 10px;
 }
+
 
 /** focus mode */
 
