@@ -15,9 +15,10 @@ public class FileReaderWriter {
 
 
     public static void main(String[] args) throws IOException {
-        testFileReader();
-        testFileReader1();
-        TestFileWriter();
+//        testFileReader();
+//        testFileReader1();
+//        TestFileWriter();
+//        TestFileReaderWriter();
     }
 
     // 测试 FileReader
@@ -26,7 +27,7 @@ public class FileReaderWriter {
         FileReader fr = null;
         try {
             // 1. 实例化File类对象
-            File file = new File("Interview\\hello.txt"); // 路径相较于当前工程
+            File file = new File("Interview//IO//hello.txt"); // 路径相较于当前工程
             // 2. 提供具体的流
             fr = new FileReader(file);
             // 3. 数据的读入过程
@@ -54,7 +55,7 @@ public class FileReaderWriter {
 
         FileReader fr = null;
         try {
-            File file = new File("Interview//hello.txt");
+            File file = new File("Interview//IO//hello.txt");
             fr = new FileReader(file);
             char[] cBuf = new char[5];
             // RETURN   The number of characters read,
@@ -88,14 +89,59 @@ public class FileReaderWriter {
     }
 
     // 从内存中写出数据到磁盘的文件里。
+    /*
+     *  输出操作 对应File可以不存在,会自动创建,不会爆异常
+     *          如果存在,可以根据第二个参数确定是否追加,默认不追加,进行覆盖
+     *          FileWriter fw = new FileWriter(file,false/true);
+     * */
     public static void TestFileWriter() throws IOException {
 
-        File file = new File("Interview//helloWriter.txt");
-        System.out.println(file.getAbsolutePath());
-        // file文件本身没有写出的能力,
-        FileWriter fw = new FileWriter(file);
-        fw.write("Fuck F4N!");
-        fw.write("2022-3-11");
-        fw.close();
+        FileWriter fw = null;
+        try {
+            File file = new File("Interview//IO//helloWriter.txt");
+            System.out.println(file.getAbsolutePath());
+            // file文件本身没有写出的能力,
+            fw = new FileWriter(file, false);
+            fw.write("Fuck F4N!");
+            fw.write("2022-3-11");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fw != null) fw.close();
+        }
+    }
+
+
+    // 对同一文件的读写,做一个复制操作
+    public static void TestFileReaderWriter() throws IOException {
+        FileReader fr = null;
+        FileWriter fw = null;
+        try {
+            File srcFile = new File("Interview//IO//hello.txt");
+            File destFile = new File("Interview//IO//helloWriter.txt");
+
+
+            fr = new FileReader(srcFile);
+            fw = new FileWriter(destFile,true);
+            char[] cBuf = new char[5];
+            int len;
+            while ((len = fr.read(cBuf)) != -1) {
+                fw.write(cBuf, 0, len);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fw != null) fw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                if (fr != null) fr.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
