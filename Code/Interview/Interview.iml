@@ -7,6 +7,8 @@
       <sourceFolder url="file://$MODULE_DIR$/LeetCode" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/basics" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/IO" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/NIO" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/JUC" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
