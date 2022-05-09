@@ -38,4 +38,24 @@ public class a440findKthNumber {
         return ans;
     }
 
+
+    public static int findKthNumber2(int n, int k) {
+        long number = 1;
+        int idx = 1;
+        for (int i = 0; i < n; i++) {
+            if (idx == k) return (int)number;
+            idx++;
+            if (number * 10 <= n) {
+                number *= 10;
+            } else {
+                while (number % 10 == 9 || number + 1 > n) {
+                    number /= 10;
+                }
+                number++;
+            }
+        }
+        return (int)number;
+
+
+    }
 }
