@@ -2,7 +2,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
-public class InheritedInterface {
+public class  InheritedInterface {
 
     public static class MyThread implements Runnable {
         @Override
