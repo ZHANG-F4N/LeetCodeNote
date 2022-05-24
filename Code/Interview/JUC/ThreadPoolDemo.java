@@ -55,28 +55,39 @@ public class ThreadPoolDemo {
 //        }
 
 
-        ExecutorService threadPool = new ThreadPoolExecutor(
-                2,
-                5,
-                2L,
-                TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(3),
-                Executors.defaultThreadFactory(),
-                new ThreadPoolExecutor.AbortPolicy());
-        // 自定义线程池使用
-        try {
-            /*模拟5个线程放入大小为5的线程池*/
-            for (int i = 0; i < 5; i++) {
-                threadPool.execute(() -> {
-                    System.out.println(Thread.currentThread().getName() + " 办理业务");
-                });
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            // 关闭线程池
-            threadPool.shutdown();
-        }
+//        ExecutorService threadPool = new ThreadPoolExecutor(
+//                2,
+//                5,
+//                2L,
+//                TimeUnit.SECONDS,
+//                new ArrayBlockingQueue<>(3),
+//                Executors.defaultThreadFactory(),
+//                new ThreadPoolExecutor.AbortPolicy());
+//        // 自定义线程池使用
+//        try {
+//            /*模拟5个线程放入大小为5的线程池*/
+//            for (int i = 0; i < 5; i++) {
+//                threadPool.execute(() -> {
+//                    System.out.println(Thread.currentThread().getName() + " 办理业务");
+//                });
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            // 关闭线程池
+//            threadPool.shutdown();
+//        }
+
+//        ExecutorService executorService = Executors.newFixedThreadPool(2);
+//        while (true) {
+//            executorService.submit(() -> {
+//                try {
+//                    TimeUnit.SECONDS.sleep(30);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            });
+//        }
 
 
     }
