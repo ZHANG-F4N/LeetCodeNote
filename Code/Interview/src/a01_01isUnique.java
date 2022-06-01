@@ -15,5 +15,6 @@ public class a01_01isUnique {
             flag |= 1 << dist;
         }
         return true;
+
     }
 }
