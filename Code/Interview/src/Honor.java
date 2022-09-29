@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Honor {
     public static void main(String[] args) {
-        QQ3();
+        Q5();
     }
 
     //Q1
@@ -251,4 +251,53 @@ public class Honor {
             System.out.println(idx);
         }
     }
+
+
+    public static void Q5() {
+        Scanner scanner = new Scanner(System.in);
+        int T = scanner.nextInt();
+
+        for (int k = 0; k < T; k++) {
+            int n = scanner.nextInt();
+            int[][] meet = new int[n][2];
+            for (int i = 0; i < n; i++) {
+                meet[i][0] = scanner.nextInt();
+                meet[i][1] = scanner.nextInt();
+            }
+
+            Arrays.sort(meet, (o1, o2) -> {
+                if (o1[1] == o2[1]) {
+                    return o1[0] - o2[0];
+                }
+                return o1[1] - o2[1];
+            });
+            int[][] dp = new int[n][n];
+            int ans = 0;
+            int endtime = 0;
+            for (int i = 0; i < n; i++) {
+                dp[i][i] = meet[i][1] - meet[i][0];
+            }
+            for (int i = 0; i < n; i++) {
+                if (meet[i][0] < endtime) continue;
+                else {
+                    ans += meet[i][1] - meet[i][0];
+                    endtime = meet[i][1];
+                }
+            }
+
+            System.out.println(ans);
+        }
+    }
 }
+
+
+/*
+        1
+        6
+        15 17
+        8 11
+        10 16
+        11 12
+        13 15
+        9 12
+        */
