@@ -8,14 +8,15 @@ using namespace std;
 bool cmp(string a, string b) {
     return a.compare(b) > 0;
 }
+/*
+ * C++ vector 用法详解
+ * 在标准C++中,vector同样是一个模板,并且其底层实现用的是三个指针,
+ * 然后利用这三个指针相互加减,达到存储效果.而vector和string类似,
+ * 本质是都是一个顺序表. 头文件为 <vector>
+ * */
 
 int main() {
-    /*
-     * C++ vector 用法详解
-     * 在标准C++中,vector同样是一个模板,并且其底层实现用的是三个指针,
-     * 然后利用这三个指针相互加减,达到存储效果.而vector和string类似,
-     * 本质是都是一个顺序表. 头文件为 <vector>
-     * */
+
     int n = 5, a = 3;
     // 构造vector
     //---------------------------------------------
@@ -93,6 +94,8 @@ int main() {
     reverse(v6.begin(), v6.end());  // 元素反转
     sort(v6.begin(), v6.end());     // 元素排序 默认升序
     sort(v6.begin(), v6.end(), cmp);       // 自定义比较器,可以降序
+    v6.resize(12);  // 重设容器大小size
+    v6.clear();     // 清空容器
     vector<string>::iterator it = find(v6.begin(), v6.end(), "test1");    // 寻找指定元素,并返回下标或者迭代器
     cout << *it << endl;
     vector<string> v8 = vector<string>(9);
