@@ -33,14 +33,12 @@ int main() {
     map<string, int> map1; // 默认构造
     map<string, string> map2{
             {"name", "zhang"},
-            {"age",  "18"}
+            {"age",  "18"},
+            {"gender","female"}
     };   // 带初始化的构造
     map<string, int> map3(map1); // 调用拷贝构造函数,利用先前已创建好的 map 容器，再创建一个新的 map 容器。
     // 取已建 map 容器中指定区域内的键值对，创建并初始化新的 map 容器。
     map<string, string> map4(++map2.begin(), map2.end());
-
-
-
 
     // 访问map
     // ---------------------------------------
