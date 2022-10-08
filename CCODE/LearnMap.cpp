@@ -23,6 +23,9 @@ using namespace std;
  * pair 类模板定义在<utility>头文件中，所以在使用该类模板之前，需引入此头文件。
  * pair 对象重载了 <、<=、>、>=、==、!= 这 6 的运算符，
  * 其运算规则是：对于进行比较的 2 个 pair 对象，先比较 pair.first 元素的大小，如果相等则继续比较 pair.second 元素的大小。
+ *
+ * C++ STL 标准库为 map 容器配备的是双向迭代器（bidirectional iterator）。
+ * 这意味着，map 容器迭代器只能进行 ++p、p++、--p、p--、*p 操作，并且迭代器之间只能使用 == 或者 != 运算符进行比较。
  * */
 int main() {
 
@@ -32,13 +35,15 @@ int main() {
     // ----------------------------------------
     map<string, int> map1; // 默认构造
     map<string, string> map2{
-            {"name", "zhang"},
-            {"age",  "18"},
-            {"gender","female"}
+            {"name",   "zhang"},
+            {"age",    "18"},
+            {"gender", "female"}
     };   // 带初始化的构造
     map<string, int> map3(map1); // 调用拷贝构造函数,利用先前已创建好的 map 容器，再创建一个新的 map 容器。
     // 取已建 map 容器中指定区域内的键值对，创建并初始化新的 map 容器。
     map<string, string> map4(++map2.begin(), map2.end());
+    map<string, string, less<string>> map5;     // 自定义 map 容器的排序规则
+    map<string, string, greater<string>> map6;  // 自定义 map 容器的排序规则
 
     // 访问map
     // ---------------------------------------
@@ -55,6 +60,26 @@ int main() {
     map<string, string>::iterator it = map2.find("age");
     cout << it->first << ":" << it->second;
 
+
+    // 插入元素
+    // --------------------------------------
+    map5.insert({{"val", "10086"},
+                 {"num", "102"}});  // 插入元素 可以插入单值 ,多值, 还有迭代器
+    map5.insert(pair<string, string>("num","10")); // 当键已存在时,则插入失败,不会修改原来的值
+    map5.insert(map4.begin(), map4.end());
+    map5.insert(map5.begin(), pair<string, string>("num1","10")); // 指定位置插入, 但 map 容器仍会对存储的键值对进行排序。
+    map5.emplace("val", "1007"); // 在当前 map 容器中的指定位置处构造新键值对。
+    // 其效果和插入键值对一样，但效率更高。仅当 key 不存在时才会插入。不会修改原来的值
+
+
+
+    // 删除元素
+    // --------------------------------------
+    map5.erase(map5.begin());   //  删除 map 容器指定位置、指定键（key）值或者指定区域内的键值对。
+    map5.erase("num");   //  删除 map 容器指定位置、指定键（key）值或者指定区域内的键值对。
+    map5.erase(map5.begin(), map5.end());   //  删除 map 容器指定位置、指定键（key）值或者指定区域内的键值对。
+
+    map5.clear(); // 清空map中的元素
 
     for (const auto &item: map4) {
         cout << item.first << " " << item.second << endl;
